@@ -10,6 +10,7 @@ import { PostHogPageView } from "@/components/providers/posthog-pageview";
 import { Navbar } from "@/components/navbar";
 import { LocaleSync } from "@/components/i18n/locale-sync";
 import { WorldMount } from "@/components/world/world-mount";
+import { BookingDrawer } from "@/components/booking/booking-drawer";
 
 import "./globals.css";
 
@@ -172,6 +173,7 @@ export default function RootLayout({
              * exige boundary para no abortar el prerender (error de build
              * "missing-suspense-with-csr-bailout").
              */}
+            <BookingDrawer />
             <Suspense fallback={null}>
               <PostHogPageView />
             </Suspense>
