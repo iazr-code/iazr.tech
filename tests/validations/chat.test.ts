@@ -14,8 +14,31 @@ describe("parseChatRequest", () => {
     expect(parseChatRequest({ messages: many(20) }).ok).toBe(true);
   });
 
-  it("rejects 21 messages with 413", () => {
-    expect(parseChatRequest({ messages: many(21) })).toMatchObject({ ok: false, status: 413 });
+  it("trims history to the last 20 messages instead of failing", () => {
+    const r = parseChatRequest({ messages: many(25) });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.messages).toHaveLength(20);
+  });
+
+  it("rejects absurd payloads (more than 100 messages) with 413", () => {
+    expect(parseChatRequest({ messages: many(101) })).toMatchObject({ ok: false, status: 413 });
+  });
+
+  it("accepts a long assistant reply in the history", () => {
+    const r = parseChatRequest({ messages: [msg("hola"), msg("a".repeat(5000), "assistant"), msg("y luego?")] });
+    expect(r.ok).toBe(true);
+  });
+
+  it("keeps a 12-turn conversation with long replies alive by dropping the oldest turns", () => {
+    const messages = [];
+    for (let i = 0; i < 12; i += 1) messages.push(msg(`pregunta ${i}`), msg("b".repeat(1900), "assistant"));
+    messages.push(msg("última pregunta"));
+    const r = parseChatRequest({ messages });
+    if (!r.ok) throw new Error("expected ok");
+    const total = r.messages.reduce((n, m) => n + m.parts.reduce((k, p) => k + (p.type === "text" ? p.text.length : 0), 0), 0);
+    expect(total).toBeLessThanOrEqual(12000);
+    expect(r.messages[r.messages.length - 1].parts[0]).toEqual({ type: "text", text: "última pregunta" });
+    expect(r.messages[0].role).toBe("user");
   });
 
   it("enforces 2000 chars per message", () => {
@@ -23,8 +46,10 @@ describe("parseChatRequest", () => {
     expect(parseChatRequest({ messages: [msg("a".repeat(2001))] })).toMatchObject({ ok: false, status: 413 });
   });
 
-  it("enforces 12000 chars in total", () => {
-    expect(parseChatRequest({ messages: many(7, 1800) })).toMatchObject({ ok: false, status: 413 });
+  it("enforces 12000 chars in total by trimming the oldest messages", () => {
+    const r = parseChatRequest({ messages: many(7, 1800) });
+    if (!r.ok) throw new Error("expected ok");
+    expect(r.messages).toHaveLength(6);
   });
 
   it("rejects the system role with 400", () => {

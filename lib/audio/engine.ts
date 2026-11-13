@@ -46,6 +46,7 @@ export function createAudioEngine(deps: { createContext?: () => AudioContext; do
   let filter: BiquadFilterNode | null = null;
   let oscillators: OscillatorNode[] = [];
   let running = false;
+  let suspendTimer: ReturnType<typeof setTimeout> | null = null;
   let scene: SceneId = "hero";
 
   const doc = () => deps.doc ?? (typeof document !== "undefined" ? document : null);
@@ -110,6 +111,8 @@ export function createAudioEngine(deps: { createContext?: () => AudioContext; do
         build(ctx);
         doc()?.addEventListener("visibilitychange", onVisibility);
       }
+      if (suspendTimer) clearTimeout(suspendTimer);
+      suspendTimer = null;
       await ctx.resume();
       running = true;
       master?.gain.setTargetAtTime(MASTER_LEVEL, ctx.currentTime, 0.8);
@@ -119,6 +122,13 @@ export function createAudioEngine(deps: { createContext?: () => AudioContext; do
       if (!ctx || !master) return;
       running = false;
       master.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+      // Tras el fundido se suspende el contexto: los osciladores dejan de
+      // procesar y el sistema (móvil) puede liberar la sesión de audio.
+      const context = ctx;
+      suspendTimer = setTimeout(() => {
+        suspendTimer = null;
+        if (!running) void context.suspend();
+      }, 1200);
     },
 
     isRunning: () => running,

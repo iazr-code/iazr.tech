@@ -95,6 +95,35 @@ describe("createAudioEngine (opt-in)", () => {
     expect(ctx.resume).toHaveBeenCalled();
   });
 
+  it("stop() suspends the context after the fade so the device can sleep, and start() resumes it", async () => {
+    vi.useFakeTimers();
+    const ctx = fakeContext();
+    const engine = createAudioEngine({ createContext: () => ctx as unknown as AudioContext, doc: fakeDoc() });
+    await engine.start();
+    ctx.suspend.mockClear();
+    ctx.resume.mockClear();
+    engine.stop();
+    expect(ctx.suspend).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1500);
+    expect(ctx.suspend).toHaveBeenCalledTimes(1);
+    await engine.start();
+    expect(ctx.resume).toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it("does not suspend if sound is turned back on during the fade", async () => {
+    vi.useFakeTimers();
+    const ctx = fakeContext();
+    const engine = createAudioEngine({ createContext: () => ctx as unknown as AudioContext, doc: fakeDoc() });
+    await engine.start();
+    ctx.suspend.mockClear();
+    engine.stop();
+    await engine.start();
+    vi.advanceTimersByTime(1500);
+    expect(ctx.suspend).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
   it("stop() ramps the master gain down and stops running", async () => {
     const ctx = fakeContext();
     const engine = createAudioEngine({ createContext: () => ctx as unknown as AudioContext, doc: fakeDoc() });

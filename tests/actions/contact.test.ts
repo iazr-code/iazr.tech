@@ -24,6 +24,20 @@ function form() {
   return fd;
 }
 
+describe("submitContact validation vs rate limit", () => {
+  it("does not spend the limit on submissions that fail validation", async () => {
+    currentIp = "3.3.3.3";
+    for (let i = 0; i < 4; i += 1) {
+      const bad = form();
+      bad.set("message", "corto");
+      const res = await submitContact(initialContactState, bad);
+      expect(res.message).toBe("invalid");
+    }
+    const ok = await submitContact(initialContactState, form());
+    expect(ok.status).toBe("success");
+  });
+});
+
 describe("submitContact rate limit", () => {
   it("allows 3 submissions per IP, blocks the 4th, and does not block other IPs", async () => {
     currentIp = "1.1.1.1";

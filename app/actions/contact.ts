@@ -6,7 +6,7 @@ import { contactSchema, serviceLabels } from "@/lib/validations/contact";
 import type { ContactState } from "@/lib/contact-state";
 import { siteConfig } from "@/lib/data/site";
 import { trackLead } from "@/lib/analytics/lead";
-import { contactLimiter, getClientIp } from "@/lib/security/rate-limit";
+import { contactAttemptLimiter, contactLimiter, getClientIp } from "@/lib/security/rate-limit";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 
 /**
@@ -123,10 +123,12 @@ export async function submitContact(
 ): Promise<ContactState> {
   // Los campos opcionales vacíos (selects sin selección) se normalizan a
   // `undefined` para que Zod los trate como ausentes, no como cadenas inválidas.
-  // Rate limit por IP (3 / 10 min): sustituye al antiguo bloqueo global en
-  // memoria, que hacía esperar a TODOS los visitantes tras un envío.
-  const limit = contactLimiter.check(getClientIp(await headers()));
-  if (!limit.ok) {
+  // Dos límites por IP (sustituyen al antiguo bloqueo global en memoria):
+  // · intentos brutos (20 / 10 min) contra el spam, antes de validar;
+  // · envíos válidos (3 / 10 min), DESPUÉS de validar: un error de tipeo no
+  //   le cuesta al visitante uno de sus envíos.
+  const ip = getClientIp(await headers());
+  if (!contactAttemptLimiter.check(ip).ok) {
     return { status: "error", message: "rate_limited", fieldErrors: null };
   }
 
@@ -157,6 +159,10 @@ export async function submitContact(
   // Doble guardia honeypot (el esquema ya lo rechaza; esto es fail-closed).
   if (data.website) {
     return { status: "error", message: "honeypot", fieldErrors: null };
+  }
+
+  if (!contactLimiter.check(ip).ok) {
+    return { status: "error", message: "rate_limited", fieldErrors: null };
   }
 
   // ── TELEMETRÍA: se registra el lead (fecha, servicio, presupuesto) apenas

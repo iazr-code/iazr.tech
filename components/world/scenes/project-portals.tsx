@@ -21,7 +21,7 @@ import { TIER_SETTINGS } from "@/lib/world/quality";
 import { interactionState } from "@/lib/world/interaction-store";
 import { localProgress, rangeOf, scrollState } from "@/lib/world/scroll-store";
 import { useTier } from "@/lib/world/tier-store";
-import { createUploadQueue, PORTAL_ASPECT, portalTextureUrl } from "@/lib/world/textures";
+import { createGeneration, createUploadQueue, PORTAL_ASPECT, portalTextureUrl } from "@/lib/world/textures";
 import { portalFragment, portalVertex } from "@/lib/world/shaders/portal";
 
 const WIDTH = 3.2;
@@ -63,6 +63,8 @@ export function ProjectPortals() {
   const active = useRef(0);
   const queue = useMemo(() => createUploadQueue(1), []);
   const loading = useRef(false);
+  const generation = useMemo(() => createGeneration(), []);
+  const loadedSize = useRef(0);
   const forward = useMemo(() => new Vector3(), []);
 
   const geometry = useMemo(() => new PlaneGeometry(WIDTH, WIDTH / PORTAL_ASPECT, 32, 16), []);
@@ -88,28 +90,35 @@ export function ProjectPortals() {
     []
   );
 
-  // Liberación de GPU: texturas al cambiar de tamaño de nivel y todo al desmontar.
+  // Cambio de nivel: solo se recarga al SUBIR de tamaño (bajar no libera VRAM
+  // ya asignada y evitaría 9 descargas por cada oscilación medium↔low). La
+  // generación nueva invalida las cargas en vuelo y las subidas en cola.
   useEffect(() => {
+    if (size <= loadedSize.current) return;
+    generation.next();
+    queue.clear();
     loading.current = false;
-    return () => {
+  }, [size, generation, queue]);
+
+  // Al desmontar: todas las texturas, materiales y la geometría.
+  useEffect(
+    () => () => {
+      generation.next();
+      queue.clear();
       materials.forEach((m) => {
         (m.uniforms.uMap.value as Texture | null)?.dispose();
         m.uniforms.uMap.value = null;
-        m.uniforms.uHasMap.value = 0;
+        m.dispose();
       });
-    };
-  }, [size, materials]);
-
-  useEffect(
-    () => () => {
       geometry.dispose();
-      materials.forEach((m) => m.dispose());
     },
-    [geometry, materials]
+    [geometry, materials, generation, queue]
   );
 
   function startLoading() {
     loading.current = true;
+    loadedSize.current = size;
+    const gen = generation.next();
     const anisotropy = Math.min(anisotropyCap, gl.capabilities.getMaxAnisotropy());
     featuredProjects.forEach((project, i) => {
       fetch(portalTextureUrl(project.id, size))
@@ -117,6 +126,10 @@ export function ProjectPortals() {
         // Decodificación fuera del hilo principal; la orientación ya va invertida para WebGL.
         .then((blob) => createImageBitmap(blob, { imageOrientation: "flipY" }))
         .then((bitmap) => {
+          if (!generation.isCurrent(gen)) {
+            bitmap.close();
+            return;
+          }
           const texture = new Texture(bitmap);
           texture.flipY = false;
           texture.colorSpace = SRGBColorSpace;
@@ -126,8 +139,13 @@ export function ProjectPortals() {
           texture.anisotropy = anisotropy;
           texture.needsUpdate = true;
           queue.enqueue(() => {
+            if (!generation.isCurrent(gen)) {
+              texture.dispose();
+              return;
+            }
             gl.initTexture(texture); // subida a GPU: una por frame
             const m = materials[i];
+            (m.uniforms.uMap.value as Texture | null)?.dispose(); // nunca dos texturas por portal
             m.uniforms.uMap.value = texture;
             m.uniforms.uHasMap.value = 1;
           });

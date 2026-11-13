@@ -30,8 +30,8 @@ describe("POST /api/chat", () => {
     expect(res.status).toBe(400);
   });
 
-  it("rejects 21 messages with 413", async () => {
-    const messages = Array.from({ length: 21 }, (_, i) => ({ id: `${i}`, role: "user", parts: [{ type: "text", text: "x" }] }));
+  it("rejects more than 100 messages with 413", async () => {
+    const messages = Array.from({ length: 101 }, (_, i) => ({ id: `${i}`, role: "user", parts: [{ type: "text", text: "x" }] }));
     const res = await POST(req({ messages }, "10.0.0.3"));
     expect(res.status).toBe(413);
   });

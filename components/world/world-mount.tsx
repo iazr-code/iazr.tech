@@ -49,7 +49,7 @@ export function WorldMount() {
   return (
     <>
       <StaticBackdrop visible={!showCanvas || contextLost} />
-      {showCanvas ? <WorldCanvas onContextLost={setContextLost} /> : null}
+      {showCanvas ? <WorldCanvas contextLost={contextLost} onContextLost={setContextLost} /> : null}
     </>
   );
 }

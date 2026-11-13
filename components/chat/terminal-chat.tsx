@@ -189,6 +189,7 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
         ref={scrollRef}
         className="h-[420px] overflow-y-auto px-5 py-5 font-mono text-sm leading-relaxed"
         role="log"
+        data-lenis-prevent
         aria-live="polite"
         aria-label={dict.logLabel}
       >

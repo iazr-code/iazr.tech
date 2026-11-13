@@ -64,3 +64,5 @@ const TEN_MINUTES = 600_000;
 
 export const chatLimiter = createRateLimiter({ limit: 20, windowMs: TEN_MINUTES });
 export const contactLimiter = createRateLimiter({ limit: 3, windowMs: TEN_MINUTES });
+/** Intentos brutos del formulario (válidos o no): freno anti-spam más laxo. */
+export const contactAttemptLimiter = createRateLimiter({ limit: 20, windowMs: TEN_MINUTES });

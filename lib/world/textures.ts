@@ -21,9 +21,17 @@ export function portalTextureUrl(id: string, size: 1024 | 512): string {
 }
 
 /** Cola de tareas con presupuesto por frame (subidas a GPU, decodificaciones…). */
-export function createUploadQueue(perFrame = 1): { enqueue(task: () => void): void; flush(): number; size(): number } {
+export function createUploadQueue(perFrame = 1): {
+  enqueue(task: () => void): void;
+  flush(): number;
+  size(): number;
+  clear(): void;
+} {
   const tasks: (() => void)[] = [];
   return {
+    clear: () => {
+      tasks.length = 0;
+    },
     enqueue: (task) => {
       tasks.push(task);
     },
@@ -36,5 +44,17 @@ export function createUploadQueue(perFrame = 1): { enqueue(task: () => void): vo
       return ran;
     },
     size: () => tasks.length,
+  };
+}
+
+/**
+ * Generación de carga: cada cambio de tamaño de textura abre una generación
+ * nueva y las cargas en vuelo de la anterior se descartan al llegar.
+ */
+export function createGeneration(): { next(): number; isCurrent(g: number): boolean } {
+  let current = 0;
+  return {
+    next: () => ++current,
+    isCurrent: (g) => g === current,
   };
 }

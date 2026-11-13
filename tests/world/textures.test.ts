@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createUploadQueue, cropRectForAspect, portalTextureUrl } from "@/lib/world/textures";
+import { createGeneration, createUploadQueue, cropRectForAspect, portalTextureUrl } from "@/lib/world/textures";
 
 describe("cropRectForAspect", () => {
   it("crops taller images from the top", () => {
@@ -33,6 +33,30 @@ describe("createUploadQueue", () => {
     [1, 2, 3].forEach(() => q.enqueue(() => {}));
     expect(q.flush()).toBe(2);
     expect(q.size()).toBe(1);
+  });
+});
+
+describe("createUploadQueue.clear", () => {
+  it("drops pending tasks so stale uploads never run", () => {
+    const q = createUploadQueue();
+    let ran = 0;
+    q.enqueue(() => ran++);
+    q.enqueue(() => ran++);
+    q.clear();
+    expect(q.size()).toBe(0);
+    q.flush();
+    expect(ran).toBe(0);
+  });
+});
+
+describe("createGeneration", () => {
+  it("marks earlier generations as stale after next()", () => {
+    const gen = createGeneration();
+    const first = gen.next();
+    expect(gen.isCurrent(first)).toBe(true);
+    const second = gen.next();
+    expect(gen.isCurrent(first)).toBe(false);
+    expect(gen.isCurrent(second)).toBe(true);
   });
 });
 

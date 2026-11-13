@@ -46,10 +46,40 @@ function DebugProbe() {
 }
 
 /**
+ * Pérdida/restauración del contexto WebGL. Se suscribe con un efecto dentro del
+ * Canvas (no en onCreated, que puede no ejecutarse si no llega a pintarse un frame).
+ * preventDefault() permite que el navegador restaure el contexto en este canvas.
+ */
+function ContextWatcher({ onContextLost }: { onContextLost: (lost: boolean) => void }) {
+  const gl = useThree((s) => s.gl);
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const lost = (e: Event) => {
+      e.preventDefault();
+      onContextLost(true);
+    };
+    const restored = () => onContextLost(false);
+    canvas.addEventListener("webglcontextlost", lost);
+    canvas.addEventListener("webglcontextrestored", restored);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", lost);
+      canvas.removeEventListener("webglcontextrestored", restored);
+    };
+  }, [gl, onContextLost]);
+  return null;
+}
+
+/**
  * Único <Canvas> del sitio. Vive en el layout raíz: no se remonta al navegar
  * ni al cambiar de idioma. Fijo detrás del contenido, sin eventos de puntero.
  */
-export default function WorldCanvas({ onContextLost }: { onContextLost: (lost: boolean) => void }) {
+export default function WorldCanvas({
+  contextLost,
+  onContextLost,
+}: {
+  contextLost: boolean;
+  onContextLost: (lost: boolean) => void;
+}) {
   const tier = useTier();
   const [hidden, setHidden] = useState(false);
   const [debug, setDebug] = useState(false);
@@ -69,23 +99,17 @@ export default function WorldCanvas({ onContextLost }: { onContextLost: (lost: b
     <Canvas
       aria-hidden="true"
       className="!fixed inset-0 z-0"
-      style={{ position: "fixed", inset: 0, pointerEvents: "none" }}
-      frameloop={hidden ? "never" : "always"}
+      // Sin contexto WebGL: bucle detenido y lienzo oculto (se ve el fondo estático).
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", visibility: contextLost ? "hidden" : "visible" }}
+      frameloop={hidden || contextLost ? "never" : "always"}
       dpr={settings.dpr}
       camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 120 }}
       gl={{ antialias: tier === "high", alpha: false, powerPreference: "high-performance", stencil: false }}
       eventSource={typeof document !== "undefined" ? document.body : undefined}
       eventPrefix="client"
-      onCreated={({ gl, scene }) => {
-        scene.background = BACKGROUND;
-        const canvas = gl.domElement;
-        canvas.addEventListener("webglcontextlost", (e) => {
-          e.preventDefault();
-          onContextLost(true);
-        });
-        canvas.addEventListener("webglcontextrestored", () => onContextLost(false));
-      }}
     >
+      <color attach="background" args={[BACKGROUND]} />
+      <ContextWatcher onContextLost={onContextLost} />
       <fog attach="fog" args={["#06080a", 8, 34]} />
       <PerformanceMonitor
         ms={400}

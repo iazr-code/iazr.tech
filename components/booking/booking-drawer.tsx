@@ -32,6 +32,7 @@ export function BookingDrawer() {
 
   return (
     <dialog
+      data-lenis-prevent
       ref={ref}
       aria-labelledby="booking-title"
       onClose={() => open && closeBooking()}
