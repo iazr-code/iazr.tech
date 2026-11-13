@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import { AdditiveBlending, BufferGeometry, Float32BufferAttribute } from "three";
 
+import { HeroEntity } from "@/components/world/scenes/hero-entity";
+
 /**
  * Raíz de las escenas del mundo. Cada escena se monta aquí y decide su
  * visibilidad según el progreso de scroll.
@@ -35,5 +37,10 @@ function AmbientDust({ count = 1800 }: { count?: number }) {
 }
 
 export function WorldScenes() {
-  return <AmbientDust />;
+  return (
+    <>
+      <AmbientDust />
+      <HeroEntity />
+    </>
+  );
 }
