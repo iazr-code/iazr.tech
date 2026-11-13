@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:adversarial": "node scripts/adversarial.mjs"
+    "test:adversarial": "node scripts/adversarial.mjs",
+    "textures": "node scripts/build-textures.mjs"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.26",

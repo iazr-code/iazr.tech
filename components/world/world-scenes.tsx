@@ -7,6 +7,7 @@ import { education, experience } from "@/lib/data/experience";
 import { HeroEntity } from "@/components/world/scenes/hero-entity";
 import { ServiceForms } from "@/components/world/scenes/service-forms";
 import { JourneyRibbon } from "@/components/world/scenes/journey-ribbon";
+import { ProjectPortals } from "@/components/world/scenes/project-portals";
 import { Network } from "@/components/world/scenes/network";
 import { ContactGate } from "@/components/world/scenes/contact-gate";
 
@@ -47,6 +48,7 @@ export function WorldScenes() {
       <AmbientDust />
       <HeroEntity />
       <ServiceForms />
+      <ProjectPortals />
       <JourneyRibbon count={experience.length + education.length} />
       <Network />
       <ContactGate />
