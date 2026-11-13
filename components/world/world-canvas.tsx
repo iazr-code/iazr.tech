@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import { Color } from "three";
@@ -12,6 +12,9 @@ import { WorldErrorBoundary } from "@/components/world/error-boundary";
 import { WorldScenes } from "@/components/world/world-scenes";
 
 const BACKGROUND = new Color("#06080a");
+
+// Post-procesado en un chunk aparte: low/static nunca lo descargan.
+const Effects = lazy(() => import("@/components/world/effects"));
 
 type DebugInfo = { tier: string; calls: number; triangles: number; textures: number; fps: number };
 declare global {
@@ -87,15 +90,22 @@ export default function WorldCanvas({ onContextLost }: { onContextLost: (lost: b
       <PerformanceMonitor
         ms={400}
         iterations={10}
-        bounds={(refresh) => (refresh > 90 ? [50, 90] : [45, 60])}
-        flipflops={3}
+        // Banda [45, 57] a 60 Hz: con un tope de 60 el vsync nunca lo superaría y
+        // el nivel no podría recuperarse tras un bache (p. ej. pestaña estrangulada).
+        // Sin fallback permanente: el nivel siempre puede volver a subir.
+        bounds={(refresh) => (refresh > 90 ? [50, 85] : [45, 57])}
+        flipflops={Infinity}
         onDecline={() => setTier(stepTier(getTier(), "down"))}
         onIncline={() => setTier(stepTier(getTier(), "up"))}
-        onFallback={() => setTier("low")}
       />
       <WorldErrorBoundary onError={() => setTier("static")}>
         <CameraRig />
         <WorldScenes />
+        {settings.post !== "none" ? (
+          <Suspense fallback={null}>
+            <Effects mode={settings.post} />
+          </Suspense>
+        ) : null}
       </WorldErrorBoundary>
       {debug ? <DebugProbe /> : null}
     </Canvas>

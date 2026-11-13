@@ -25,7 +25,10 @@ export function WorldMount() {
   const [contextLost, setContextLost] = useState(false);
 
   useEffect(() => {
-    setTier(detectInitialTier(readTierEnv()));
+    // ?tier=high|medium|low|static fuerza un nivel (verificación y depuración).
+    const forced = new URLSearchParams(window.location.search).get("tier");
+    const isForced = forced === "high" || forced === "medium" || forced === "low" || forced === "static";
+    setTier(isForced ? forced : detectInitialTier(readTierEnv()));
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => setTier(detectInitialTier(readTierEnv()));
     media.addEventListener("change", onChange);
