@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -74,13 +75,13 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         {/* Marca — Sora 700 (solidez geométrica de la identidad) */}
-        <a
+        <Link
           href="/#inicio"
           className="font-display text-lg font-bold tracking-tight text-foreground"
         >
           IAZR
           <span className="caret-blink ml-0.5 text-primary">_</span>
-        </a>
+        </Link>
 
         {/* Enlaces de escritorio — Sora 500 (navegación per la especificación) */}
         <div className="hidden items-center gap-7 md:flex">

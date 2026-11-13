@@ -273,7 +273,7 @@ export function TerminalChat() {
                 className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3"
               >
                 <p className="text-xs text-destructive">
-                  // error de conexión — el asistente no está disponible ahora mismo
+                  {"// error de conexión — el asistente no está disponible ahora mismo"}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground/70">
                   Puedes contactarme directamente por{" "}

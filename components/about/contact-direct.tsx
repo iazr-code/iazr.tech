@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Clock, Globe, Mail, MapPin, MessageSquareText } from "lucide-react";
 
 import { siteConfig } from "@/lib/data/site";
@@ -133,7 +134,7 @@ export function ContactDirect() {
           </ul>
 
           <Button variant="cyber" size="lg" asChild className="mt-7 w-full">
-            <a href="/#contacto">Solicitar auditoría técnica</a>
+            <Link href="/#contacto">Solicitar auditoría técnica</Link>
           </Button>
         </div>
       </div>

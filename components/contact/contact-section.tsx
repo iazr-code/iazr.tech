@@ -1,4 +1,4 @@
-import { Mail, MessageSquare, ExternalLink, ArrowRight, Clock, Globe, Zap } from "lucide-react";
+import { Mail, ArrowRight, Clock, Globe, Zap } from "lucide-react";
 
 import { siteConfig } from "@/lib/data/site";
 import { Avatar } from "@/components/avatar";

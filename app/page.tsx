@@ -32,8 +32,6 @@ import { stackRowA, stackRowB, stackRowC } from "@/lib/data/stack";
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export const experimental_ppr = true;
-
 /** Fallback estático del chat mientras el Suspense resuelve (skeleton PPR). */
 function TerminalSkeleton() {
   return (

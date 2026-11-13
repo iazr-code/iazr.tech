@@ -129,7 +129,7 @@ export function ContactForm() {
         <span className="inline-flex size-12 items-center justify-center rounded-full border border-success/40 bg-success/10">
           <CheckCircle2 className="size-6 text-success" aria-hidden="true" />
         </span>
-        <p className="font-mono text-sm text-success">// lead_received ✓</p>
+        <p className="font-mono text-sm text-success">{"// lead_received ✓"}</p>
         <h3 className="font-display text-xl font-semibold">Mensaje registrado</h3>
         <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
           {state.message}

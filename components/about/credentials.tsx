@@ -74,7 +74,7 @@ export function Credentials() {
       {/* ── Certificaciones internacionales (11 credenciales) ─────────── */}
       <div className="mx-auto mt-14 max-w-5xl">
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          // certificaciones internacionales · 11
+          {"// certificaciones internacionales · 11"}
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {certifications.map((group) => (

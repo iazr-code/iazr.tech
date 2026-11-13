@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "@/lib/data/site";
 import { Avatar } from "@/components/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -92,10 +93,10 @@ export function AboutHeader() {
         {/* CTAs de conversión */}
         <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="cyber" size="lg" asChild>
-            <a href="/#proyectos">Ver casos de éxito</a>
+            <Link href="/#proyectos">Ver casos de éxito</Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
-            <a href="/#contacto">Iniciar auditoría técnica</a>
+            <Link href="/#contacto">Iniciar auditoría técnica</Link>
           </Button>
           <div className="mt-2 flex items-center justify-center gap-3 sm:mt-0 sm:ml-1">
             <a
