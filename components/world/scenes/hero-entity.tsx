@@ -75,7 +75,7 @@ export function HeroEntity() {
     if (!obj) return;
     const range = rangeOf("hero");
     const local = range ? localProgress(scrollState.progress, range) : 2;
-    obj.visible = local < 1.6;
+    obj.visible = local < 1.15;
     if (!obj.visible) return;
 
     const u = material.uniforms;

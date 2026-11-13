@@ -3,7 +3,12 @@
 import { useMemo } from "react";
 import { AdditiveBlending, BufferGeometry, Float32BufferAttribute } from "three";
 
+import { education, experience } from "@/lib/data/experience";
 import { HeroEntity } from "@/components/world/scenes/hero-entity";
+import { ServiceForms } from "@/components/world/scenes/service-forms";
+import { JourneyRibbon } from "@/components/world/scenes/journey-ribbon";
+import { Network } from "@/components/world/scenes/network";
+import { ContactGate } from "@/components/world/scenes/contact-gate";
 
 /**
  * Raíz de las escenas del mundo. Cada escena se monta aquí y decide su
@@ -41,6 +46,10 @@ export function WorldScenes() {
     <>
       <AmbientDust />
       <HeroEntity />
+      <ServiceForms />
+      <JourneyRibbon count={experience.length + education.length} />
+      <Network />
+      <ContactGate />
     </>
   );
 }

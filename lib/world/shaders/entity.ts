@@ -43,7 +43,8 @@ void main() {
 
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = uSize * uPixelRatio * (0.55 + aSeed * 0.9) * (1.0 / -mv.z);
+  // Tamaño acotado: partículas cerca de la cámara no disparan el fill-rate.
+  gl_PointSize = min(uSize * uPixelRatio * (0.55 + aSeed * 0.9) * (1.0 / -mv.z), 14.0 * uPixelRatio);
 
   vMix = clamp(length(p) / 2.6 + flow.y * 0.25, 0.0, 1.0);
   vAlpha = (1.0 - burst * 0.85) * (0.45 + aSeed * 0.55);

@@ -85,6 +85,9 @@ export default function WorldCanvas({ onContextLost }: { onContextLost: (lost: b
     >
       <fog attach="fog" args={["#06080a", 8, 34]} />
       <PerformanceMonitor
+        ms={400}
+        iterations={10}
+        bounds={(refresh) => (refresh > 90 ? [50, 90] : [45, 60])}
         flipflops={3}
         onDecline={() => setTier(stepTier(getTier(), "down"))}
         onIncline={() => setTier(stepTier(getTier(), "up"))}
