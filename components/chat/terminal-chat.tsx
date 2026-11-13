@@ -6,6 +6,9 @@ import { Eraser, Send, Square } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { ModelConfig } from "@/lib/ai/model-config";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
+import { siteConfig } from "@/lib/data/site";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -24,14 +27,7 @@ import type { ModelConfig } from "@/lib/ai/model-config";
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const SUGGESTIONS = [
-  "¿Cómo lideras un proyecto de transformación digital?",
-  "¿Cuál es tu disponibilidad en la franja Colombia / remoto global?",
-  "Cuéntame sobre el asistente virtual con IA para ventas que desarrollaste",
-  "¿Cómo es tu experiencia mentorizando en Talento TECH?",
-];
-
-export function TerminalChat() {
+export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; locale: Locale }) {
   const {
     messages,
     sendMessage,
@@ -56,14 +52,15 @@ export function TerminalChat() {
 
   // Estado derivado para el indicador: prioridad red > error > stream > idle.
   const connState = !online
-    ? { dot: "bg-destructive", pulse: false, label: "sin_red" }
+    ? { dot: "bg-destructive", pulse: false, label: dict.statusOffline }
     : error
-      ? { dot: "bg-destructive", pulse: false, label: "error" }
+      ? { dot: "bg-destructive", pulse: false, label: dict.statusError }
       : status === "streaming"
-        ? { dot: "bg-primary", pulse: true, label: "streaming" }
+        ? { dot: "bg-primary", pulse: true, label: dict.statusStreaming }
         : status === "submitted"
-          ? { dot: "bg-primary/70", pulse: true, label: "enviando" }
-          : { dot: "bg-success", pulse: false, label: "conectado" };
+          ? { dot: "bg-primary/70", pulse: true, label: dict.statusSending }
+          : { dot: "bg-success", pulse: false, label: dict.statusConnected };
+  const rateLimited = Boolean(error?.message?.includes("rate_limited"));
 
   /** Texto del badge con el modelo activo (Groq real o mock de demo). */
   const modelLabel = modelConfig
@@ -114,13 +111,13 @@ export function TerminalChat() {
   /** Envía un mensaje al asistente (input libre o chip de sugerencia). */
   const submit = (text: string) => {
     if (!text.trim() || isLoading) return;
-    void sendMessage({ text });
+    void sendMessage({ text }, { body: { locale } });
     setInput("");
   };
 
   const submitSuggestion = (text: string) => {
     if (isLoading) return;
-    void sendMessage({ text });
+    void sendMessage({ text }, { body: { locale } });
   };
 
   const clearConversation = () => {
@@ -152,7 +149,7 @@ export function TerminalChat() {
         <div className="ml-auto flex items-center gap-2">
           {mounted && (
             <span
-              title={`Modelo: ${modelConfig ? modelConfig.model : "…"} · estado: ${connState.label}`}
+              title={`${modelConfig ? modelConfig.model : "…"} · ${connState.label}`}
               className="flex min-w-0 items-center gap-1.5 rounded-md border border-border/70 bg-background/40 px-2 py-1 font-mono text-[10px] text-muted-foreground"
             >
               <span
@@ -178,7 +175,7 @@ export function TerminalChat() {
             <button
               type="button"
               onClick={clearConversation}
-              aria-label="Reiniciar conversación"
+              aria-label={dict.reset}
               className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
             >
               <Eraser className="size-3.5" aria-hidden="true" />
@@ -193,24 +190,22 @@ export function TerminalChat() {
         className="h-[420px] overflow-y-auto px-5 py-5 font-mono text-sm leading-relaxed"
         role="log"
         aria-live="polite"
-        aria-label="Conversación con el asistente de IAZR"
+        aria-label={dict.logLabel}
       >
         {messages.length === 0 ? (
           /* Estado vacío: invitación + chips de arranque rápido */
           <div className="flex h-full flex-col justify-center gap-5">
             <div>
               <p className="text-muted-foreground">
-                <span className="text-success">$</span> ./iniciar_asistente.sh
+                <span className="text-success">$</span> ./iazr --assistant
               </p>
               <p className="mt-2 text-muted-foreground/80">
-                Interroga a la red neuronal de IAZR sobre viabilidad técnica o
-                disponibilidad. Respuestas en tiempo real, con el contexto
-                verificado del ingeniero. <span className="caret-blink">▊</span>
+                {dict.intro} <span className="caret-blink">▊</span>
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((suggestion) => (
+              {dict.suggestions.map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
@@ -224,10 +219,10 @@ export function TerminalChat() {
 
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/50">
               {modelConfig === null
-                ? "// consultando modelo…"
+                ? dict.checkingModel
                 : modelConfig.demo
-                  ? "// sin GROQ_API_KEY — el asistente responde en modo demo"
-                  : `// ${modelConfig.provider} · ${modelConfig.model} — respuestas en tiempo real`}
+                  ? dict.demoNote
+                  : `// ${modelConfig.provider} · ${modelConfig.model} — ${dict.liveNote}`}
             </p>
           </div>
         ) : (
@@ -273,19 +268,19 @@ export function TerminalChat() {
                 className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3"
               >
                 <p className="text-xs text-destructive">
-                  {"// error de conexión — el asistente no está disponible ahora mismo"}
+                  {rateLimited ? dict.rateLimited : dict.errorTitle}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground/70">
-                  Puedes contactarme directamente por{" "}
+                  {dict.errorBody}{" "}
                   <a
-                    href="mailto:iazr.code@gmail.com"
+                    href={siteConfig.socials.email}
                     className="text-primary underline-offset-2 hover:underline"
                   >
-                    iazr.code@gmail.com
+                    {siteConfig.author.email}
                   </a>{" "}
-                  o{" "}
+                  {dict.or}{" "}
                   <a
-                    href="https://wa.me/573229132643"
+                    href={siteConfig.socials.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary underline-offset-2 hover:underline"
@@ -298,7 +293,7 @@ export function TerminalChat() {
                   onClick={clearError}
                   className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60 hover:text-primary transition-colors"
                 >
-                  ↺ reintentar
+                  {dict.retry}
                 </button>
               </div>
             ) : null}
@@ -320,15 +315,16 @@ export function TerminalChat() {
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="pregunta sobre tecnología, IA, datos o disponibilidad…"
-          aria-label="Mensaje para el asistente de IAZR"
+          maxLength={2000}
+          placeholder={dict.placeholder}
+          aria-label={dict.inputLabel}
           className="h-9 flex-1 bg-transparent font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground/50"
         />
         {isLoading ? (
           <button
             type="button"
             onClick={stop}
-            aria-label="Detener generación"
+            aria-label={dict.stop}
             className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-destructive/40 text-destructive transition-colors hover:bg-destructive/10"
           >
             <Square className="size-3.5" aria-hidden="true" />
@@ -337,7 +333,7 @@ export function TerminalChat() {
           <button
             type="submit"
             disabled={!input.trim()}
-            aria-label="Enviar mensaje"
+            aria-label={dict.send}
             className={cn(
               "inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10 text-primary transition-all",
               input.trim()

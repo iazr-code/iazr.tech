@@ -1,63 +1,22 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { buildJsonLdGraph } from "@/lib/seo/json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
-
-import { HeroSection } from "@/components/hero/hero-section";
-import { Marquee } from "@/components/marquee";
-import { BentoGrid } from "@/components/bento/bento-grid";
-import { ServicesGrid } from "@/components/services/services-grid";
-import { GlobeSection } from "@/components/three/globe-section";
-import { ProjectParallax } from "@/components/projects/project-parallax";
+import { SectionHeading } from "@/components/section-heading";
 import { Timeline } from "@/components/timeline";
 import { TerminalChat } from "@/components/chat/terminal-chat";
-import { ContactSection } from "@/components/contact/contact-section";
-import { SectionHeading } from "@/components/section-heading";
+import { ContactPanel } from "@/components/contact/contact-section";
 import { Footer } from "@/components/footer";
-import { stackRowA, stackRowB, stackRowC } from "@/lib/data/stack";
 
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- *  PÁGINA PRINCIPAL — Composición de secciones.
- *
- *  PARTIAL PRERENDERING (PPR):
- *  · `export const experimental_ppr = true` opta a esta ruta por el modo de
- *    adopción incremental configurado en next.config.ts.
- *  · Efecto: TODO el cascarón estático (hero, marquesinas, bento, proyectos,
- *    trayectoria, footer) se compila a HTML puro y se entrega al borde casi
- *    instantáneamente (FCP ≈ 0 ms).
- *  · El único agujero dinámico es el TerminalChat (llamada de IA por streaming):
- *    se aísla en un <Suspense> para que su HTML se transmita por separado sin
- *    bloquear el primer pintado.
- *
- *  Server Components puros (sin "use client"): Marquee, BentoGrid, Timeline,
- *  SectionHeading, Footer.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Portada por idioma (SSG). Cada sección lleva `data-world-section`: la escena
+ * 3D del layout raíz lee su posición para guiar la cámara.
  */
 
-/** Fallback estático del chat mientras el Suspense resuelve (skeleton PPR). */
-function TerminalSkeleton() {
-  return (
-    <div
-      aria-label="Cargando terminal de IA"
-      className="mx-auto h-[560px] w-full max-w-3xl animate-pulse overflow-hidden rounded-xl border border-border bg-terminal"
-    >
-      <div className="h-11 border-b border-border/70 bg-secondary/40" />
-      <div className="space-y-3 px-5 py-6">
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-4 rounded bg-secondary/60"
-            style={{ width: `${82 - i * 12}%` }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+const OG_LOCALE: Record<Locale, string> = { es: "es_CO", en: "en_US" };
 
 export const dynamicParams = false;
 
@@ -67,80 +26,45 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const dict = getDictionary(locale);
   return {
+    title: { absolute: dict.meta.title },
+    description: dict.meta.description,
     alternates: {
       canonical: `/${locale}`,
       languages: { es: "/es", en: "/en", "x-default": "/en" },
     },
-    openGraph: { locale: OG_LOCALE[locale as Locale] ?? "en_US", url: `/${locale}` },
+    openGraph: { title: dict.meta.title, description: dict.meta.description, locale: OG_LOCALE[locale], url: `/${locale}` },
+    twitter: { title: dict.meta.title, description: dict.meta.description },
   };
 }
-
-const OG_LOCALE: Record<Locale, string> = { es: "es_CO", en: "en_US" };
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const dict = getDictionary(locale);
 
   return (
     <>
       <JsonLd data={buildJsonLdGraph(locale)} />
-      {/* Cabecera cinemática (client: Framer Motion + Lenis anchors) */}
-      <HeroSection />
 
-      {/* Marquesinas de stack — CSS puro, Server Components */}
-      <section aria-label="Stack tecnológico" className="space-y-0 py-10">
-        <Marquee items={stackRowA} reverse className="py-2" duration={38} />
-        <Marquee items={stackRowB} className="py-2" duration={46} />
-        {/* Tercera fila: herramientas y plataformas de producción */}
-        <Marquee items={stackRowC} reverse className="py-2" duration={40} />
+      <section id="trayectoria" data-world-section="journey" className="px-6 py-24 sm:py-32">
+        <SectionHeading eyebrow={dict.journey.eyebrow} title={dict.journey.title} description={dict.journey.description} />
+        <Timeline locale={locale} dict={dict.journey} />
       </section>
 
-      {/* Interludio 3D — red neuronal global (R3F resiliente, offscreen pause) */}
-      <GlobeSection />
-
-      {/* Esquema de destrezas — Bento asimétrico (Full-Stack · Datos/IA · Gestión) */}
-      <section id="capacidades" className="px-6 py-24 sm:py-32">
-        <SectionHeading
-          eyebrow="capacidades"
-          title={
-            <>
-              Cuatro dominios, un solo{" "}
-              <span className="italic text-primary">estándar</span>
-            </>
-          }
-          description="Desarrollo Full-Stack, Datos & IA, Infraestructura/Cloud y gestión estratégica: capacidades verificadas en una cuadrícula Bento asimétrica y comprobable."
-        />
-        <div className="mx-auto max-w-6xl">
-          <BentoGrid />
-        </div>
+      <section id="asistente" data-world-section="chat" className="px-6 py-24 sm:py-32">
+        <SectionHeading eyebrow={dict.chat.eyebrow} title={dict.chat.title} description={dict.chat.description} />
+        <TerminalChat dict={dict.chat} locale={locale} />
       </section>
 
-      {/* Oferta B2B — traduce el stack a entregables de negocio */}
-      <ServicesGrid />
-
-      {/* Casos de éxito — parallax 3D */}
-      <ProjectParallax />
-
-      {/* Trayectoria verificable */}
-      <Timeline />
-
-      {/* Motor conversacional — único agujero dinámico (Suspense/PPR) */}
-      <section id="conversacion" className="px-6 py-24 sm:py-32">
-        <SectionHeading
-          eyebrow="conversacion"
-          title="Interroga a la red neuronal de IAZR"
-          description="¿Viabilidad técnica? ¿Disponibilidad en tu franja horaria? Pregúntale directamente al asistente: responde en tiempo real con el contexto verificado del ingeniero."
-        />
-        <Suspense fallback={<TerminalSkeleton />}>
-          <TerminalChat />
-        </Suspense>
+      <section id="contacto" data-world-section="contact" className="px-6 py-24 sm:py-32">
+        <SectionHeading eyebrow={dict.contact.eyebrow} title={dict.contact.title} description={dict.contact.description} />
+        <ContactPanel locale={locale} dict={dict.contact} />
       </section>
 
-      {/* Canal de conversión B2B — Server Action + validación Zod */}
-      <ContactSection />
-
-      <Footer />
+      <Footer locale={locale} dict={dict} />
     </>
   );
 }

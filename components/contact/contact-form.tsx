@@ -4,12 +4,9 @@ import { useEffect, useActionState, useRef, useState, type FocusEvent } from "re
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import posthog from "posthog-js";
 
-import {
-  budgetLabels,
-  budgetOptions,
-  serviceLabels,
-  serviceOptions,
-} from "@/lib/validations/contact";
+import { budgetOptions, serviceOptions } from "@/lib/validations/contact";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { submitContact } from "@/app/actions/contact";
 import { initialContactState } from "@/lib/contact-state";
 import { Button } from "@/components/ui/button";
@@ -52,7 +49,9 @@ async function hashEmail(email: string): Promise<string> {
     .join("");
 }
 
-export function ContactForm() {
+export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; locale: Locale }) {
+  const t = dict.form;
+  const errorText = (key?: string) => (key ? (dict.errors as Record<string, string>)[key] ?? dict.errors.invalid : undefined);
   const [state, formAction, pending] = useActionState(
     submitContact,
     initialContactState
@@ -129,10 +128,10 @@ export function ContactForm() {
         <span className="inline-flex size-12 items-center justify-center rounded-full border border-success/40 bg-success/10">
           <CheckCircle2 className="size-6 text-success" aria-hidden="true" />
         </span>
-        <p className="font-mono text-sm text-success">{"// lead_received ✓"}</p>
-        <h3 className="font-display text-xl font-semibold">Mensaje registrado</h3>
+        <p className="font-mono text-sm text-success">{t.successTag}</p>
+        <h3 className="font-display text-xl font-semibold">{t.successTitle}</h3>
         <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-          {state.message}
+          {t.successBody}
         </p>
       </div>
     );
@@ -144,12 +143,13 @@ export function ContactForm() {
       noValidate
       onFocus={handleFormFocus}
       onSubmit={handleFormSubmit}
-      className="flex h-full flex-col gap-5"
+      className="relative flex h-full flex-col gap-5"
     >
+      <input type="hidden" name="locale" value={locale} />
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium">
-            Nombre *
+            {t.name} *
           </label>
           <input
             id="contact-name"
@@ -159,15 +159,15 @@ export function ContactForm() {
             required
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "contact-name-error" : undefined}
-            placeholder="Iván Andrés Zúñiga"
+            placeholder={t.namePlaceholder}
             className={cn(inputBase, errors.name && "border-destructive/70")}
           />
-          <FieldError id="contact-name-error" error={errors.name?.[0]} />
+          <FieldError id="contact-name-error" error={errorText(errors.name?.[0])} />
         </div>
 
         <div>
           <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium">
-            Correo corporativo *
+            {t.email} *
           </label>
           <input
             id="contact-email"
@@ -178,16 +178,16 @@ export function ContactForm() {
             required
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "contact-email-error" : undefined}
-            placeholder="direccion@empresa.com"
+            placeholder={t.emailPlaceholder}
             className={cn(inputBase, errors.email && "border-destructive/70")}
           />
-          <FieldError id="contact-email-error" error={errors.email?.[0]} />
+          <FieldError id="contact-email-error" error={errorText(errors.email?.[0])} />
         </div>
       </div>
 
       <div>
         <label htmlFor="contact-company" className="mb-1.5 block text-sm font-medium">
-          Empresa <span className="text-muted-foreground">(opcional)</span>
+          {t.company} <span className="text-muted-foreground">{t.optional}</span>
         </label>
         <input
           id="contact-company"
@@ -196,16 +196,16 @@ export function ContactForm() {
           autoComplete="organization"
           aria-invalid={Boolean(errors.company)}
           aria-describedby={errors.company ? "contact-company-error" : undefined}
-          placeholder="Nombre de tu organización"
+          placeholder={t.companyPlaceholder}
           className={cn(inputBase, errors.company && "border-destructive/70")}
         />
-        <FieldError id="contact-company-error" error={errors.company?.[0]} />
+        <FieldError id="contact-company-error" error={errorText(errors.company?.[0])} />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="contact-service" className="mb-1.5 block text-sm font-medium">
-            Servicio *
+            {t.service} *
           </label>
           <select
             id="contact-service"
@@ -217,20 +217,20 @@ export function ContactForm() {
             className={cn(inputBase, "appearance-none", errors.service && "border-destructive/70")}
           >
             <option value="" disabled>
-              Selecciona…
+              {t.select}
             </option>
             {serviceOptions.map((value) => (
               <option key={value} value={value}>
-                {serviceLabels[value]}
+                {dict.services[value]}
               </option>
             ))}
           </select>
-          <FieldError id="contact-service-error" error={errors.service?.[0]} />
+          <FieldError id="contact-service-error" error={errorText(errors.service?.[0])} />
         </div>
 
         <div>
           <label htmlFor="contact-budget" className="mb-1.5 block text-sm font-medium">
-            Presupuesto <span className="text-muted-foreground">(opcional)</span>
+            {t.budget} <span className="text-muted-foreground">{t.optional}</span>
           </label>
           <select
             id="contact-budget"
@@ -241,21 +241,21 @@ export function ContactForm() {
             className={cn(inputBase, "appearance-none")}
           >
             <option value="" disabled>
-              Selecciona…
+              {t.select}
             </option>
             {budgetOptions.map((value) => (
               <option key={value} value={value}>
-                {budgetLabels[value]}
+                {dict.budgets[value]}
               </option>
             ))}
           </select>
-          <FieldError id="contact-budget-error" error={errors.budget?.[0]} />
+          <FieldError id="contact-budget-error" error={errorText(errors.budget?.[0])} />
         </div>
       </div>
 
       <div className="flex-1">
         <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium">
-          ¿Qué necesitas auditar o construir? *
+          {t.message} *
         </label>
         <textarea
           id="contact-message"
@@ -264,19 +264,19 @@ export function ContactForm() {
           required
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? "contact-message-error" : undefined}
-          placeholder="Describe el contexto: proyecto, equipo, objetivo de negocio, plazos…"
+          placeholder={t.messagePlaceholder}
           className={cn(
             inputBase,
             "min-h-32 resize-y",
             errors.message && "border-destructive/70"
           )}
         />
-        <FieldError id="contact-message-error" error={errors.message?.[0]} />
+        <FieldError id="contact-message-error" error={errorText(errors.message?.[0])} />
       </div>
 
       {/* Honeypot: oculto para humanos, visible para bots */}
       <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-        <label htmlFor="contact-website">No rellenes este campo</label>
+        <label htmlFor="contact-website">{t.honeypot}</label>
         <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
@@ -285,7 +285,7 @@ export function ContactForm() {
           role="alert"
           className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
         >
-          {state.message}
+          {errorText(state.message)}
         </p>
       ) : null}
 
@@ -293,19 +293,18 @@ export function ContactForm() {
         {pending ? (
           <>
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            Enviando solicitud…
+            {t.sending}
           </>
         ) : (
           <>
             <Send className="size-4" aria-hidden="true" />
-            Enviar solicitud de auditoría
+            {t.submit}
           </>
         )}
       </Button>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Respuesta en &lt;24h hábiles · franja GMT-5 · los datos se usan solo para
-        responder tu solicitud.
+        {t.privacy}
       </p>
     </form>
   );

@@ -1,6 +1,8 @@
 import { siteConfig } from "@/lib/data/site";
 import type { Locale } from "@/lib/i18n/config";
 import { certifications, education, experience } from "@/lib/data/experience";
+import { services } from "@/lib/data/services";
+import { localize } from "@/lib/i18n/localized";
 
 const LANGUAGE_TAG: Record<Locale, string> = { es: "es-CO", en: "en-US" };
 
@@ -49,18 +51,18 @@ type Organization = {
   slogan: string;
   email: string;
   founder: { "@type": "Person"; name: string; url: string };
-  areaServed: string;
+  areaServed: string[];
   numberOfEmployees: { "@type": "QuantitativeValue"; value: number };
   makesOffer: { "@type": "Offer"; itemOffered: { "@type": "Service"; name: string; description: string } }[];
 };
 
-export function buildPersonSchema(): Person {
+export function buildPersonSchema(locale: Locale): Person {
   return {
     "@type": "Person",
     name: siteConfig.author.name,
     givenName: siteConfig.author.givenName,
     familyName: siteConfig.author.familyName,
-    jobTitle: "Director Tecnológico · Full-Stack Developer · Mentor Tech",
+    jobTitle: locale === "es" ? "Director Tecnológico · Full-Stack Developer" : "Technology Lead · Full-Stack Developer",
     url: siteConfig.url,
     /**
      * image: la foto del perfil professional expuesta como og.png.
@@ -102,7 +104,7 @@ export function buildPersonSchema(): Person {
     hasCredential: [
       ...education.map((e) => ({
         "@type": "EducationalOccupationalCredential" as const,
-        name: e.degree,
+        name: localize(e.degree, locale),
       })),
       ...certifications.flatMap((group) =>
         group.credentials.map((name) => ({
@@ -121,7 +123,7 @@ export function buildPersonSchema(): Person {
   };
 }
 
-export function buildOrganizationSchema(): Organization {
+export function buildOrganizationSchema(locale: Locale): Organization {
   return {
     "@type": "Organization",
     name: "IAZR — Dirección Tecnológica & Full-Stack",
@@ -132,43 +134,16 @@ export function buildOrganizationSchema(): Organization {
     slogan: "Director Tecnológico · Full-Stack Developer · Mentor Tech",
     email: siteConfig.author.email,
     founder: { "@type": "Person", name: siteConfig.author.name, url: siteConfig.url },
-    areaServed: "Global (Colombia · Remoto)",
+    areaServed: ["US", "Latin America", "Worldwide (remote)"],
     numberOfEmployees: { "@type": "QuantitativeValue", value: 1 },
-    makesOffer: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Dirección Tecnológica & Transformación Digital",
-          description:
-            "Dirección de innovación digital, asistentes virtuales con IA, plataformas CRM y web corporativa.",
-        },
+    makesOffer: services.map((service) => ({
+      "@type": "Offer" as const,
+      itemOffered: {
+        "@type": "Service" as const,
+        name: localize(service.title, locale),
+        description: localize(service.description, locale),
       },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Desarrollo Full-Stack",
-          description: "Sitios web corporativos y plataformas con React, Next.js y Node.js.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "IA aplicada & Datos",
-          description: "Analítica con Power BI y SQL, bases de datos e integración de IA en producto.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Mentoría & Formación Tech",
-          description: "Bootcamps y formación en habilidades digitales, programación y análisis de datos.",
-        },
-      },
-    ],
+    })),
   };
 }
 
@@ -179,7 +154,7 @@ export function buildOrganizationSchema(): Organization {
  * búsquedas de nombre de persona + cargo.
  */
 export function buildProfilePageSchema(locale: Locale) {
-  const person = buildPersonSchema();
+  const person = buildPersonSchema(locale);
   const url = `${siteConfig.url}/${locale}`;
   return {
     "@type": "ProfilePage",
@@ -231,8 +206,8 @@ export function buildJsonLdGraph(locale: Locale) {
     "@context": "https://schema.org",
     "@graph": [
       buildProfilePageSchema(locale),
-      buildPersonSchema(),
-      buildOrganizationSchema(),
+      buildPersonSchema(locale),
+      buildOrganizationSchema(locale),
       buildWebSiteSchema(locale),
     ],
   };

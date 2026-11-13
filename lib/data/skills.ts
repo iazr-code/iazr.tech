@@ -1,105 +1,79 @@
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- *  DATA / SKILLS — Esquema de destrezas (Bento Grid asimétrico).
- *
- *  Ecosistema tecnológico real del CV (julio 2026), segmentado en dominios:
- *   · Desarrollo Full-Stack (React, Next.js, Node.js, Python)
- *   · Datos & IA (PostgreSQL, MongoDB, Power BI, SQL, Machine Learning)
- *   · Infraestructura & Cloud (Linux, Azure, Huawei Cloud, Vercel, n8n)
- *   · Gestión estratégica (MGA, PDM, Scrum, CRM, BPM) y mentoría tech.
- *
- *  Cada celda declara su tamaño en la rejilla (colSpan/rowSpan) para lograr
- *  la asimetría "bento" y un `featured` que la BentoGrid usa para resaltar
- *  la celda principal. Los iconos son componentes lucide-react.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Dominios de capacidad (stack real del CV, julio 2026).
  */
-import {
-  Bot,
-  Cloud,
-  Cpu,
-  GraduationCap,
-  ShieldCheck,
-  Workflow,
-  type LucideIcon,
-} from "lucide-react";
+import { Bot, Cloud, Cpu, GraduationCap, ShieldCheck, Workflow, type LucideIcon } from "lucide-react";
+
+import type { Localized } from "@/lib/i18n/localized";
 
 export type SkillTile = {
   id: string;
-  /** Título de la celda (dominio). */
-  title: string;
-  /** Descripción corta orientada a resultados B2B. */
-  description: string;
-  /** Icono lucide que identifica el dominio. */
+  title: Localized;
+  description: Localized;
   icon: LucideIcon;
-  /** Tecnologías específicas del dominio (chips mono). */
   tags: string[];
-  /** Proporción dentro de la rejilla bento. */
-  colSpan: 1 | 2;
-  rowSpan: 1 | 2;
-  /** Celda principal (más superficie, luz hover más intensa). */
   featured?: boolean;
 };
 
 export const skills: SkillTile[] = [
   {
     id: "fullstack",
-    title: "Desarrollo Full-Stack",
-    description:
-      "Aplicaciones y sitios web de producción con React, Next.js y Node.js: de la interfaz al backend, con arquitectura limpia y rendimiento medible.",
+    title: { es: "Desarrollo Full-Stack", en: "Full-stack development" },
+    description: {
+      es: "Aplicaciones y sitios de producción con React, Next.js, Supabase y Node.js: de la interfaz al backend, con arquitectura limpia y rendimiento medible.",
+      en: "Production apps and sites with React, Next.js, Supabase and Node.js: from interface to backend, with clean architecture and measurable performance.",
+    },
     icon: Cpu,
-    tags: ["React", "Next.js", "Node.js", "Python", "JavaScript", "TypeScript", "HTML/CSS", "Git"],
-    colSpan: 2,
-    rowSpan: 1,
+    tags: ["React", "Next.js", "Supabase", "Node.js", "Python", "TypeScript", "Git"],
     featured: true,
   },
   {
     id: "datos-ia",
-    title: "Datos & IA",
-    description:
-      "Analítica de datos con Power BI y SQL, bases PostgreSQL/MongoDB y Machine Learning aplicado a decisiones y productos.",
+    title: { es: "Datos & IA", en: "Data & AI" },
+    description: {
+      es: "Analítica con Power BI y SQL, bases PostgreSQL/MongoDB y Machine Learning aplicado a decisiones y productos.",
+      en: "Analytics with Power BI and SQL, PostgreSQL/MongoDB databases and machine learning applied to decisions and products.",
+    },
     icon: Bot,
     tags: ["PostgreSQL", "MongoDB", "Power BI", "SQL", "Machine Learning"],
-    colSpan: 1,
-    rowSpan: 1,
   },
   {
     id: "infraestructura",
-    title: "Infraestructura & Cloud",
-    description:
-      "Despliegue y operación en la nube con Azure, Huawei Cloud y Vercel, más automatización de procesos con n8n sobre Linux.",
+    title: { es: "Infraestructura & Cloud", en: "Infrastructure & cloud" },
+    description: {
+      es: "Despliegue y operación con Azure, Huawei Cloud y Vercel, más automatización de procesos con n8n sobre Linux.",
+      en: "Deployment and operations on Azure, Huawei Cloud and Vercel, plus process automation with n8n on Linux.",
+    },
     icon: Cloud,
-    tags: ["Linux", "Azure", "Huawei Cloud", "Vercel", "n8n", "Automatización"],
-    colSpan: 1,
-    rowSpan: 1,
+    tags: ["Linux", "Azure", "Huawei Cloud", "Vercel", "n8n"],
   },
   {
     id: "ciberseguridad",
-    title: "Ciberseguridad",
-    description:
-      "Experiencia en análisis de seguridad de la información: protección de sistemas y redes, respuesta a incidentes y protocolos de integridad.",
+    title: { es: "Ciberseguridad", en: "Cybersecurity" },
+    description: {
+      es: "Seguridad de la información: protección de sistemas y redes, respuesta a incidentes y protocolos de integridad.",
+      en: "Information security: protection of systems and networks, incident response and integrity protocols.",
+    },
     icon: ShieldCheck,
-    tags: ["Seguridad de la información", "Respuesta a incidentes", "Redes"],
-    colSpan: 2,
-    rowSpan: 1,
+    tags: ["InfoSec", "Incident response", "Networks"],
   },
   {
     id: "gestion",
-    title: "Gestión estratégica",
-    description:
-      "Metodologías de gestión pública y empresarial: formulación de proyectos (MGA), PDM, Scrum, CRM y BPM para dirección tecnológica.",
+    title: { es: "Gestión estratégica", en: "Strategic management" },
+    description: {
+      es: "Metodologías de gestión pública y empresarial: formulación de proyectos (MGA), PDM, Scrum, CRM y BPM.",
+      en: "Public and business management methods: project formulation (MGA), development plans, Scrum, CRM and BPM.",
+    },
     icon: Workflow,
-    tags: ["MGA", "PDM", "Scrum", "CRM", "BPM"],
-    colSpan: 1,
-    rowSpan: 1,
+    tags: ["MGA", "Scrum", "CRM", "BPM"],
   },
   {
     id: "mentoria",
-    title: "Mentoría tech & formación",
-    description:
-      "Mentor de bootcamps (Talento TECH), profesor de cátedra y formador en habilidades digitales: +500 beneficiarios acompañados.",
+    title: { es: "Mentoría & formación", en: "Mentoring & training" },
+    description: {
+      es: "Mentor de bootcamps (Talento TECH), profesor de cátedra y formador en habilidades digitales: +500 personas acompañadas.",
+      en: "Bootcamp mentor (Talento TECH), university lecturer and digital-skills trainer: 500+ people mentored.",
+    },
     icon: GraduationCap,
-    tags: ["Talento TECH", "Bootcamps", "Habilidades digitales", "Hackathones"],
-    colSpan: 1,
-    rowSpan: 1,
+    tags: ["Talento TECH", "Bootcamps", "Hackathons"],
   },
 ];

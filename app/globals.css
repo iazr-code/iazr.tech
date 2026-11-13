@@ -332,3 +332,11 @@
   color: transparent;
   animation: var(--animate-shimmer);
 }
+
+/* Panel translúcido sobre el Canvas: contraste AA sin tapar la escena. */
+@utility glass-panel {
+  border: 1px solid rgb(255 255 255 / 0.09);
+  background: color-mix(in oklch, var(--card) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}

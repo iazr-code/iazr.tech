@@ -23,10 +23,10 @@ export const serviceOptions = [
 ] as const;
 
 export const serviceLabels: Record<(typeof serviceOptions)[number], string> = {
-  "direccion-tecnologica": "Dirección Tecnológica / transformación digital",
-  fullstack: "Desarrollo Full-Stack",
-  "ia-datos": "IA aplicada & Datos",
-  mentoria: "Mentoría & formación tech",
+  "direccion-tecnologica": "Ecosistemas digitales & dirección tecnológica",
+  fullstack: "Desarrollo web de alto rendimiento",
+  "ia-datos": "Automatización & IA aplicada",
+  mentoria: "Mentoría & formación de equipos",
   otro: "Otro / aún lo estoy definiendo",
 };
 
@@ -50,21 +50,21 @@ export const contactSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "El nombre requiere al menos 2 caracteres")
-    .max(80, "Nombre demasiado largo (máx. 80 caracteres)"),
-  email: z.email("Ingresa un correo electrónico válido"),
-  company: z.string().trim().max(120, "Máximo 120 caracteres").optional(),
+    .min(2, "name_min")
+    .max(80, "name_max"),
+  email: z.email("email_invalid"),
+  company: z.string().trim().max(120, "company_max").optional(),
   service: z.enum(serviceOptions, {
-    error: "Selecciona un servicio para orientar la respuesta",
+    error: "service_required",
   }),
   budget: z.enum(budgetOptions).optional(),
   message: z
     .string()
     .trim()
-    .min(20, "Cuéntanos un poco más (mínimo 20 caracteres)")
-    .max(2000, "Máximo 2.000 caracteres"),
+    .min(20, "message_min")
+    .max(2000, "message_max"),
   /** Honeypot anti-bots: si aparece contenido, la validación falla. */
-  website: z.string().max(0, "Acción no permitida").optional(),
+  website: z.string().max(0, "honeypot").optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;

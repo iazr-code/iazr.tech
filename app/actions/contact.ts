@@ -7,6 +7,7 @@ import type { ContactState } from "@/lib/contact-state";
 import { siteConfig } from "@/lib/data/site";
 import { trackLead } from "@/lib/analytics/lead";
 import { contactLimiter, getClientIp } from "@/lib/security/rate-limit";
+import { isLocale, type Locale } from "@/lib/i18n/config";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -35,6 +36,41 @@ import { contactLimiter, getClientIp } from "@/lib/security/rate-limit";
  *  exponen internals ni credenciales al cliente.
  * ─────────────────────────────────────────────────────────────────────────────
  */
+
+/** Autorespuesta en el idioma del visitante. */
+function autoReply(locale: Locale, name: string, service: string) {
+  const { email, whatsappDisplay, name: author } = siteConfig.author;
+  const lines =
+    locale === "es"
+      ? [
+          `Hola ${name}:`,
+          "",
+          `Recibí tu solicitud (${service}). Gracias por tu interés en trabajar con IAZR.`,
+          "",
+          "La revisaré y te responderé con un plan concreto en menos de 24 horas hábiles (GMT-5).",
+          "",
+          `Si es urgente, escríbeme a ${email} o por WhatsApp ${whatsappDisplay}.`,
+          "",
+          "Saludos,",
+          `${author} — IAZR`,
+        ]
+      : [
+          `Hi ${name},`,
+          "",
+          `I received your request (${service}). Thanks for your interest in working with IAZR.`,
+          "",
+          "I will review it and reply with a concrete plan within one business day (GMT-5).",
+          "",
+          `If it is urgent, email me at ${email} or message me on WhatsApp at ${whatsappDisplay}.`,
+          "",
+          "Best regards,",
+          `${author} — IAZR`,
+        ];
+  return {
+    subject: locale === "es" ? "✓ Solicitud recibida — IAZR" : "✓ Request received — IAZR",
+    text: lines.join("\n"),
+  };
+}
 
 /** Remitente por defecto: solo puede enviar al correo registrado en la cuenta. */
 const DEFAULT_FROM = "IAZR Portfolio <onboarding@resend.dev>";
@@ -109,16 +145,18 @@ export async function submitContact(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Corrige los campos señalados e inténtalo de nuevo.",
+      message: "invalid",
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
 
   const data = parsed.data;
+  const localeField = formData.get("locale");
+  const locale: Locale = isLocale(localeField) ? localeField : "en";
 
   // Doble guardia honeypot (el esquema ya lo rechaza; esto es fail-closed).
   if (data.website) {
-    return { status: "error", message: "Acción no permitida.", fieldErrors: null };
+    return { status: "error", message: "honeypot", fieldErrors: null };
   }
 
   // ── TELEMETRÍA: se registra el lead (fecha, servicio, presupuesto) apenas
@@ -157,9 +195,7 @@ export async function submitContact(
       console.error("[IAZR·contacto] Error de envío:", error);
       return {
         status: "error",
-        message:
-          "No se pudo entregar el mensaje ahora. Escríbenos directamente a " +
-          siteConfig.author.email,
+        message: "delivery_failed",
         fieldErrors: null,
       };
     }
@@ -177,19 +213,7 @@ export async function submitContact(
         await sendEmail({
           from,
           to: data.email,
-          subject: "✓ Solicitud recibida — IAZR",
-          text: [
-            `Hola ${data.name}:`,
-            "",
-            `He recibido tu solicitud de auditoría (${service}) y te agradezco el interés en trabajar con IAZR.`,
-            "",
-            "La revisaré y te responderé con un plan de acción concreto en menos de 24 horas hábiles (franja GMT-5, Colombia).",
-            "",
-            `Si tu caso es urgente, escríbeme directo a ${siteConfig.author.email} o por WhatsApp ${siteConfig.author.whatsappDisplay}.`,
-            "",
-            "Saludos,",
-            `${siteConfig.author.name} — Director Tecnológico · Full-Stack Developer`,
-          ].join("\n"),
+          ...autoReply(locale, data.name, service),
         });
       } catch (error) {
         // El lead ya se entregó; la confirmación es un extra. Se loguea para
@@ -204,8 +228,7 @@ export async function submitContact(
 
   return {
     status: "success",
-    message:
-      "Solicitud recibida. Te responderé en menos de 24h hábiles (franja GMT-5).",
+    message: "success",
     fieldErrors: null,
   };
 }
