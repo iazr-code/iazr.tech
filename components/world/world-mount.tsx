@@ -39,6 +39,10 @@ export function WorldMount() {
 
   const showCanvas = resolved && tier !== "static";
 
+  useEffect(() => {
+    document.documentElement.dataset.world = showCanvas && !contextLost ? "3d" : "static";
+  }, [showCanvas, contextLost]);
+
   return (
     <>
       <StaticBackdrop visible={!showCanvas || contextLost} />

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CalendarClock } from "lucide-react";
 
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -10,6 +11,10 @@ import { Timeline } from "@/components/timeline";
 import { TerminalChat } from "@/components/chat/terminal-chat";
 import { ContactPanel } from "@/components/contact/contact-section";
 import { Footer } from "@/components/footer";
+import { HeroSection } from "@/components/sections/hero-section";
+import { ServicesSection } from "@/components/sections/services-section";
+import { ProjectsSection } from "@/components/sections/projects-section";
+import { BookingButton } from "@/components/booking/booking-button";
 
 /**
  * Portada por idioma (SSG). Cada sección lleva `data-world-section`: la escena
@@ -48,6 +53,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <>
       <JsonLd data={buildJsonLdGraph(locale)} />
+      <HeroSection dict={dict} />
+      <ServicesSection locale={locale} dict={dict} />
+      <ProjectsSection locale={locale} dict={dict} />
 
       <section id="trayectoria" data-world-section="journey" className="px-6 py-24 sm:py-32">
         <SectionHeading eyebrow={dict.journey.eyebrow} title={dict.journey.title} description={dict.journey.description} />
@@ -61,7 +69,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <section id="contacto" data-world-section="contact" className="px-6 py-24 sm:py-32">
         <SectionHeading eyebrow={dict.contact.eyebrow} title={dict.contact.title} description={dict.contact.description} />
-        <ContactPanel locale={locale} dict={dict.contact} />
+        <ContactPanel locale={locale} dict={dict.contact}>
+          <BookingButton source="contact" variant="cyber" className="w-full">
+            <CalendarClock className="size-4" aria-hidden="true" />
+            {dict.hero.ctaBook}
+          </BookingButton>
+        </ContactPanel>
       </section>
 
       <Footer locale={locale} dict={dict} />
