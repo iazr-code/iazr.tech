@@ -9,6 +9,7 @@ import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { PostHogPageView } from "@/components/providers/posthog-pageview";
 import { Navbar } from "@/components/navbar";
 import { LocaleSync } from "@/components/i18n/locale-sync";
+import { WorldMount } from "@/components/world/world-mount";
 
 import "./globals.css";
 
@@ -154,18 +155,17 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geist.variable} ${jetbrainsMono.variable}`}
+      className={`dark ${geist.variable} ${jetbrainsMono.variable}`}
     >
       <body>
-        {/*
-         * Providers: next-themes (modo claro/oscuro OKLCH) + Lenis (smooth
-         * scroll). Lenis no debe bloquear el primer pintado: es un cliente
-         * ligero que se adjunta tras la hidratación.
-         */}
         <Providers>
           <PostHogProvider>
+            {/* Mundo 3D persistente: un único Canvas fijo detrás del contenido. */}
+            <WorldMount />
             <Navbar />
-            <main id="inicio">{children}</main>
+            <main id="inicio" className="relative z-10">
+              {children}
+            </main>
             {/*
              * Pageviews de PostHog (funnel visita → envío); null-render.
              * <Suspense> obligatorio: useSearchParams() en una página estática
