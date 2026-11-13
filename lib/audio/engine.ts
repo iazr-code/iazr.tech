@@ -32,7 +32,12 @@ const CHORDS: Record<SceneId, [number, number, number]> = {
   contact: [146.83, 220.0, 329.63],
 };
 
-type Doc = Pick<Document, "hidden" | "addEventListener" | "removeEventListener">;
+/** Subconjunto de Document que usa el motor (inyectable en tests). */
+type Doc = {
+  hidden: boolean;
+  addEventListener(type: "visibilitychange", listener: () => void): void;
+  removeEventListener(type: "visibilitychange", listener: () => void): void;
+};
 
 export function createAudioEngine(deps: { createContext?: () => AudioContext; doc?: Doc } = {}): AudioEngine {
   const createContext = deps.createContext ?? (() => new AudioContext());
