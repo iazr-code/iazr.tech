@@ -1,4 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { isLocale, locales, type Locale } from "@/lib/i18n/config";
+import { buildJsonLdGraph } from "@/lib/seo/json-ld";
+import { JsonLd } from "@/components/seo/json-ld";
 
 import { HeroSection } from "@/components/hero/hero-section";
 import { Marquee } from "@/components/marquee";
@@ -53,9 +59,32 @@ function TerminalSkeleton() {
   );
 }
 
-export default function HomePage() {
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { es: "/es", en: "/en", "x-default": "/en" },
+    },
+    openGraph: { locale: OG_LOCALE[locale as Locale] ?? "en_US", url: `/${locale}` },
+  };
+}
+
+const OG_LOCALE: Record<Locale, string> = { es: "es_CO", en: "en_US" };
+
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
   return (
     <>
+      <JsonLd data={buildJsonLdGraph(locale)} />
       {/* Cabecera cinemática (client: Framer Motion + Lenis anchors) */}
       <HeroSection />
 

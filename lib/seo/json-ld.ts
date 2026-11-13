@@ -1,5 +1,8 @@
 import { siteConfig } from "@/lib/data/site";
+import type { Locale } from "@/lib/i18n/config";
 import { certifications, education, experience } from "@/lib/data/experience";
+
+const LANGUAGE_TAG: Record<Locale, string> = { es: "es-CO", en: "en-US" };
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -175,12 +178,14 @@ export function buildOrganizationSchema(): Organization {
  * como "About Me" / "Profile" y las posiciona con mayor confianza en
  * búsquedas de nombre de persona + cargo.
  */
-export function buildProfilePageSchema() {
+export function buildProfilePageSchema(locale: Locale) {
   const person = buildPersonSchema();
+  const url = `${siteConfig.url}/${locale}`;
   return {
     "@type": "ProfilePage",
-    "@id": `${siteConfig.url}/#profile`,
-    url: siteConfig.url,
+    "@id": `${url}#profile`,
+    url,
+    inLanguage: LANGUAGE_TAG[locale],
     name: `${siteConfig.author.name} — Portafolio Profesional`,
     description: siteConfig.description,
     dateCreated: "2026-01-01",
@@ -192,8 +197,8 @@ export function buildProfilePageSchema() {
         {
           "@type": "ListItem",
           position: 1,
-          name: "Inicio",
-          item: siteConfig.url,
+          name: locale === "es" ? "Inicio" : "Home",
+          item: url,
         },
       ],
     },
@@ -201,48 +206,34 @@ export function buildProfilePageSchema() {
 }
 
 /**
- * WebSite schema con SearchAction.
- * Habilita el "Sitelinks search box" de Google: cuando alguien busca el
- * nombre del sitio, Google puede mostrar un cuadro de búsqueda directo
- * debajo del resultado principal.
+ * WebSite schema. Sin SearchAction: el sitio no tiene buscador y declarar uno
+ * inexistente es un dato estructurado falso.
  */
-export function buildWebSiteSchema() {
+export function buildWebSiteSchema(locale: Locale) {
   return {
     "@type": "WebSite",
     "@id": `${siteConfig.url}/#website`,
     url: siteConfig.url,
     name: siteConfig.title,
     description: siteConfig.description,
-    inLanguage: "es-CO",
+    inLanguage: LANGUAGE_TAG[locale],
     author: {
       "@type": "Person",
       name: siteConfig.author.name,
       url: siteConfig.url,
     },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${siteConfig.url}/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
-/**
- * Construye el grafo completo. `@graph` permite declarar múltiples nodos
- * independientes en un único bloque application/ld+json, recomendado por Google.
- * Orden: ProfilePage primero (más específico) → Person → Organization → WebSite.
- */
-export function buildJsonLdGraph() {
+/** Grafo completo: ProfilePage → Person → Organization → WebSite. */
+export function buildJsonLdGraph(locale: Locale) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      buildProfilePageSchema(),
+      buildProfilePageSchema(locale),
       buildPersonSchema(),
       buildOrganizationSchema(),
-      buildWebSiteSchema(),
+      buildWebSiteSchema(locale),
     ],
   };
 }

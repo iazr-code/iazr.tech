@@ -4,12 +4,11 @@ import { GeistSans } from "geist/font/sans";
 import localFont from "next/font/local";
 
 import { siteConfig } from "@/lib/data/site";
-import { buildJsonLdGraph } from "@/lib/seo/json-ld";
-import { JsonLd } from "@/components/seo/json-ld";
 import { Providers } from "@/components/providers/providers";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { PostHogPageView } from "@/components/providers/posthog-pageview";
 import { Navbar } from "@/components/navbar";
+import { LocaleSync } from "@/components/i18n/locale-sync";
 
 import "./globals.css";
 
@@ -96,14 +95,6 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
   creator: siteConfig.author.name,
   publisher: siteConfig.author.name,
-  alternates: {
-    canonical: "/",
-    languages: {
-      "es": "/",
-      "es-CO": "/",
-      "x-default": "/",
-    },
-  },
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
@@ -161,7 +152,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="es"
+      lang="en"
       suppressHydrationWarning
       className={`${geist.variable} ${jetbrainsMono.variable}`}
     >
@@ -187,12 +178,7 @@ export default function RootLayout({
           </PostHogProvider>
         </Providers>
 
-        {/*
-         * JSON-LD en el Server Component raíz: los datos estructurados quedan
-         * embebidos en el HTML crudo del servidor para acceso inmediato de las
-         * arañas (sin esperar hidratación de JavaScript).
-         */}
-        <JsonLd data={buildJsonLdGraph()} />
+        <LocaleSync />
       </body>
     </html>
   );

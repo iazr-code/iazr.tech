@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { isLocale, locales } from "@/lib/i18n/config";
 
 import { siteConfig } from "@/lib/data/site";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -23,26 +26,39 @@ import { ContactDirect } from "@/components/about/contact-direct";
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export const experimental_ppr = true;
-
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Acerca de",
   description:
     "Trayectoria, formación y datos de contacto de Iván Andrés Zúñiga (IAZR): Director Tecnológico, Full-Stack Developer y Mentor Tech con experiencia en IA aplicada, datos y transformación digital.",
-  alternates: {
-    canonical: "/about",
-  },
+
   openGraph: {
     title: "Acerca de IAZR — Trayectoria y formación",
     description:
       "La hoja de vida verificable de Iván Andrés Zúñiga: Director Tecnológico, Full-Stack Developer y Mentor Tech. 7+ años, 11 certificaciones internacionales.",
-    url: "/about",
     type: "profile",
   },
 };
 
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    ...metadata,
+    alternates: {
+      canonical: `/${locale}/about`,
+      languages: { es: "/es/about", en: "/en/about", "x-default": "/en/about" },
+    },
+    openGraph: { ...metadata.openGraph, url: `/${locale}/about` },
+  };
+}
+
 /** Migas de pan Schema.org para la ruta Home › Acerca de. */
-const breadcrumbJsonLd = {
+const breadcrumbJsonLd = (locale: string) => ({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -50,18 +66,21 @@ const breadcrumbJsonLd = {
       "@type": "ListItem",
       position: 1,
       name: "Inicio",
-      item: siteConfig.url,
+      item: `${siteConfig.url}/${locale}`,
     },
     {
       "@type": "ListItem",
       position: 2,
       name: "Acerca de",
-      item: `${siteConfig.url}/about`,
+      item: `${siteConfig.url}/${locale}/about`,
     },
   ],
-};
+});
 
-export default function AboutPage() {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
   return (
     <>
       {/* Cabecera de identidad (foto, rol, disponibilidad, CTAs) */}
@@ -88,7 +107,7 @@ export default function AboutPage() {
       <ContactDirect />
 
       {/* JSON-LD de migas de pan (renderizado en el servidor) */}
-      <JsonLd data={breadcrumbJsonLd} />
+      <JsonLd data={breadcrumbJsonLd(locale)} />
     </>
   );
 }
