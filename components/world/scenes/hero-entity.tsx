@@ -89,7 +89,8 @@ export function HeroEntity() {
 
   // En pantallas anchas la entidad se desplaza a la derecha, dejando el texto libre.
   const offsetX = viewport.aspect > 1.15 ? Math.min(3, viewport.width * 0.3) : 0;
-  const offsetY = viewport.aspect > 1.15 ? 0 : -0.9;
+  // En vertical (móvil) baja al pie de la pantalla: el texto queda sobre fondo limpio.
+  const offsetY = viewport.aspect > 1.15 ? 0 : -viewport.height * 0.58;
 
   if (count === 0) return null;
   return (
@@ -98,7 +99,7 @@ export function HeroEntity() {
       geometry={geometry}
       material={material}
       position={[anchor[0] + offsetX, anchor[1] + offsetY, anchor[2]]}
-      scale={viewport.aspect > 1.15 ? 0.85 : 0.7}
+      scale={viewport.aspect > 1.15 ? 0.85 : 0.62}
       frustumCulled={false}
     />
   );

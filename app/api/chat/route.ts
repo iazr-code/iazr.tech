@@ -131,7 +131,10 @@ export async function POST(req: Request) {
       system,
       messages,
       temperature: 0.6,
-      maxOutputTokens: 1024,
+      // Modelos de razonamiento (p. ej. gpt-oss): razonamiento acotado y margen
+      // de tokens para que la respuesta visible nunca quede vacía.
+      maxOutputTokens: 1600,
+      providerOptions: { groq: { reasoningEffort: "low" } },
       onError: ({ error: streamError }) => {
         console.warn("[/api/chat] Error dentro del stream:", streamError);
       },

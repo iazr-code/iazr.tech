@@ -49,7 +49,7 @@ export function ServiceForms() {
   useFrame((state, delta) => {
     const g = group.current;
     if (!g) return;
-    g.visible = nearCamera(state.camera, anchor[2]);
+    g.visible = nearCamera(state.camera, anchor[2], 19);
     if (!g.visible) return;
     const t = state.clock.elapsedTime;
     LAYOUT.forEach((_, i) => {

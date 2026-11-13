@@ -19,7 +19,7 @@ export function HeroSection({ dict }: { dict: Dictionary }) {
       className="relative flex min-h-svh flex-col justify-center px-6 pb-24 pt-28"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl [text-shadow:0_2px_18px_rgb(0_0_0/0.85)]">
           <p className="rise inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 font-mono text-[11px] text-muted-foreground backdrop-blur-sm [--d:0ms]">
             <span className="size-1.5 rounded-full bg-success shadow-[0_0_10px_var(--success)]" />
             {t.status}

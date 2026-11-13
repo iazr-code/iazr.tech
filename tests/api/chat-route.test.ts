@@ -59,4 +59,19 @@ describe("POST /api/chat", () => {
     const groqModelCalls = fetchSpy.mock.calls.filter(([url]) => String(url).includes("api.groq.com/openai/v1/models"));
     expect(groqModelCalls).toHaveLength(0);
   });
+
+  it("caps reasoning so a reasoning model never spends the whole budget and replies empty", async () => {
+    process.env.GROQ_API_KEY = "gsk_test_fake";
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(async () => new Response("{}", { status: 401 }));
+    const res = await POST(req(valid, "10.0.0.6"));
+    await res.text();
+    delete process.env.GROQ_API_KEY;
+    const completion = fetchSpy.mock.calls.find(([url]) => String(url).includes("/chat/completions"));
+    expect(completion).toBeDefined();
+    const body = JSON.parse(String((completion![1] as RequestInit).body));
+    expect(body.reasoning_effort).toBe("low");
+    expect(body.max_completion_tokens ?? body.max_tokens).toBeGreaterThanOrEqual(1600);
+  });
 });
