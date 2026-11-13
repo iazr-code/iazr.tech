@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/data/site";
 import { Providers } from "@/components/providers/providers";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { PostHogPageView } from "@/components/providers/posthog-pageview";
-import { Navbar } from "@/components/navbar";
+import { Hud } from "@/components/hud/hud";
 import { LocaleSync } from "@/components/i18n/locale-sync";
 import { WorldMount } from "@/components/world/world-mount";
 import { BookingDrawer } from "@/components/booking/booking-drawer";
@@ -163,8 +163,8 @@ export default function RootLayout({
           <PostHogProvider>
             {/* Mundo 3D persistente: un único Canvas fijo detrás del contenido. */}
             <WorldMount />
-            <Navbar />
-            <main id="inicio" className="relative z-10">
+            <Hud />
+            <main id="main" className="relative z-10">
               {children}
             </main>
             {/*
