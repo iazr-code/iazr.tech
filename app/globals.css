@@ -374,3 +374,8 @@ dialog.booking-drawer[open] {
 @media (min-width: 1024px) {
   html[data-world="3d"] .world-fallback-shot { display: none; }
 }
+
+/* Ecualizador del botón de sonido. */
+.sound-bar { animation: sound-bar 900ms ease-in-out infinite alternate; transform-origin: bottom; }
+@keyframes sound-bar { from { transform: scaleY(0.4); } to { transform: scaleY(1.8); } }
+@media (prefers-reduced-motion: reduce) { .sound-bar { animation: none; } }
