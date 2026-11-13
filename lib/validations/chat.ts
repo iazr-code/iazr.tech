@@ -23,7 +23,6 @@ const bodySchema = z.object({
 });
 
 // Controles C0 (salvo \t y \n), \r, DEL y C1.
-// eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g;
 
 function sanitize(text: string): string {

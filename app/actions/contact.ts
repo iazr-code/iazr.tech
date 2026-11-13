@@ -1,9 +1,12 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import { contactSchema, serviceLabels } from "@/lib/validations/contact";
 import type { ContactState } from "@/lib/contact-state";
 import { siteConfig } from "@/lib/data/site";
 import { trackLead } from "@/lib/analytics/lead";
+import { contactLimiter, getClientIp } from "@/lib/security/rate-limit";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -11,7 +14,7 @@ import { trackLead } from "@/lib/analytics/lead";
  *
  *  Mutación sin API REST intermedia (superficie de ataque mínima):
  *  1. Validación estricta del esquema con Zod (fuente de verdad en servidor).
- *  2. Guardia honeypot + throttle básico en memoria.
+ *  2. Rate limit por IP (3 / 10 min) + guardia honeypot.
  *  3. Entrega del lead:
  *     · Con `RESEND_API_KEY` → correo transaccional vía Resend (fetch directo)
  *       hacia el email de IAZR (siteConfig.author.email), con reply_to al
@@ -78,16 +81,19 @@ async function sendEmail({
   }
 }
 
-/** Throttle en memoria (por instancia serverless): evita spam de fuerza bruta. */
-let lastSubmitAt = 0;
-const THROTTLE_MS = 10_000;
-
 export async function submitContact(
   _prevState: ContactState,
   formData: FormData
 ): Promise<ContactState> {
   // Los campos opcionales vacíos (selects sin selección) se normalizan a
   // `undefined` para que Zod los trate como ausentes, no como cadenas inválidas.
+  // Rate limit por IP (3 / 10 min): sustituye al antiguo bloqueo global en
+  // memoria, que hacía esperar a TODOS los visitantes tras un envío.
+  const limit = contactLimiter.check(getClientIp(await headers()));
+  if (!limit.ok) {
+    return { status: "error", message: "rate_limited", fieldErrors: null };
+  }
+
   const raw = {
     name: String(formData.get("name") ?? ""),
     email: String(formData.get("email") ?? ""),
@@ -107,16 +113,6 @@ export async function submitContact(
       fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
-
-  const now = Date.now();
-  if (now - lastSubmitAt < THROTTLE_MS) {
-    return {
-      status: "error",
-      message: "Demasiadas solicitudes seguidas. Espera unos segundos.",
-      fieldErrors: null,
-    };
-  }
-  lastSubmitAt = now;
 
   const data = parsed.data;
 

@@ -1,6 +1,7 @@
 import { education, experience } from "@/lib/data/experience";
 import { featuredProjects } from "@/lib/data/projects";
 import { siteConfig } from "@/lib/data/site";
+import type { Locale } from "@/lib/i18n/config";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -39,7 +40,8 @@ const projectsBlock = featuredProjects
   .map((p) => `· ${p.name} (${p.year}) — ${p.role}. Stack: ${p.stack.join(", ")}. URL: ${p.href}`)
   .join("\n");
 
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(locale: Locale): string {
+  const languageRule = locale === "en" ? "Respond in English unless the visitor writes in another language." : "Responde en español salvo que el visitante escriba en otro idioma.";
   return `Eres el asistente conversacional oficial del portafolio de IAZR — Iván Andrés Zúñiga, y representas al propio ingeniero en su ausencia. Tu misión: ayudar a reclutadores, directivos B2B y desarrolladores a evaluar su idoneidad técnica y su disponibilidad.
 
 ## IDENTIDAD VERIFICADA
@@ -66,7 +68,7 @@ ${projectsBlock}
 - Métricas verificadas: 7+ años de experiencia, 11 certificaciones internacionales, 13 roles profesionales y 3 títulos de postgrado.
 
 ## NORMAS DE COMPORTAMIENTO
-1. Responde SIEMPRE en el idioma de la pregunta (por defecto, español neutro).
+1. ${languageRule}
 2. Tono profesional, técnico y directo: frases concisas, evita relleno corporativo.
 3. Si te preguntan por disponibilidad: menciona la franja GMT-5 (Colombia), el trabajo remoto global y la capacidad de arrancar proyectos/auditorías en 1–2 semanas.
    La auditoría técnica inicial dura 1–2 semanas y entrega un roadmap accionable; el SLA de respuesta al contacto es <24 h hábiles.

@@ -1,10 +1,12 @@
 import type { LanguageModelV4StreamPart } from "@ai-sdk/provider";
 import { createGroq } from "@ai-sdk/groq";
-import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import { streamText, convertToModelMessages } from "ai";
 import { MockLanguageModelV4, simulateReadableStream } from "ai/test";
 
 import { buildSystemPrompt } from "@/lib/ai/system-prompt";
 import { getActiveModelConfig } from "@/lib/ai/model-config";
+import { chatLimiter, getClientIp } from "@/lib/security/rate-limit";
+import { parseChatRequest } from "@/lib/validations/chat";
 
 // Identificador estable del "parte de texto" del stream simulado.
 const DEMO_TEXT_ID = "demo-text-1";
@@ -17,8 +19,9 @@ const DEMO_TEXT_ID = "demo-text-1";
  *    (useChat) consume cada delta en tiempo real → "latencia nula" percibida.
  *  · System Prompt: se construye desde lib/ai/system-prompt.ts (contexto
  *    sintético del ingeniero inyectado al modelo subyacente).
- *  · Proveedor: GROQ (createGroq) con llama3-70b-8192 por defecto
- *    (modelo configurable vía GROQ_MODEL). Groq entrega latencias de inferencia
+ *  · Seguridad: rate limit por IP (20 / 10 min) y payload validado con Zod
+ *    (lib/validations/chat.ts) antes de tocar el proveedor.
+ *  · Proveedor: GROQ (createGroq); modelo vía GROQ_MODEL (ver lib/ai/model-config). Groq entrega latencias de inferencia
  *    extremadamente bajas → streaming casi instantáneo para el usuario.
  *  · Modo demo (sin GROQ_API_KEY): se usa MockLanguageModelV4 + simulateReadableStream
  *    (subpath oficial "ai/test") para devolver un stream predefinido con el
@@ -93,74 +96,49 @@ function buildDemoModel() {
   });
 }
 
+function jsonError(status: number, error: string, headers?: HeadersInit) {
+  return Response.json({ error }, { status, headers });
+}
+
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-
-  const system = buildSystemPrompt();
-  // Fuente única de resolución (lib/ai/model-config): la misma que expone
-  // GET /api/chat/model para que el terminal pinte el badge del modelo real.
-  const { provider, model: modelId } = getActiveModelConfig();
-
-  // Pre-validación liviana: si hay clave de Groq, verificamos que el modelo
-  // exista ANTES de abrir el stream SSE. Así el error es sincrónico y el
-  // try/catch lo captura antes de que el AI SDK emita nada al cliente.
-  if (provider === "groq") {
-    try {
-      const checkRes = await fetch(
-        `https://api.groq.com/openai/v1/models/${modelId}`,
-        { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
-      );
-      if (!checkRes.ok) {
-        console.warn(
-          `[/api/chat] Modelo Groq "${modelId}" no disponible (${checkRes.status}) — modo demo.`
-        );
-        const fallback = streamText({
-          model: buildDemoModel(),
-          system,
-          messages: await convertToModelMessages(messages),
-        });
-        return fallback.toUIMessageStreamResponse();
-      }
-    } catch {
-      // Red caída u otro error de fetch: fallback demo silencioso.
-      console.warn("[/api/chat] No se pudo verificar el modelo Groq — modo demo.");
-      const fallback = streamText({
-        model: buildDemoModel(),
-        system,
-        messages: await convertToModelMessages(messages),
-      });
-      return fallback.toUIMessageStreamResponse();
-    }
+  // 1) Rate limit por IP (antes de leer el cuerpo: barato y protege la cuota).
+  const limit = chatLimiter.check(getClientIp(req.headers));
+  if (!limit.ok) {
+    return jsonError(429, "rate_limited", {
+      "Retry-After": String(Math.max(1, Math.ceil(limit.retryAfterMs / 1000))),
+    });
   }
 
+  // 2) Validación y saneado del payload (roles, partes de texto, longitudes).
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return jsonError(400, "invalid_json");
+  }
+  const parsed = parseChatRequest(body);
+  if (!parsed.ok) return jsonError(parsed.status, parsed.error);
+
+  const system = buildSystemPrompt(parsed.locale);
+  const { provider, model: modelId } = getActiveModelConfig();
+  const messages = await convertToModelMessages(parsed.messages);
+
+  // 3) Sin pre-validación del modelo: si Groq falla, onError lo registra y el
+  //    cliente muestra su estado de error (ya no se duplica la latencia).
   try {
     const result = streamText({
-      // Con clave → modelo real de Groq; sin clave → stream demo predefinido.
       model: provider === "groq" ? groq(modelId) : buildDemoModel(),
       system,
-      // convertToModelMessages normaliza el formato UI (partes) al formato de
-      // mensajes del proveedor; así el cliente puede enviar attachments etc.
-      messages: await convertToModelMessages(messages),
+      messages,
       temperature: 0.6,
       maxOutputTokens: 1024,
-      // onError: captura errores que el SDK propaga dentro del stream SSE
-      // (e.g. el proveedor rechaza la solicitud tras haber iniciado la conexión).
       onError: ({ error: streamError }) => {
         console.warn("[/api/chat] Error dentro del stream:", streamError);
       },
     });
-
-    // toUIMessageStreamResponse serializa el stream en SSE (`data: {json}\n\n`)
-    // exactamente como lo parsea useChat en el cliente.
     return result.toUIMessageStreamResponse();
   } catch (error: unknown) {
-    // Errores sincrónicos inesperados (no capturados por la pre-validación).
     console.error("[/api/chat] Error inesperado:", error);
-    const fallback = streamText({
-      model: buildDemoModel(),
-      system,
-      messages: await convertToModelMessages(messages),
-    });
-    return fallback.toUIMessageStreamResponse();
+    return streamText({ model: buildDemoModel(), system, messages }).toUIMessageStreamResponse();
   }
 }
