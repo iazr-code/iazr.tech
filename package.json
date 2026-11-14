@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:adversarial": "node scripts/adversarial.mjs",
-    "textures": "node scripts/build-textures.mjs"
+    "textures": "node scripts/build-textures.mjs",
+    "postinstall": "node scripts/patch-next-dev-manifest.mjs"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.26",
