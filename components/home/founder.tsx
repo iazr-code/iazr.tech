@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { certifications, experience } from "@/lib/data/experience";
+import { certificationCount, experience } from "@/lib/data/experience";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { localize } from "@/lib/i18n/localized";
@@ -11,7 +11,6 @@ export const CV_URL = "https://drive.google.com/file/d/1uXSsTCNRBIJW5D3zHWLMhyql
 /** The founder: portrait, credentials in sentences, three recent roles, the CV. */
 export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const t = dict.founder;
-  const certCount = certifications.reduce((n, g) => n + g.credentials.length, 0);
   const roles = experience.slice(0, 3);
 
   return (
@@ -27,7 +26,7 @@ export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) 
         <div className="flex flex-col lg:col-span-7 lg:col-start-6">
           <h2 className="t-h2">{t.title}</h2>
           <p className="t-lead mt-4 measure">{t.lead}</p>
-          <p className="mt-4 measure">{t.record.replace("{certs}", String(certCount))}</p>
+          <p className="mt-4 measure">{t.record.replace("{certs}", String(certificationCount))}</p>
 
           <h3 className="t-label mt-10 text-muted-foreground">{t.rolesTitle}</h3>
           <ul className="mt-3">

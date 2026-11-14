@@ -63,6 +63,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     hrefLabel: localize(p.hrefLabel, locale),
     image: p.image,
     imageAlt: `${dict.cases.screenshotAlt} ${p.name}`,
+    results: p.results ? localize(p.results, locale) : undefined,
+    resultsLabel: dict.cases.resultsLabel,
   }));
 
   return (

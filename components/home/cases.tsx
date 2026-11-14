@@ -17,6 +17,8 @@ export type CaseItem = {
   hrefLabel: string;
   image: string;
   imageAlt: string;
+  results?: string[];
+  resultsLabel?: string;
 };
 
 /**
@@ -88,7 +90,7 @@ export function Cases({
                       className="h-px bg-current transition-[width,margin] duration-300 ease-[var(--ease-out)]"
                       style={{ width: on ? 20 : 0, marginRight: on ? 12 : 0 }}
                     />
-                    <span className="text-[17px] font-medium">{item.name}</span>
+                    <span className="text-base font-medium">{item.name}</span>
                   </span>
                   <span className="text-[14px] max-sm:hidden">{item.role}</span>
                 </button>
@@ -118,16 +120,25 @@ export function Cases({
               />
             ))}
           </div>
-          <div className="mt-6 flex flex-col items-start gap-4">
+          <div className="mt-5 flex flex-col items-start gap-3">
             <div>
               <p className="t-label text-muted-foreground">
-                {current.role} · {current.year}
+                {current.role} · {current.year} · <span className="sr-only">{stackLabel}: </span>
+                {current.stack.join(", ")}
               </p>
               <p className="mt-2 max-w-[60ch]">{current.description}</p>
-              <p className="mt-3 text-[14px] text-muted-foreground">
-                <span className="sr-only">{stackLabel}: </span>
-                {current.stack.join(" · ")}
-              </p>
+              {current.results ? (
+                <>
+                  <h3 className="sr-only">{current.resultsLabel}</h3>
+                  <ul className="mt-3 max-w-[64ch]">
+                    {current.results.map((r) => (
+                      <li key={r} className="border-t border-border py-1.5 font-medium">
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </div>
             <a href={current.href} target="_blank" rel="noopener noreferrer" className="link">
               {current.hrefLabel}

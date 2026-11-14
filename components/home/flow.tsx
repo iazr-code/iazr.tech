@@ -60,7 +60,7 @@ export function FlowSection({ t }: { t: Flow }) {
                   >
                     {i + 1}
                   </span>
-                  <span className="self-center text-[17px] font-medium leading-snug">{s.title}</span>
+                  <span className="self-center text-base font-medium leading-snug">{s.title}</span>
                   <span
                     className="col-start-2 grid transition-[grid-template-rows,opacity] duration-300 ease-[var(--ease-out)]"
                     style={{ gridTemplateRows: active ? "1fr" : "0fr", opacity: active ? 1 : 0 }}
@@ -114,11 +114,39 @@ function Reveal({ on, children, className }: { on: boolean; children: React.Reac
   );
 }
 
+/** A stage not reached yet: a dashed slot that names what will land there. */
+function Pending({ on, icon, label, pending }: { on: boolean; icon: string; label: string; pending: string }) {
+  return (
+    <Reveal on={on} className="mt-3">
+      <div className="flex h-12 items-center gap-3 rounded-[14px] border border-dashed border-[var(--line-strong)] px-4 text-[14px] text-muted-foreground">
+        <BrandIcon name={icon} className="!size-6 !rounded-[6px] !border-0 opacity-60 [&_img]:!size-[15px]" />
+        <span>{label}</span>
+        <span className="ml-auto">{pending}</span>
+      </div>
+    </Reveal>
+  );
+}
+
 function Chat({ t, step }: { t: Flow["ui"]; step: number }) {
   return (
-    <div className="flex flex-col rounded-[14px] bg-background p-3.5 text-[15px] leading-snug">
-      <p className="self-center rounded-full bg-secondary px-3 py-1 text-[13px] text-muted-foreground">{t.scan}</p>
-      <p className="mt-2.5 max-w-[85%] self-start rounded-[14px] rounded-tl-[4px] bg-paper px-3 py-2">{t.incoming}</p>
+    <div className="flex flex-col rounded-[14px] bg-background p-3.5 text-base leading-snug">
+      <p className="self-center rounded-full bg-secondary px-3 py-1 text-[13px] text-muted-foreground">
+        {t.scan} · {t.time}
+      </p>
+      <p className="mt-2.5 max-w-[85%] self-start rounded-[14px] rounded-tl-[4px] bg-paper px-3 py-2">
+        {t.incoming}
+        <span className="mt-1 block text-right font-mono text-[13px] text-muted-foreground">{t.time}</span>
+      </p>
+      <Reveal on={step === 0} className="ml-auto mt-2.5 w-fit">
+        <p className="inline-flex items-center gap-2 rounded-[14px] rounded-tr-[4px] bg-secondary px-3 py-2 text-[14px] text-muted-foreground">
+          <span className="flex gap-1" aria-hidden="true">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="size-1.5 animate-pulse rounded-full bg-current" style={{ animationDelay: `${i * 160}ms` }} />
+            ))}
+          </span>
+          {t.typing}
+        </p>
+      </Reveal>
       <Reveal on={step >= 1} className="ml-auto mt-2.5 max-w-[88%]">
         <p className="rounded-[14px] rounded-tr-[4px] bg-primary px-3 py-2 text-primary-foreground">{t.reply}</p>
       </Reveal>
@@ -143,6 +171,14 @@ function System({ t, step }: { t: Flow["ui"]; step: number }) {
             </span>
           ))}
         </div>
+        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 border-t border-border pt-3 text-[14px]">
+          {t.detectRows.map((row) => (
+            <div key={row.label} className="contents">
+              <dt className="text-muted-foreground">{row.label}</dt>
+              <dd className="font-mono text-[13px] leading-[1.6]">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
         <Reveal on={step >= 1} className="mt-3 border-t border-border pt-3">
           <p className="text-[13px] font-medium text-muted-foreground">{t.qualifyTitle}</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -154,6 +190,7 @@ function System({ t, step }: { t: Flow["ui"]; step: number }) {
           </div>
         </Reveal>
       </div>
+      <Pending on={step < 2} icon="google-calendar" label={t.eventPending} pending={t.pending} />
       <Reveal on={step >= 2} className="mt-3 rounded-[14px] border border-border bg-background p-4">
         <div className="flex items-center gap-3">
           <BrandIcon name="google-calendar" className="!size-9 !rounded-[8px] [&_img]:!size-[20px]" />
@@ -164,6 +201,7 @@ function System({ t, step }: { t: Flow["ui"]; step: number }) {
         </div>
         <p className="mt-3 border-t border-border pt-3 text-[14px] text-muted-foreground">{t.reminder}</p>
       </Reveal>
+      <Pending on={step < 3} icon="supabase" label={t.crmPending} pending={t.pending} />
       <Reveal on={step >= 3} className="mt-3 rounded-[14px] border border-border bg-background">
         <div className="flex items-center gap-2 border-b border-border px-4 py-2.5 text-[13px] font-medium">
           <BrandIcon name="supabase" className="!size-6 !rounded-[6px] !border-0 [&_img]:!size-[15px]" />
@@ -190,6 +228,7 @@ function System({ t, step }: { t: Flow["ui"]; step: number }) {
           </tbody>
         </table>
       </Reveal>
+      <Pending on={step < 3} icon="google-icon" label={t.reviewPending} pending={t.pending} />
       <Reveal on={step >= 3} className="mt-3 rounded-[14px] border border-border bg-background p-4">
         <div className="flex items-center gap-2">
           <BrandIcon name="google-icon" className="!size-6 !rounded-[6px] !border-0 [&_img]:!size-[15px]" />

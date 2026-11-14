@@ -59,7 +59,7 @@ export function Hud() {
 
         <nav aria-label={dict.nav.primary} className="hidden items-center gap-7 lg:flex">
           {links.map((item) => (
-            <Link key={item.href} href={item.href} className="link text-[15px]">
+            <Link key={item.href} href={item.href} className="link text-base">
               {item.label}
             </Link>
           ))}

@@ -50,8 +50,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           </div>
           <p
             aria-hidden="true"
-            className="mt-10 select-none font-display font-medium leading-[0.8] tracking-[-0.06em] max-sm:mt-8"
-            style={{ fontSize: "clamp(96px, 21vw, 300px)" }}
+            className="t-wordmark mt-10 select-none font-display font-medium max-sm:mt-8"
           >
             IA-ZR
           </p>

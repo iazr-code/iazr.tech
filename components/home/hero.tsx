@@ -43,8 +43,8 @@ export function Hero({ dict }: { dict: Dictionary }) {
           className="enter lit-frame relative mt-8 w-full min-h-[240px] flex-1 overflow-hidden px-4 pt-8 sm:px-8"
           style={{
             "--d": "240ms",
-            maskImage: "linear-gradient(to bottom, #000 82%, transparent)",
-            WebkitMaskImage: "linear-gradient(to bottom, #000 82%, transparent)",
+            maskImage: "linear-gradient(to bottom, var(--p-ink) 82%, transparent)",
+            WebkitMaskImage: "linear-gradient(to bottom, var(--p-ink) 82%, transparent)",
           } as React.CSSProperties}
         >
           <OpsWindow t={t.window} />

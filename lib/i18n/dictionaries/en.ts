@@ -106,6 +106,7 @@ export const en: Dictionary = {
         tag: "Track 01 · Ready-made",
         title: "IA-ZR Control ecosystem",
         audience: "For practices, clinics and shops. Running in days.",
+        clients: "Running at Zolaris Ingeniería, Gloria Marina Romo's ontological coaching practice, Dozurcol Pasto and La Campana.",
         features: [
           { icon: "whatsapp", text: "AI agent on WhatsApp, around the clock" },
           { icon: "google-calendar", text: "Automatic booking and reminders" },
@@ -122,6 +123,7 @@ export const en: Dictionary = {
         tag: "Track 02 · Custom",
         title: "Business systems",
         audience: "For companies and institutions with their own workflows.",
+        clients: "Running at Zolaris Ingeniería: a custom CRM and HR platform wired into n8n workflows.",
         features: [
           { icon: "n8n", text: "Process automation with n8n" },
           { icon: "sap", text: "Integration with SAP and Siigo Nube" },
@@ -159,8 +161,19 @@ export const en: Dictionary = {
     ],
     ui: {
       leadTitle: "Incoming contact",
+      pending: "Pending",
+      eventPending: "Appointment in the calendar",
+      crmPending: "Record in the CRM",
+      reviewPending: "Google review",
+      time: "09:41",
+      typing: "The AI agent is typing",
+      detectRows: [
+        { label: "Received", value: "09:41:07" },
+        { label: "Detected in", value: "< 2 s" },
+        { label: "Status", value: "Detected · assigned to the AI agent" },
+      ],
       leadSource: "Source",
-      leadSources: ["WhatsApp", "NFC card"],
+      leadSources: ["WhatsApp", "IA-ZR NFC card"],
       qualifyTitle: "Qualified by the AI agent",
       chatName: "New contact",
       chatChannel: "WhatsApp",
@@ -185,6 +198,7 @@ export const en: Dictionary = {
     listLabel: "Work",
     stack: "Stack",
     screenshotAlt: "Screenshot of",
+    resultsLabel: "Verified results",
   },
   journey: {
     title: "Career",
@@ -197,7 +211,7 @@ export const en: Dictionary = {
     title: "You talk to the person who designs and builds your system",
     lead: "Iván Andrés Zúñiga Romo leads IA-ZR. Systems and Telecommunications Engineer, MBA with honours, specialist in Senior Management and in Artificial Intelligence (UNIR).",
     record:
-      "Over 7 years building products, more than 500 people trained through Talento TECH and UdeA, and {certs} international certifications from Microsoft, Huawei and Google.",
+      "Over 7 years building products, more than 500 people trained through Talento TECH and the University of Antioquia with 100% of their MVPs delivered, and {certs} verifiable international certifications from Microsoft, Google, AWS, SAP, Tableau, Adobe and Huawei.",
     rolesTitle: "Recent roles",
     portraitAlt: "Iván Andrés Zúñiga Romo, founder of IA-ZR",
     ctaCv: "Download the CV",
@@ -330,8 +344,10 @@ export const en: Dictionary = {
       "Training in engineering and business, a specialisation in AI and a career that joins technology leadership, development, data and mentoring.",
     credentialsEyebrow: "Credentials",
     credentialsTitle: "International certifications",
-    credentialsDescription: "Formal education, certifications from Microsoft, Huawei and Google, and ongoing specialisation.",
+    credentialsDescription: "Fifteen international certifications: eight Coursera professional certificates with verification codes, four Huawei HCIA and three from Google and Microsoft.",
     certificationsLabel: "International certifications",
+    verify: "Verify",
+    diplomasLabel: "Executive diplomas",
     credentialsCount: "credentials",
     continuous: [
       {

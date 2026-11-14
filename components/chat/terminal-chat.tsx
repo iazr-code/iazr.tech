@@ -166,7 +166,7 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
                   key={suggestion}
                   type="button"
                   onClick={() => submitSuggestion(suggestion)}
-                  className="btn btn--secondary !h-auto min-h-11 max-w-full !whitespace-normal !py-2.5 text-left !text-[15px]"
+                  className="btn btn--secondary !h-auto min-h-11 max-w-full !whitespace-normal !py-2.5 text-left !text-base"
                 >
                   {suggestion}
                 </button>
@@ -213,7 +213,7 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
             })}
 
             {error ? (
-              <div role="alert" className="rounded-[var(--r-md)] bg-destructive/10 px-4 py-3 text-[15px]">
+              <div role="alert" className="rounded-[var(--r-md)] bg-destructive/10 px-4 py-3 text-base">
                 <p className="font-medium text-destructive">{rateLimited ? dict.rateLimited : dict.errorTitle}</p>
                 <p className="mt-1 text-muted-foreground">
                   {dict.errorBody}{" "}

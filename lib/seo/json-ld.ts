@@ -35,7 +35,12 @@ type Person = {
   telephone: string;
   knowsAbout: string[];
   alumniOf: { "@type": "CollegeOrUniversity"; name: string }[];
-  hasCredential: { "@type": "EducationalOccupationalCredential"; name: string }[];
+  hasCredential: {
+    "@type": "EducationalOccupationalCredential";
+    name: string;
+    recognizedBy?: { "@type": "Organization"; name: string };
+    url?: string;
+  }[];
   worksFor: { "@type": "Organization"; name: string }[];
   knowsLanguage: string;
   address: { "@type": "PostalAddress"; addressCountry: string; addressLocality: string };
@@ -107,9 +112,11 @@ export function buildPersonSchema(locale: Locale): Person {
         name: localize(e.degree, locale),
       })),
       ...certifications.flatMap((group) =>
-        group.credentials.map((name) => ({
+        group.credentials.map((c) => ({
           "@type": "EducationalOccupationalCredential" as const,
-          name,
+          name: c.name,
+          recognizedBy: { "@type": "Organization" as const, name: c.issuer },
+          ...(c.verifyUrl ? { url: c.verifyUrl } : {}),
         }))
       ),
     ],

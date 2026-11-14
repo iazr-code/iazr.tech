@@ -273,7 +273,7 @@ The product-UI container used for every "it's working" proof.
 - **Panels inside:** sand-ground panels with hairline and 12 to 14px radius; data in JetBrains Mono 13px; real logos in icon tiles.
 
 ### Icon Tiles
-Real full-colour tool logos (from `public/icons`) on a paper tile: 40px square, 10px radius, 1px hairline, logo at 22px; a wide variant (56px, logo 40px) for wordmark logos. Interface concepts without a brand use one line set (Lucide, 1.75 stroke) in cobalt on the same tile. Inside lists and windows tiles shrink to 32px / 8px radius (logo 18px).
+Real full-colour tool logos (from `public/icons`) on a paper tile: 40px square, 12px radius, 1px hairline, logo at 22px; a wide variant (56px, logo 40px) for wordmark logos. Interface concepts without a brand use one line set (Lucide, 1.75 stroke) in cobalt on the same tile. Inside lists and windows tiles shrink to 32px / 8px radius (logo 18px).
 
 ### Inputs / Fields
 - **Style:** paper fill, 1px input stroke (ink 24%), 8px radius, min 48px tall, 12px by 16px padding, 16px text. Labels 14px / 500 above, 6px gap.

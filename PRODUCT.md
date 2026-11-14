@@ -71,10 +71,18 @@ Tagline: "Transformamos ideas y operaciones manuales en sistemas inteligentes qu
 ## Evidence on Hand
 
 - **9 production deployments** (`lib/data/projects.ts`, screenshots in `public/proyectos/`): Emssanar EPS, SST MedSys, Zolaris Ingeniería, La Campana, Dozurcol Pasto, Método Sonora, Paisajes Sonoros, Portafolio SST, Panini 2026.
-- **Real impact metrics** for the projects exist but **have not been supplied yet**. Until they are, do not show figures.
-- **Track 01** is already sold and running for at least one client. Which client, and whether they can be named, is not yet confirmed.
-- **Founder** (`lib/data/experience.ts`): 7+ years of experience, 500+ people trained (Talento TECH, UdeA), and a downloadable CV.
-- **Certifications: open conflict.** The data and the CV (July 2026) list 11 international certifications from Microsoft, Huawei and Google. The brief says 15 and names AWS, SAP and Tableau, which are not in the data. The site shows the count computed from `certifications` in `lib/data/experience.ts` (11) until the user confirms the missing four.
+- **Zolaris Ingeniería (flagship, verified metrics):** over 80% less time to first response with the AI assistant on WhatsApp (24/7); 100% of operational traceability centralised in the custom CRM and HR platform; 99.9% uptime for the full-stack corporate site wired into n8n.
+- **Metrics for the other 8 projects** have not been supplied. Do not show figures for them.
+- **Track 01 clients (may be named):**
+  - Zolaris Ingeniería: WhatsApp AI sales assistant, CRM and corporate site.
+  - Gloria Marina Romo's ontological coaching practice: automated booking (Calendly, Google Meet, Supabase), conversion landing and review capture.
+  - Businesses in Pasto (Dozurcol Pasto, La Campana): B2B web presence, local SEO and quick contact through NFC and QR cards and stands.
+- **Founder** (`lib/data/experience.ts`): 7+ years of experience, 500+ people trained in national programmes (Talento TECH, Universidad de Antioquia) with 100% of MVPs delivered, a sales response SLA under 24 business hours, and a downloadable CV.
+- **15 international certifications** (`certifications` in `lib/data/experience.ts`, which drives every count):
+  - 8 Coursera Professional Certificates from 2025, each with a public verification URL: Power BI PL-300, Google Cybersecurity, AWS Cloud Support, SAP Technology Consultant, Microsoft Front-End, Tableau BI, Adobe Marketing, Google Digital Marketing & E-commerce.
+  - 4 Huawei HCIA: AI, Cloud, IoT, 5G.
+  - 3 from Google and Microsoft: Google Data Analytics, Google IT Support, Azure Fundamentals.
+  - Plus executive diplomas in BPM Modelling, Human Talent Management (Universidad Mariana, 2026) and CRM Administration.
 - **Absences**: there are no publishable testimonials. Never invent testimonials, clients, figures or reviews.
 
 ## Product Principles

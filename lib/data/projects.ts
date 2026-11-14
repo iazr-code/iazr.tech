@@ -16,19 +16,48 @@ export type Project = {
   hrefLabel: Localized;
   image: string;
   year: string;
+  /** Verified results, said as sentences (never a stat strip). */
+  results?: Localized<string[]>;
 };
 
 const visit: Localized = { es: "Visitar sitio", en: "Visit site" };
 
 export const featuredProjects: Project[] = [
   {
+    id: "zolaris",
+    codename: "zolarisweb",
+    role: { es: "Asistente IA, CRM y web", en: "AI assistant, CRM and website" },
+    name: "Zolaris Ingeniería",
+    description: {
+      es: "Asistente de IA para ventas en WhatsApp, plataforma CRM y RRHH a medida y portal web corporativo integrado con n8n.",
+      en: "An AI sales assistant on WhatsApp, a custom CRM and HR platform and a corporate site wired into n8n.",
+    },
+    results: {
+      es: [
+        "Más del 80 % menos tiempo de atención inicial con el asistente de IA en WhatsApp, activo las 24 horas.",
+        "El 100 % de la trazabilidad operativa centralizada en la plataforma CRM y RRHH.",
+        "99,9 % de disponibilidad del portal web corporativo integrado con n8n.",
+      ],
+      en: [
+        "Over 80% less time to first response with the AI assistant on WhatsApp, running 24/7.",
+        "100% of operational traceability centralised in the CRM and HR platform.",
+        "99.9% uptime for the corporate site wired into n8n.",
+      ],
+    },
+    stack: ["Next.js", "Supabase", "n8n", "WhatsApp API", "IA"],
+    href: "https://zolarisweb.vercel.app/",
+    hrefLabel: visit,
+    image: "/proyectos/Zolaris.png",
+    year: "2026",
+  },
+  {
     id: "la-campana",
     codename: "lacampana.co",
     role: { es: "Web corporativa", en: "Corporate website" },
     name: "La Campana",
     description: {
-      es: "Presencia digital corporativa: identidad de marca, contenidos institucionales y estructura orientada a conversión, con rendimiento optimizado y accesibilidad auditada.",
-      en: "Corporate digital presence: brand identity, institutional content and a conversion-oriented structure, with optimized performance and audited accessibility.",
+      es: "Presencia web B2B con identidad de marca y estructura orientada a conversión, posicionamiento SEO local y contacto rápido con tarjetas y stands NFC y QR.",
+      en: "B2B web presence with brand identity and a conversion-led structure, local SEO and quick contact through NFC and QR cards and stands.",
     },
     stack: ["Next.js", "Tailwind CSS", "SEO"],
     href: "https://lacampana.co/",
@@ -72,8 +101,8 @@ export const featuredProjects: Project[] = [
     role: { es: "Sitio comercial", en: "Commercial site" },
     name: "Dozurcol Pasto",
     description: {
-      es: "Sitio comercial para la sede Pasto de Dozurcol: catálogo de productos, contacto y generación de confianza para venta B2B regional.",
-      en: "Commercial site for Dozurcol's Pasto branch: product catalog, contact and trust-building for regional B2B sales.",
+      es: "Sitio comercial para la sede Pasto de Dozurcol: catálogo B2B, posicionamiento SEO local y contacto rápido con tarjetas y stands NFC y QR.",
+      en: "Commercial site for Dozurcol's Pasto branch: a B2B catalogue, local SEO and quick contact through NFC and QR cards and stands.",
     },
     stack: ["Next.js", "Tailwind CSS", "SEO local"],
     href: "https://dozurcol-pasto.vercel.app/",
@@ -124,21 +153,6 @@ export const featuredProjects: Project[] = [
     href: "https://metodo-sonora.vercel.app/",
     hrefLabel: visit,
     image: "/proyectos/MetodoSonora.png",
-    year: "2025",
-  },
-  {
-    id: "zolaris",
-    codename: "zolarisweb",
-    role: { es: "Web de empresa tech", en: "Tech company website" },
-    name: "Zolaris",
-    description: {
-      es: "Sitio web para una empresa de ingeniería y tecnología: servicios, casos de éxito y equipo, con arquitectura SEO y alto rendimiento.",
-      en: "Website for an engineering and technology company: services, case studies and team, with an SEO-first architecture and high performance.",
-    },
-    stack: ["Next.js", "SEO", "Analítica"],
-    href: "https://zolarisweb.vercel.app/",
-    hrefLabel: visit,
-    image: "/proyectos/Zolaris.png",
     year: "2025",
   },
   {

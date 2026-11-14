@@ -90,7 +90,7 @@ export function OpsWindow({ t }: { t: Window }) {
               >
                 <BrandIcon name={ICON[e.kind]} className="!size-8 !rounded-[8px] [&_img]:!size-[18px]" />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-medium leading-snug">{e.title}</span>
+                  <span className="block text-base font-medium leading-snug">{e.title}</span>
                   <span className="block truncate text-[14px] leading-snug text-muted-foreground">{e.detail}</span>
                 </span>
                 <span className="shrink-0 font-mono text-[13px] text-muted-foreground">{e.meta}</span>

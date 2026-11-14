@@ -22,11 +22,22 @@ export type ExperienceEntry = {
   highlights: Localized<string[]>;
 };
 
+export type Credential = {
+  name: string;
+  issuer: string;
+  /** Month and year, when the CV gives it. */
+  date?: Localized;
+  /** Skills covered, as the certificate lists them. */
+  skills?: string[];
+  /** Public verification link (Coursera), when there is one. */
+  verifyUrl?: string;
+};
+
 export type CertificationGroup = {
   id: string;
   vendor: string;
   description: Localized;
-  credentials: string[];
+  credentials: Credential[];
 };
 
 export const education: EducationEntry[] = [
@@ -72,36 +83,64 @@ export const education: EducationEntry[] = [
   },
 ];
 
-/** 11 certificaciones internacionales, agrupadas por emisor. */
+/** 15 international certifications (CV, July 2026), grouped as the CV groups them. */
 export const certifications: CertificationGroup[] = [
   {
-    id: "microsoft",
-    vendor: "Microsoft",
+    id: "coursera-2025",
+    vendor: "Coursera · Professional Certificates 2025",
     description: {
-      es: "Credenciales de analítica de datos, desarrollo web y fundamentos de nube.",
-      en: "Credentials in data analytics, web development and cloud fundamentals.",
+      es: "Ocho certificados profesionales de 2025, cada uno con su código de verificación público.",
+      en: "Eight professional certificates from 2025, each with a public verification code.",
     },
-    credentials: ["Power BI Data Analyst", "Front-End Developer", "Azure Fundamentals"],
+    credentials: [
+      { name: "Microsoft Power BI Data Analyst", issuer: "Microsoft", date: { es: "Abr 2025", en: "Apr 2025" }, skills: ["ETL", "Star Schema", "DAX", "PL-300"], verifyUrl: "https://coursera.org/verify/professional-cert/OGENW8NNWKSA" },
+      { name: "Google Cybersecurity", issuer: "Google", date: { es: "May 2025", en: "May 2025" }, skills: ["Python", "Linux", "SQL", "SIEM", "IDS"], verifyUrl: "https://coursera.org/verify/professional-cert/6DB5RJDOGQOC" },
+      { name: "AWS Cloud Support Associate", issuer: "Amazon Web Services", date: { es: "May 2025", en: "May 2025" }, skills: ["AWS", "Serverless", "Python"], verifyUrl: "https://coursera.org/verify/professional-cert/01ATSFNKF133" },
+      { name: "SAP Technology Consultant", issuer: "SAP", date: { es: "May 2025", en: "May 2025" }, skills: ["ERP", "SAP"], verifyUrl: "https://coursera.org/verify/professional-cert/D7CS4ACWU4Q1" },
+      { name: "Microsoft Front-End Developer", issuer: "Microsoft", date: { es: "Jun 2025", en: "Jun 2025" }, skills: ["HTML/CSS/JS", "C#", "Blazor", "UI/UX"], verifyUrl: "https://coursera.org/verify/professional-cert/B7A9JPMJ5EAJ" },
+      { name: "Tableau Business Intelligence Analyst", issuer: "Tableau", date: { es: "Jul 2025", en: "Jul 2025" }, skills: ["Dashboards", "Data Storytelling"], verifyUrl: "https://coursera.org/verify/professional-cert/WKOWYEDBT7WZ" },
+      { name: "Adobe Marketing Specialist", issuer: "Adobe", date: { es: "Jul 2025", en: "Jul 2025" }, skills: ["Generative AI", "SEO", "Automation"], verifyUrl: "https://coursera.org/verify/professional-cert/KEGL6MRPQRXD" },
+      { name: "Google Digital Marketing & E-commerce", issuer: "Google", date: { es: "Jul 2025", en: "Jul 2025" }, skills: ["SEO/SEM", "Web Analytics", "E-commerce"], verifyUrl: "https://coursera.org/verify/professional-cert/GYMN9S3HIV04" },
+    ],
   },
   {
     id: "huawei",
-    vendor: "Huawei",
+    vendor: "Huawei · HCIA",
     description: {
-      es: "Certificaciones oficiales HCIA en inteligencia artificial, nube, IoT y 5G.",
-      en: "Official HCIA certifications in artificial intelligence, cloud, IoT and 5G.",
+      es: "Certificaciones oficiales Huawei Certified ICT Associate en IA, nube, IoT y 5G.",
+      en: "Official Huawei Certified ICT Associate certifications in AI, cloud, IoT and 5G.",
     },
-    credentials: ["HCIA — Artificial Intelligence V3.5", "HCIA — Cloud Service", "HCIA — IoT V3.0", "HCIA — 5G V2.0"],
+    credentials: [
+      { name: "HCIA — Artificial Intelligence V3.5", issuer: "Huawei" },
+      { name: "HCIA — Cloud Service", issuer: "Huawei" },
+      { name: "HCIA — IoT V3.0", issuer: "Huawei" },
+      { name: "HCIA — 5G V2.0", issuer: "Huawei" },
+    ],
   },
   {
-    id: "google",
-    vendor: "Google",
+    id: "google-microsoft",
+    vendor: "Google · Microsoft",
     description: {
-      es: "Certificados profesionales de Google en ciberseguridad, soporte, datos y marketing digital.",
-      en: "Google professional certificates in cybersecurity, IT support, data and digital marketing.",
+      es: "Credenciales de analítica de datos, soporte TI y fundamentos de nube.",
+      en: "Credentials in data analytics, IT support and cloud fundamentals.",
     },
-    credentials: ["Cybersecurity Professional", "IT Support Professional", "Data Analytics", "Digital Marketing & E-commerce"],
+    credentials: [
+      { name: "Google Data Analytics", issuer: "Google" },
+      { name: "Google IT Support", issuer: "Google" },
+      { name: "Microsoft Certified: Azure Fundamentals", issuer: "Microsoft" },
+    ],
   },
 ];
+
+/** Executive diplomas that complement the certifications. */
+export const diplomas: Localized[] = [
+  { es: "Diplomado en Modelamiento BPM (Colombia–España)", en: "Diploma in BPM Modelling (Colombia–Spain)" },
+  { es: "Diplomado en Gestión del Talento Humano (Universidad Mariana, 2026)", en: "Diploma in Human Talent Management (Universidad Mariana, 2026)" },
+  { es: "Diplomado en Administración CRM", en: "Diploma in CRM Administration" },
+];
+
+/** Total number of international certifications (drives every count on the site). */
+export const certificationCount = certifications.reduce((n, g) => n + g.credentials.length, 0);
 
 export const experience: ExperienceEntry[] = [
   {

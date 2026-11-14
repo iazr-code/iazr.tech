@@ -108,6 +108,7 @@ export const es = {
         tag: "Vía 01 · Producto listo",
         title: "Ecosistema IA-ZR Control",
         audience: "Para consultorios, clínicas y comercios. Funciona en días.",
+        clients: "En producción en Zolaris Ingeniería, la práctica de coaching ontológico de Gloria Marina Romo, Dozurcol Pasto y La Campana.",
         features: [
           { icon: "whatsapp", text: "Agente de IA en WhatsApp las 24 horas" },
           { icon: "google-calendar", text: "Agenda y recordatorios automáticos" },
@@ -124,6 +125,7 @@ export const es = {
         tag: "Vía 02 · A medida",
         title: "Sistemas empresariales",
         audience: "Para empresas e instituciones con flujos propios.",
+        clients: "En producción en Zolaris Ingeniería: CRM y RRHH a medida integrados con flujos n8n.",
         features: [
           { icon: "n8n", text: "Automatización de procesos con n8n" },
           { icon: "sap", text: "Integración con SAP y Siigo Nube" },
@@ -161,8 +163,19 @@ export const es = {
     ],
     ui: {
       leadTitle: "Contacto entrante",
+      pending: "Pendiente",
+      eventPending: "Cita en la agenda",
+      crmPending: "Registro en el CRM",
+      reviewPending: "Reseña en Google",
+      time: "09:41",
+      typing: "El agente de IA está escribiendo",
+      detectRows: [
+        { label: "Recibido", value: "09:41:07" },
+        { label: "Detección", value: "< 2 s" },
+        { label: "Estado", value: "Detectado · asignado al agente de IA" },
+      ],
       leadSource: "Origen",
-      leadSources: ["WhatsApp", "Tarjeta NFC"],
+      leadSources: ["WhatsApp", "Tarjeta NFC IA-ZR"],
       qualifyTitle: "Calificado por el agente de IA",
       chatName: "Nuevo contacto",
       chatChannel: "WhatsApp",
@@ -187,6 +200,7 @@ export const es = {
     listLabel: "Casos",
     stack: "Stack",
     screenshotAlt: "Captura de",
+    resultsLabel: "Resultados verificados",
   },
   journey: {
     title: "Trayectoria",
@@ -199,7 +213,7 @@ export const es = {
     title: "Hablas con quien diseña y construye tu sistema",
     lead: "Iván Andrés Zúñiga Romo dirige IA-ZR. Ingeniero de Sistemas y Telecomunicaciones, MBA con mención de honor, especialista en Alta Gerencia y en Inteligencia Artificial (UNIR).",
     record:
-      "Más de 7 años construyendo producto, más de 500 personas formadas en Talento TECH y la UdeA, y {certs} certificaciones internacionales de Microsoft, Huawei y Google.",
+      "Más de 7 años construyendo producto, más de 500 personas formadas en Talento TECH y la Universidad de Antioquia con el 100 % de los MVP entregados, y {certs} certificaciones internacionales verificables de Microsoft, Google, AWS, SAP, Tableau, Adobe y Huawei.",
     rolesTitle: "Cargos recientes",
     portraitAlt: "Iván Andrés Zúñiga Romo, fundador de IA-ZR",
     ctaCv: "Descargar CV",
@@ -336,8 +350,10 @@ export const es = {
     credentialsEyebrow: "Credenciales",
     credentialsTitle: "Certificaciones internacionales",
     credentialsDescription:
-      "Formación formal, certificaciones de Microsoft, Huawei y Google, y especialización continua.",
+      "Quince certificaciones internacionales: ocho certificados profesionales de Coursera con código de verificación, cuatro HCIA de Huawei y tres de Google y Microsoft.",
     certificationsLabel: "Certificaciones internacionales",
+    verify: "Verificar",
+    diplomasLabel: "Diplomados ejecutivos",
     credentialsCount: "credenciales",
     continuous: [
       {
