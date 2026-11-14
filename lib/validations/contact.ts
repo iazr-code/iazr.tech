@@ -23,11 +23,11 @@ export const serviceOptions = [
 ] as const;
 
 export const serviceLabels: Record<(typeof serviceOptions)[number], string> = {
-  "direccion-tecnologica": "Ecosistemas digitales & dirección tecnológica",
-  fullstack: "Desarrollo web de alto rendimiento",
-  "ia-datos": "Automatización & IA aplicada",
-  mentoria: "Mentoría & formación de equipos",
-  otro: "Otro / aún lo estoy definiendo",
+  "direccion-tecnologica": "Vía 01 · Ecosistema IA-ZR Control",
+  fullstack: "Vía 02 · Plataforma web o SaaS",
+  "ia-datos": "Vía 02 · Automatización e integraciones",
+  mentoria: "Formación de equipos",
+  otro: "Aún no lo sé",
 };
 
 export const budgetOptions = [

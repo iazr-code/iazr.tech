@@ -62,13 +62,6 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
           : { dot: "bg-success", pulse: false, label: dict.statusConnected };
   const rateLimited = Boolean(error?.message?.includes("rate_limited"));
 
-  /** Texto del badge con el modelo activo (Groq real o mock de demo). */
-  const modelLabel = modelConfig
-    ? modelConfig.demo
-      ? "demo · MockLanguageModelV4"
-      : `groq · ${modelConfig.model}`
-    : "…";
-
   // Autoscroll: sigue la última línea mientras el stream avanza.
   useEffect(() => {
     const el = scrollRef.current;
@@ -129,46 +122,17 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
   };
 
   return (
-    <div
-      data-slot="terminal-chat"
-      className="mx-auto w-full max-w-3xl overflow-hidden rounded-xl border border-border bg-terminal shadow-[0_24px_80px_-32px_rgba(0,0,0,0.8)]"
-    >
-      {/* ── Barra de título estilo macOS ─────────────────────────────── */}
-      <div className="flex h-11 items-center gap-3 border-b border-border/70 bg-secondary/40 px-4">
-        <span className="flex gap-1.5" aria-hidden="true">
-          <span className="size-3 rounded-full bg-[#ff5f57]" />
-          <span className="size-3 rounded-full bg-[#febc2e]" />
-          <span className="size-3 rounded-full bg-[#28c840]" />
+    <div data-slot="terminal-chat" className="window panel flex h-full min-h-[460px] w-full flex-col">
+      <div className="window__bar">
+        <span className="ic-tile !size-7 !rounded-[7px] bg-primary !border-0 text-[13px] font-medium text-primary-foreground" aria-hidden="true">
+          IA
         </span>
-        <p className="font-mono text-xs text-muted-foreground">
-          iazr@neural-net:{" "}
-          <span className="text-primary">~/portfolio</span>
-        </p>
-
-        {/* Indicador de estado en tiempo real: dot (conexión/stream) + modelo */}
+        <span className="text-foreground">IA-ZR</span>
         <div className="ml-auto flex items-center gap-2">
           {mounted && (
-            <span
-              title={`${modelConfig ? modelConfig.model : "…"} · ${connState.label}`}
-              className="flex min-w-0 items-center gap-1.5 rounded-md border border-border/70 bg-background/40 px-2 py-1 font-mono text-[10px] text-muted-foreground"
-            >
-              <span
-                aria-hidden="true"
-                className={cn("size-1.5 shrink-0 rounded-full", connState.dot, connState.pulse && "animate-pulse")}
-                style={
-                  connState.dot === "bg-success"
-                    ? { boxShadow: "0 0 6px var(--success)" }
-                    : undefined
-                }
-              />
-              {/* Etiqueta de estado solo en pantallas ≥ sm (en móvil basta el dot) */}
-              <span className="hidden uppercase tracking-wider sm:inline">{connState.label}</span>
-              <span aria-hidden="true" className="hidden text-muted-foreground/40 sm:inline">
-                ·
-              </span>
-              <span className="min-w-0 max-w-[150px] truncate normal-case tracking-normal text-primary">
-                {modelLabel}
-              </span>
+            <span className="flex min-w-0 items-center gap-2">
+              <span aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", connState.dot, connState.pulse && "animate-pulse")} />
+              <span className="hidden sm:inline">{connState.label}</span>
             </span>
           )}
           {mounted && (
@@ -176,58 +140,48 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
               type="button"
               onClick={clearConversation}
               aria-label={dict.reset}
-              className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground/60 transition-colors hover:bg-secondary hover:text-foreground"
+              title={dict.reset}
+              className="btn btn--secondary !h-9 !w-9 !p-0"
             >
-              <Eraser className="size-3.5" aria-hidden="true" />
+              <Eraser className="size-4" aria-hidden="true" />
             </button>
           )}
         </div>
       </div>
 
-      {/* ── Área de mensajes ─────────────────────────────────────────── */}
       <div
         ref={scrollRef}
-        className="h-[420px] overflow-y-auto px-5 py-5 font-mono text-sm leading-relaxed"
+        className="min-h-0 flex-1 overflow-y-auto px-5 py-5 max-sm:px-4"
         role="log"
         data-lenis-prevent
         aria-live="polite"
         aria-label={dict.logLabel}
       >
         {messages.length === 0 ? (
-          /* Estado vacío: invitación + chips de arranque rápido */
-          <div className="flex h-full flex-col justify-center gap-5">
-            <div>
-              <p className="text-muted-foreground">
-                <span className="text-success">$</span> ./iazr --assistant
-              </p>
-              <p className="mt-2 text-muted-foreground/80">
-                {dict.intro} <span className="caret-blink">▊</span>
-              </p>
-            </div>
-
+          <div className="flex h-full flex-col justify-end gap-5">
+            <p className="max-w-[46ch] text-muted-foreground">{dict.intro}</p>
             <div className="flex flex-wrap gap-2">
               {dict.suggestions.map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
                   onClick={() => submitSuggestion(suggestion)}
-                  className="max-w-full rounded-md border border-primary/25 bg-primary/5 px-3 py-1.5 text-left text-xs text-primary transition-colors hover:bg-primary/15"
+                  className="btn btn--secondary !h-auto min-h-11 max-w-full !whitespace-normal !py-2.5 text-left !text-[15px]"
                 >
                   {suggestion}
                 </button>
               ))}
             </div>
-
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/50">
+            <p className="text-[13px] text-muted-foreground">
               {modelConfig === null
                 ? dict.checkingModel
                 : modelConfig.demo
                   ? dict.demoNote
-                  : `// ${modelConfig.provider} · ${modelConfig.model} — ${dict.liveNote}`}
+                  : `${modelConfig.provider} · ${modelConfig.model} · ${dict.liveNote}`}
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-3">
             {messages.map((message) => {
               const text = message.parts
                 .filter((part) => part.type === "text")
@@ -236,64 +190,42 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
 
               if (message.role === "user") {
                 return (
-                  <div key={message.id} className="flex gap-3">
-                    <span aria-hidden="true" className="select-none text-primary">
-                      ➜
-                    </span>
-                    <p className="whitespace-pre-wrap text-foreground">
-                      {text}
-                    </p>
-                  </div>
+                  <p
+                    key={message.id}
+                    className="max-w-[85%] self-end whitespace-pre-wrap rounded-[14px] rounded-tr-[4px] bg-primary px-3.5 py-2.5 text-primary-foreground"
+                  >
+                    {text}
+                  </p>
                 );
               }
 
               return (
-                <div key={message.id} className="flex gap-3">
-                  <span aria-hidden="true" className="select-none text-success">
-                    iazr
-                  </span>
-                  <div className="min-w-0 flex-1 whitespace-pre-wrap text-muted-foreground/90">
-                    {text}
-                    {/* Cursor parpadeante mientras se genera la respuesta */}
-                    {isLoading && message.id === messages[messages.length - 1]?.id ? (
-                      <span className="caret-blink text-primary">▊</span>
-                    ) : null}
-                  </div>
+                <div
+                  key={message.id}
+                  className="max-w-[88%] self-start whitespace-pre-wrap rounded-[14px] rounded-tl-[4px] bg-background px-3.5 py-2.5"
+                >
+                  {text}
+                  {isLoading && message.id === messages[messages.length - 1]?.id ? (
+                    <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse rounded-sm bg-current align-[-2px]" aria-hidden="true" />
+                  ) : null}
                 </div>
               );
             })}
 
             {error ? (
-              <div
-                role="alert"
-                className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3"
-              >
-                <p className="text-xs text-destructive">
-                  {rateLimited ? dict.rateLimited : dict.errorTitle}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground/70">
+              <div role="alert" className="rounded-[var(--r-md)] bg-destructive/10 px-4 py-3 text-[15px]">
+                <p className="font-medium text-destructive">{rateLimited ? dict.rateLimited : dict.errorTitle}</p>
+                <p className="mt-1 text-muted-foreground">
                   {dict.errorBody}{" "}
-                  <a
-                    href={siteConfig.socials.email}
-                    className="text-primary underline-offset-2 hover:underline"
-                  >
+                  <a href={siteConfig.socials.email} className="link">
                     {siteConfig.author.email}
                   </a>{" "}
                   {dict.or}{" "}
-                  <a
-                    href={siteConfig.socials.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline-offset-2 hover:underline"
-                  >
+                  <a href={siteConfig.socials.whatsapp} target="_blank" rel="noopener noreferrer" className="link">
                     WhatsApp
                   </a>
                 </p>
-                <button
-                  type="button"
-                  onClick={clearError}
-                  className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60 hover:text-primary transition-colors"
-                >
+                <button type="button" onClick={clearError} className="link mt-2 text-[14px]">
                   {dict.retry}
                 </button>
               </div>
@@ -302,47 +234,33 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
         )}
       </div>
 
-      {/* ── Línea de entrada ─────────────────────────────────────────── */}
       <form
         onSubmit={(event) => {
           event.preventDefault();
           submit(input);
         }}
-        className="flex items-center gap-2 border-t border-border/70 bg-secondary/20 px-4 py-3"
+        className="flex items-center gap-2 border-t border-border p-3"
       >
-        <span aria-hidden="true" className="select-none font-mono text-primary">
-          $
-        </span>
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           maxLength={2000}
           placeholder={dict.placeholder}
           aria-label={dict.inputLabel}
-          className="h-9 flex-1 bg-transparent font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground/50"
+          className="h-12 min-w-0 flex-1 rounded-[var(--r-sm)] border border-input bg-background px-4 text-base outline-none transition-colors duration-150 focus-visible:border-primary"
         />
         {isLoading ? (
-          <button
-            type="button"
-            onClick={stop}
-            aria-label={dict.stop}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-destructive/40 text-destructive transition-colors hover:bg-destructive/10"
-          >
-            <Square className="size-3.5" aria-hidden="true" />
+          <button type="button" onClick={stop} aria-label={dict.stop} className="btn btn--secondary !h-12 !w-12 shrink-0 !p-0">
+            <Square className="size-4" aria-hidden="true" />
           </button>
         ) : (
           <button
             type="submit"
             disabled={!input.trim()}
             aria-label={dict.send}
-            className={cn(
-              "inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10 text-primary transition-all",
-              input.trim()
-                ? "hover:bg-primary/20 hover:shadow-[0_0_18px_-4px_var(--primary)]"
-                : "opacity-40"
-            )}
+            className="btn btn--primary !h-12 !w-12 shrink-0 !p-0 disabled:opacity-40"
           >
-            <Send className="size-3.5" aria-hidden="true" />
+            <Send className="size-4" aria-hidden="true" />
           </button>
         )}
       </form>

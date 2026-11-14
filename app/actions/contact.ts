@@ -45,29 +45,29 @@ function autoReply(locale: Locale, name: string, service: string) {
       ? [
           `Hola ${name}:`,
           "",
-          `Recibí tu solicitud (${service}). Gracias por tu interés en trabajar con IAZR.`,
+          `Recibimos tu solicitud (${service}). Gracias por tu interés en trabajar con IA-ZR.`,
           "",
-          "La revisaré y te responderé con un plan concreto en menos de 24 horas hábiles (GMT-5).",
+          "La revisamos y te respondemos con un plan concreto en menos de 24 horas hábiles (GMT-5).",
           "",
-          `Si es urgente, escríbeme a ${email} o por WhatsApp ${whatsappDisplay}.`,
+          `Si es urgente, escríbenos a ${email} o por WhatsApp al ${whatsappDisplay}.`,
           "",
           "Saludos,",
-          `${author} — IAZR`,
+          `${author} — IA-ZR`,
         ]
       : [
           `Hi ${name},`,
           "",
-          `I received your request (${service}). Thanks for your interest in working with IAZR.`,
+          `We received your request (${service}). Thanks for your interest in working with IA-ZR.`,
           "",
-          "I will review it and reply with a concrete plan within one business day (GMT-5).",
+          "We will review it and reply with a concrete plan within 24 business hours (GMT-5).",
           "",
-          `If it is urgent, email me at ${email} or message me on WhatsApp at ${whatsappDisplay}.`,
+          `If it is urgent, email us at ${email} or message us on WhatsApp at ${whatsappDisplay}.`,
           "",
           "Best regards,",
-          `${author} — IAZR`,
+          `${author} — IA-ZR`,
         ];
   return {
-    subject: locale === "es" ? "✓ Solicitud recibida — IAZR" : "✓ Request received — IAZR",
+    subject: locale === "es" ? "Solicitud recibida — IA-ZR" : "Request received — IA-ZR",
     text: lines.join("\n"),
   };
 }
@@ -186,7 +186,7 @@ export async function submitContact(
         from,
         to: siteConfig.author.email,
         replyTo: data.email,
-        subject: `[IAZR] Solicitud: ${service} — ${data.name}`,
+        subject: `[IA-ZR] Solicitud: ${service} — ${data.name}`,
         text: [
           `Nombre: ${data.name}`,
           `Correo: ${data.email}`,

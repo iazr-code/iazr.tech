@@ -73,7 +73,8 @@ Tagline: "Transformamos ideas y operaciones manuales en sistemas inteligentes qu
 - **9 production deployments** (`lib/data/projects.ts`, screenshots in `public/proyectos/`): Emssanar EPS, SST MedSys, Zolaris Ingeniería, La Campana, Dozurcol Pasto, Método Sonora, Paisajes Sonoros, Portafolio SST, Panini 2026.
 - **Real impact metrics** for the projects exist but **have not been supplied yet**. Until they are, do not show figures.
 - **Track 01** is already sold and running for at least one client. Which client, and whether they can be named, is not yet confirmed.
-- **Founder** (`lib/data/experience.ts`, `education.ts`, `certifications.ts`): 7+ years of experience, 500+ people trained (Talento TECH, UdeA), 15 international certifications (AWS, Power BI, cybersecurity, SAP, Tableau), and a downloadable CV.
+- **Founder** (`lib/data/experience.ts`): 7+ years of experience, 500+ people trained (Talento TECH, UdeA), and a downloadable CV.
+- **Certifications: open conflict.** The data and the CV (July 2026) list 11 international certifications from Microsoft, Huawei and Google. The brief says 15 and names AWS, SAP and Tableau, which are not in the data. The site shows the count computed from `certifications` in `lib/data/experience.ts` (11) until the user confirms the missing four.
 - **Absences**: there are no publishable testimonials. Never invent testimonials, clients, figures or reviews.
 
 ## Product Principles

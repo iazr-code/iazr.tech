@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { GeistSans } from "geist/font/sans";
+import { Host_Grotesk } from "next/font/google";
 import localFont from "next/font/local";
 
 import { siteConfig } from "@/lib/data/site";
@@ -15,15 +15,15 @@ import { BookingDrawer } from "@/components/booking/booking-drawer";
 import "./globals.css";
 
 /**
- * TIPOGRAFÍA — Sistema restringido de 2 familias.
- *
- * · GeistSans: importado del paquete oficial `geist` de Vercel.
- *   No requiere Google Fonts en build time — las fuentes viajan con node_modules.
- *   Expone la variable CSS --font-geist-sans que el @theme de globals.css consume.
- * · JetBrains Mono: cargado como fuente local desde @fontsource/jetbrains-mono
- *   para evitar depéndencia de red en build time. Expone --font-jetbrains-mono.
+ * Typography: Host Grotesk (display and text, dealt by Taste) and JetBrains
+ * Mono (data inside UI windows only).
  */
-const geist = GeistSans;
+const host = Host_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-host",
+  display: "swap",
+});
 
 const jetbrainsMono = localFont({
   src: [
@@ -50,6 +50,11 @@ const jetbrainsMono = localFont({
  *   compone como "%s | IAZR · Director Tecnológico & Full-Stack",
  *   previniendo títulos duplicados o genéricos ante Googlebot.
  */
+export const viewport: Viewport = {
+  themeColor: "#e6dbc7",
+  colorScheme: "light",
+};
+
 export const metadata: Metadata = {
   /**
    * metadataBase: ancla TODAS las URLs relativas (og:image, canonical, etc.) al
@@ -89,7 +94,7 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
-      { rel: "mask-icon", url: "/favicon.svg", color: "#00E5FF" },
+      { rel: "mask-icon", url: "/favicon.svg", color: "#062b8a" },
     ],
   },
   manifest: "/site.webmanifest",
@@ -122,7 +127,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/png",
-        alt: `${siteConfig.name} — Director Tecnológico · Full-Stack Developer · Mentor Tech`,
+        alt: `${siteConfig.name} — IA y automatización para empresas`,
       },
     ],
   },
@@ -156,7 +161,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${geist.variable} ${jetbrainsMono.variable}`}
+      className={`${host.variable} ${jetbrainsMono.variable}`}
+      data-buttons="tonal"
+      data-radius="soft"
     >
       <body>
         <Providers>

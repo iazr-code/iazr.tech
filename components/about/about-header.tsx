@@ -1,65 +1,39 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/data/site";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
-import { Avatar } from "@/components/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GitHubIcon, LinkedInIcon } from "@/components/icons";
+import { CV_URL } from "@/components/home/founder";
 
 export function AboutHeader({ locale, dict }: { locale: Locale; dict: Dictionary["about"] }) {
   return (
-    <header className="relative px-6 pb-16 pt-32 sm:pt-36">
-      <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
-        <Avatar src="/perfil.png" alt={dict.portraitAlt} sizeClass="size-28 sm:size-32" priority className="mb-7" />
-
-        <Badge variant="terminal" className="max-w-[92vw] whitespace-normal px-4 py-1.5 text-center text-xs leading-snug">
-          <span className="size-1.5 shrink-0 rounded-full bg-success shadow-[0_0_8px_var(--success)]" />
-          {dict.badge}
-        </Badge>
-
-        <p className="mt-7 font-mono text-sm uppercase tracking-[0.5em] text-muted-foreground">$ whoami --verbose</p>
-        <h1 className="mt-3 font-display text-5xl font-bold tracking-tight sm:text-6xl">
-          IAZR<span className="text-primary">_</span>
-        </h1>
-        <p className="mt-3 font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          {siteConfig.author.name}
-        </p>
-
-        <p className="mt-4 inline-flex items-center gap-2 rounded-md border border-success/30 bg-success/5 px-3 py-1 font-mono text-xs text-success">
-          <span className="size-1.5 rounded-full bg-success shadow-[0_0_8px_var(--success)]" />
-          {dict.available} {siteConfig.timezoneShort}
-        </p>
-
-        <p className="mt-6 max-w-2xl text-pretty leading-relaxed text-muted-foreground">{dict.lead}</p>
-
-        <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button variant="cyber" size="lg" asChild>
-            <Link href={`/${locale}#proyectos`}>{dict.ctaProjects}</Link>
-          </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link href={`/${locale}#contacto`}>{dict.ctaContact}</Link>
-          </Button>
-          <div className="mt-2 flex items-center justify-center gap-3 sm:ml-1 sm:mt-0">
-            <a
-              href={siteConfig.socials.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="inline-flex size-11 items-center justify-center rounded-md border border-white/15 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-            >
-              <GitHubIcon className="size-4" />
-            </a>
-            <a
-              href={siteConfig.socials.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="inline-flex size-11 items-center justify-center rounded-md border border-white/15 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-            >
-              <LinkedInIcon className="size-4" />
-            </a>
+    <header className="pb-24 pt-[calc(var(--nav)+64px)] max-sm:pb-16 max-sm:pt-[calc(var(--nav)+40px)]">
+      <div className="wrap grid gap-10 lg:grid-cols-12">
+        <div className="flex flex-col lg:col-span-7">
+          <p className="t-label inline-flex self-start rounded-full bg-secondary px-3 py-1.5 text-[14px]">{dict.badge}</p>
+          <h1 className="t-h1 mt-5">{siteConfig.author.name} Romo</h1>
+          <p className="t-lead mt-5 measure">{dict.lead}</p>
+          <div className="btn-row btn-row--stack mt-8">
+            <Button asChild>
+              <Link href={`/${locale}#contacto`}>{dict.ctaContact}</Link>
+            </Button>
+            <Button variant="secondary" asChild>
+              <a href={CV_URL} target="_blank" rel="noopener noreferrer">
+                CV
+              </a>
+            </Button>
+            <Link href={`/${locale}#casos`} className="link ml-2 max-sm:ml-0 max-sm:self-start">
+              {dict.ctaProjects}
+            </Link>
+          </div>
+        </div>
+        <div className="lg:col-span-4 lg:col-start-9">
+          <div className="w-full max-w-[302px] rounded-[var(--r-lg)] bg-surface p-3">
+          <div className="relative aspect-square overflow-hidden rounded-[var(--r-md)]">
+            <Image src="/perfil.png" alt={dict.portraitAlt} fill priority sizes="278px" className="object-cover" />
+            </div>
           </div>
         </div>
       </div>

@@ -9,11 +9,11 @@
 
 export const siteConfig = {
   /** Marca visible y apéndice del patrón title.template de SEO */
-  name: "IAZR",
+  name: "IA-ZR",
   /** Título por defecto de la landing (sin plantilla aplicada) */
-  title: "IAZR — Director Tecnológico · Full-Stack Developer · Mentor Tech",
+  title: "IA-ZR — IA y automatización para empresas",
   description:
-    "Iván Andrés Zúñiga — Director Tecnológico, Full-Stack Developer y Mentor Tech. Ingeniero de Sistemas y Telecomunicaciones, Magíster en Administración y Especialista en Inteligencia Artificial (UNIR). Transformación digital, plataformas web, IA aplicada y formación tecnológica. 7+ años, 11 certificaciones internacionales.",
+    "IA-ZR diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
   /** metadataBase: todas las URLs relativas de SEO/OG se resuelven contra este origen */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://portafolio-iazr.vercel.app",
   ogImage: "/og.png",
@@ -21,6 +21,11 @@ export const siteConfig = {
   // Cast explícito: `as const` (del objeto contenedor) haría el tuple readonly
   // e incompatible con el tipo string[] que exige la API de Metadatos de Next.
   keywords: [
+    "IA-ZR",
+    "iazr.tech",
+    "Agente de IA WhatsApp",
+    "Automatización n8n",
+    "NFC",
     "IAZR",
     "Iván Andrés Zúñiga",
     "Director Tecnológico",
@@ -66,6 +71,7 @@ export const siteConfig = {
   socials: {
     github: "https://github.com/andreszuniga96",
     linkedin: "https://www.linkedin.com/in/iazr96/",
+    instagram: "https://www.instagram.com/iazr.tech/",
     email: "mailto:iazr.code@gmail.com",
     whatsapp: "https://wa.me/573229132643",
   },

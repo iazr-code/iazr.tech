@@ -47,13 +47,15 @@ void main() {
   gl_PointSize = min(uSize * uPixelRatio * (0.55 + aSeed * 0.9) * (1.0 / -mv.z), 14.0 * uPixelRatio);
 
   vMix = clamp(length(p) / 2.6 + flow.y * 0.25, 0.0, 1.0);
-  vAlpha = (1.0 - burst * 0.85) * (0.45 + aSeed * 0.55);
+  vAlpha = (1.0 - burst * 0.9) * (0.85 + aSeed * 0.15);
 }
 `;
 
 export const entityFragment = /* glsl */ `
 uniform vec3 uColorA;
 uniform vec3 uColorB;
+// Bottom fade of the hero frame, in drawing-buffer px: x = frame bottom, y = fade height.
+uniform vec2 uFade;
 
 varying float vMix;
 varying float vAlpha;
@@ -62,9 +64,12 @@ void main() {
   vec2 uv = gl_PointCoord - 0.5;
   float d = length(uv);
   if (d > 0.5) discard;
-  float core = smoothstep(0.5, 0.0, d);
-  float glow = pow(core, 2.2);
+  // Ink dots on a light ground: normal blending, a soft round edge, no glow.
+  float dot = smoothstep(0.5, 0.38, d);
+  float fade = smoothstep(uFade.x, uFade.x + uFade.y, gl_FragCoord.y);
   vec3 color = mix(uColorA, uColorB, vMix);
-  gl_FragColor = vec4(color * (0.6 + glow * 1.6), glow * vAlpha);
+  float a = dot * vAlpha * fade;
+  // Premultiplied output: the canvas composites premultiplied alpha.
+  gl_FragColor = vec4(color * a, a);
 }
 `;

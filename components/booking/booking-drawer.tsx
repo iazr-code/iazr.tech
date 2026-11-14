@@ -37,22 +37,22 @@ export function BookingDrawer() {
       aria-labelledby="booking-title"
       onClose={() => open && closeBooking()}
       onClick={(e) => e.target === e.currentTarget && closeBooking()}
-      className="booking-drawer m-0 ml-auto h-dvh max-h-none w-full max-w-xl border-l border-white/10 bg-background/95 p-0 text-foreground backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="booking-drawer m-0 ml-auto h-dvh max-h-none w-full max-w-xl border-l border-border bg-background p-0 text-foreground"
     >
       {open ? (
         <div className="flex h-full flex-col">
-          <header className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+          <header className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
             <div>
-              <h2 id="booking-title" className="font-display text-xl font-semibold tracking-tight">
+              <h2 id="booking-title" className="font-display text-xl font-medium tracking-[-0.015em]">
                 {t.title}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t.description}</p>
+              <p className="mt-1 text-muted-foreground">{t.description}</p>
             </div>
             <button
               type="button"
               onClick={closeBooking}
               aria-label={t.close}
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-white/15 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+              className="btn btn--secondary size-11 shrink-0 !p-0"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -69,22 +69,22 @@ export function BookingDrawer() {
           ) : (
             <div className="flex flex-1 flex-col gap-4 px-6 py-8">
               <p className="font-medium">{t.fallbackTitle}</p>
-              <p className="text-sm text-muted-foreground">{t.fallbackBody}</p>
-              <a href={siteConfig.socials.email} className="glass-panel flex items-center gap-3 rounded-xl p-4 transition-colors hover:border-primary/50">
+              <p className="text-muted-foreground">{t.fallbackBody}</p>
+              <a href={siteConfig.socials.email} className="card flex min-h-14 items-center gap-3 rounded-[var(--r-md)] p-4 transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--p-ink)_10%,var(--p-surface))]">
                 <Mail className="size-5 text-primary" aria-hidden="true" />
-                <span className="font-mono text-sm">{siteConfig.author.email}</span>
+                <span className="text-base">{siteConfig.author.email}</span>
               </a>
               <a
                 href={siteConfig.socials.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass-panel flex items-center gap-3 rounded-xl p-4 transition-colors hover:border-primary/50"
+                className="card flex min-h-14 items-center gap-3 rounded-[var(--r-md)] p-4 transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--p-ink)_10%,var(--p-surface))]"
               >
                 <WhatsAppIcon className="size-5 text-primary" aria-hidden="true" />
-                <span className="font-mono text-sm">{siteConfig.author.whatsappDisplay}</span>
+                <span className="text-base">{siteConfig.author.whatsappDisplay}</span>
               </a>
-              <a href={`/${locale}#contacto`} onClick={closeBooking} className="mt-2 text-sm text-primary underline-offset-4 hover:underline">
-                {t.fallbackForm} →
+              <a href={`/${locale}#contacto`} onClick={closeBooking} className="link mt-2 self-start">
+                {t.fallbackForm}
               </a>
             </div>
           )}

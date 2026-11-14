@@ -22,13 +22,15 @@ export const SOUND_PREF_KEY = "iazr.sound";
 
 const MASTER_LEVEL = 0.18;
 
-/** Acorde (Hz) por escena: Dm9 → Fmaj7 → Am7 → Cmaj9 → Em7 → Dsus2 (registro grave). */
+/** Chord (Hz) per scene, low register: Dm9, Fmaj7, Am7, Cmaj9, Am7, Em7, Cmaj9, Dsus2. */
 const CHORDS: Record<SceneId, [number, number, number]> = {
   hero: [146.83, 220.0, 329.63],
-  services: [174.61, 261.63, 329.63],
+  problem: [174.61, 261.63, 329.63],
+  tracks: [110.0, 196.0, 261.63],
+  flow: [130.81, 246.94, 293.66],
   projects: [110.0, 196.0, 261.63],
-  journey: [130.81, 246.94, 293.66],
   chat: [164.81, 246.94, 293.66],
+  founder: [130.81, 246.94, 293.66],
   contact: [146.83, 220.0, 329.63],
 };
 

@@ -36,3 +36,10 @@ Thumbs.db
 # Herramientas locales
 .freebuff/
 .superpowers/
+
+# Taste skill run state
+.taste-skill/
+
+# Isolated build folder for a second local server
+/.next-preview/
+/.next-verify/

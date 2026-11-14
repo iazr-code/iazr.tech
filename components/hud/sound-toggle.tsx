@@ -78,8 +78,8 @@ export function SoundToggle({ labelOn, labelOff, hint }: { labelOn: string; labe
       aria-label={on ? labelOff : labelOn}
       title={on ? labelOff : suggest ? hint : labelOn}
       className={cn(
-        "relative inline-flex size-9 items-center justify-center rounded-full border border-white/15 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary",
-        on && "border-primary/50 text-primary"
+        "btn btn--secondary relative size-11 !p-0",
+        on && "text-foreground"
       )}
     >
       {on ? <Volume2 className="size-4" aria-hidden="true" /> : <VolumeX className="size-4" aria-hidden="true" />}

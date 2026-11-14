@@ -92,7 +92,7 @@ describe("system prompt", () => {
     expect(esPrompt).toContain("Responde en español");
     expect(esPrompt).toContain("Ese detalle de implementación no es negociable");
     // Regla prioritaria (antes de cualquier otra) y sin horarios inventados.
-    expect(esPrompt.indexOf("frase fija")).toBeLessThan(esPrompt.indexOf("## IDENTIDAD VERIFICADA"));
+    expect(esPrompt.indexOf("frase fija")).toBeLessThan(esPrompt.indexOf("## FUNDADOR"));
     expect(esPrompt).toContain("No inventes horarios");
     expect(enPrompt).toContain("That implementation detail is not negotiable");
   });

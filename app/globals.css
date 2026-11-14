@@ -1,108 +1,88 @@
 /*
- * ═══════════════════════════════════════════════════════════════════════════════
- *  GLOBALS.CSS — Núcleo del Sistema de Diseño IAZR
- *  Tailwind CSS v4 · CSS-first · Espacio de color OKLCH
- * ═══════════════════════════════════════════════════════════════════════════════
- *
- *  ¿POR QUÉ Tailwind v4 aquí y no un tailwind.config.js?
- *  -----------------------------------------------------
- *  En v4 la configuración temática se declara de forma nativa en CSS mediante la
- *  directiva `@theme`. Esto elimina la capa de configuración JavaScript (prohibida
- *  por la especificación del proyecto), permite que el motor (Lightning CSS,
- *  escrito en Rust) componga solo las utilidades realmente usadas y centraliza
- *  todo el "design system" en un único archivo auditable.
- *
- *  ¿POR QUÉ OKLCH?
- *  ---------------
- *  OKLCH es un espacio de color perceptualmente uniforme: mover el canal de
- *  luminosidad (L) produce cambios de contraste matemáticamente consistentes sin
- *  alterar la saturación percibida. Esto garantiza contraste WCAG AA/AAA en ambos
- *  modos (claro/oscuro) al manipular únicamente un token, algo imposible de
- *  predecir con HSL. El cian eléctrico del acento se define con tono ~200°.
+ * IA-ZR — design system (cobalt on sand).
+ * One system per page: one ink, one accent, one radius scale, one button pair,
+ * one hairline, one section box. Tokens are written once on :root; Tailwind
+ * reads them through @theme inline.
  */
 
 @import "tailwindcss";
 
-/*
- * Variante `dark` por clase: activa los tokens oscuros cuando el ancestro lleva
- * la clase `.dark` (gestionada por next-themes). Sin esta directiva, Tailwind v4
- * solo conoce `prefers-color-scheme`; con ella respetamos el toggle del usuario.
- */
-@custom-variant dark (&:is(.dark *));
-
-/* ─────────────────────────────────────────────────────────────────────────────
- *  TOKENS DE MODO CLARO (por defecto del navegador)
- * ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: oklch(0.975 0.003 252);
-  --foreground: oklch(0.21 0.025 252);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.025 252);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.025 252);
-  --primary: oklch(0.52 0.165 214);
-  --primary-foreground: oklch(0.985 0.003 252);
-  --secondary: oklch(0.945 0.01 252);
-  --secondary-foreground: oklch(0.28 0.03 252);
-  --muted: oklch(0.945 0.01 252);
-  --muted-foreground: oklch(0.5 0.025 252);
-  --accent: oklch(0.62 0.21 293);
-  --accent-foreground: oklch(0.985 0.003 252);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.985 0.003 252);
-  --border: oklch(0.88 0.015 252);
-  --input: oklch(0.88 0.015 252);
-  --ring: oklch(0.52 0.165 214);
+  /* Palette dealt by Taste (cobalt-on-sand, two-tone). */
+  --p-bg: #e6dbc7;
+  --p-surface: #ddd0b9;
+  --p-paper: #f0e8da;
+  --p-ink: #062b8a;
+  --p-muted: #3253a4;
+  --p-inv-bg: #062b8a;
+  --p-inv-surface: #153a90;
+  --p-inv-ink: #e6dbc7;
+  --p-inv-muted: #b8c2dc;
 
-  /* Extras semánticos del ecosistema IAZR */
-  --cyan-glow: oklch(0.62 0.19 205);
-  --terminal-bg: oklch(0.16 0.02 252);
-  --success: oklch(0.68 0.16 150);
-  --warning: oklch(0.78 0.15 85);
+  /* Semantic tokens (components read these). */
+  --background: var(--p-bg);
+  --foreground: var(--p-ink);
+  --card: var(--p-surface);
+  --card-foreground: var(--p-ink);
+  --popover: var(--p-paper);
+  --popover-foreground: var(--p-ink);
+  --primary: var(--p-ink);
+  --primary-foreground: var(--p-bg);
+  --secondary: color-mix(in oklab, var(--p-ink) 8%, var(--p-bg));
+  --secondary-foreground: var(--p-ink);
+  --muted: var(--p-surface);
+  --muted-foreground: var(--p-muted);
+  --accent: var(--p-ink);
+  --accent-foreground: var(--p-bg);
+  --destructive: #9f2a1c;
+  --destructive-foreground: var(--p-bg);
+  --success: #1c6a3e;
+  --warning: #8a5a00;
+  --border: color-mix(in oklab, var(--p-ink) 14%, transparent);
+  --input: color-mix(in oklab, var(--p-ink) 24%, transparent);
+  --ring: var(--p-ink);
+  --line: color-mix(in oklab, var(--p-ink) 14%, transparent);
+  --line-strong: color-mix(in oklab, var(--p-ink) 28%, transparent);
+
+  /* Rhythm (desktop / phone). */
+  --nav: 72px;
+  --padt: 120px;
+  --padb: 72px;
+  --gut: 80px;
+  --hpadb: 64px;
+
+  /* Type scale. */
+  --t-h1: clamp(40px, 2.75vw + 32px, 72px);
+  --t-h2: clamp(30px, 1.4vw + 24px, 48px);
+  --t-h3: clamp(22px, 0.5vw + 20px, 28px);
+  --t-lead: clamp(18px, 0.2vw + 17px, 20px);
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-label: 13px;
+  --display-weight: 500;
+  --display-tracking: -0.035em;
+
+  /* Radius (soft). */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-btn: 8px;
+  --btn-h: 44px;
+
+  /* Motion: exponential ease-out; quick in, slower out. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --m-in: 160ms;
+  --m-out: 260ms;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- *  TOKENS DE MODO OSCURO — Estética LINEAR (neuroestética 2026).
- *  · surface-base fijo en #080A0A (nunca negro absoluto: evita fatiga OLED).
- *  · Elevaciones por capas: tarjetas/popovers son fracciones más claras.
- *  · Bordes de 1px al 10% de opacidad (rgba(255,255,255,0.10)): ilusión de
- *    paneles de hardware retroiluminados.
- *  · Acentos fríos bioluminiscentes: cian técnico (H≈195) + violeta como
- *    acento secundario. Texto primario con contraste WCAG 2.2 AA (> 4.5:1).
- * ───────────────────────────────────────────────────────────────────────────── */
-.dark {
-  --background: #080a0a;
-  --foreground: oklch(0.95 0.004 200);
-  --card: #0c0e0e;
-  --card-foreground: oklch(0.95 0.004 200);
-  --popover: #0a0c0c;
-  --popover-foreground: oklch(0.95 0.004 200);
-  --primary: oklch(0.85 0.13 195);
-  --primary-foreground: oklch(0.16 0.03 200);
-  --secondary: #101313;
-  --secondary-foreground: oklch(0.9 0.005 200);
-  --muted: #0e1111;
-  --muted-foreground: oklch(0.72 0.008 200);
-  --accent: oklch(0.68 0.16 293);
-  --accent-foreground: oklch(0.97 0.005 200);
-  --destructive: oklch(0.68 0.18 25);
-  --destructive-foreground: oklch(0.97 0.005 200);
-  --border: rgb(255 255 255 / 0.1);
-  --input: rgb(255 255 255 / 0.1);
-  --ring: oklch(0.85 0.13 195);
-
-  --cyan-glow: oklch(0.85 0.13 195);
-  --terminal-bg: #050607;
-  --success: oklch(0.78 0.15 152);
-  --warning: oklch(0.85 0.15 88);
+@media (max-width: 1023px) {
+  :root { --gut: 48px; }
+}
+@media (max-width: 639px) {
+  :root { --nav: 56px; --padt: 96px; --padb: 48px; --gut: 24px; --hpadb: 24px; }
 }
 
-/*
- * @theme inline: expone cada token como utilidad Tailwind (bg-background,
- * text-primary, border-border...) resolviendo las variables en tiempo de uso.
- * `inline` es clave: mantiene el mapeo 1:1 con var(--*) definida arriba para que
- * el cambio de modo claro/oscuro recalcule los colores sin reconstruir CSS.
- */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -123,153 +103,66 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-cyan-glow: var(--cyan-glow);
-  --color-terminal: var(--terminal-bg);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-paper: var(--p-paper);
+  --color-surface: var(--p-surface);
+  --color-inverse: var(--p-inv-bg);
+  --color-inverse-foreground: var(--p-inv-ink);
+  --color-inverse-muted: var(--p-inv-muted);
 
-  /* ── Sistema tipográfico restringido (inyectado por next/font en <html>) ─────
-   *  · --font-sans    → Geist Sans 400–700 (fundamento geométrico general)
-   *  · --font-display → Geist Sans 600/700 (titulares y navegación)
-   *  · --font-mono    → JetBrains Mono 400/500 (código, datos, terminal)
-   *
-   *  --font-serif se mapea a Geist como red de seguridad: la clase font-serif
-   *  sigue existiendo (usada como acento itálico) sin cargar una 3.ª familia.
-   */
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-geist-sans), Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  --font-sans: var(--font-host), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-host), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Consolas, monospace;
 
-  /* ── Animaciones del ecosistema ───────────────────────────────────────── */
-  --animate-marquee: marquee var(--marquee-duration, 42s) linear infinite;
-  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 42s) linear infinite;
-  --animate-float: float 7s ease-in-out infinite;
-  --animate-float-slow: float 11s ease-in-out infinite;
-  --animate-beam-drift: beam-drift 16s ease-in-out infinite alternate;
-  --animate-aurora: aurora 22s ease-in-out infinite alternate;
-  --animate-caret: caret 1.1s steps(2, start) infinite;
-  --animate-grid-pan: grid-pan 26s linear infinite;
-  --animate-shimmer: shimmer 2.4s linear infinite;
-  --animate-pulse-glow: pulse-glow 3.4s ease-in-out infinite;
-  --animate-spin-slow: spin 14s linear infinite;
-
-  /* Keyframes declarados dentro de @theme: solo se emiten si la animación se usa */
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(-50% - var(--marquee-gap, 1rem))); }
-  }
-  @keyframes marquee-reverse {
-    from { transform: translateX(calc(-50% - var(--marquee-gap, 1rem))); }
-    to { transform: translateX(0); }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-14px); }
-  }
-  @keyframes beam-drift {
-    0% { transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1); opacity: 0.55; }
-    50% { transform: translate3d(5%, 6%, 0) rotate(6deg) scale(1.15); opacity: 0.85; }
-    100% { transform: translate3d(-2%, 3%, 0) rotate(-4deg) scale(1.05); opacity: 0.65; }
-  }
-  @keyframes aurora {
-    0% { background-position: 0% 50%; transform: rotate(0deg) scale(1); }
-    50% { background-position: 100% 50%; transform: rotate(8deg) scale(1.1); }
-    100% { background-position: 0% 50%; transform: rotate(-4deg) scale(1.05); }
-  }
-  @keyframes caret {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
-  @keyframes grid-pan {
-    from { background-position: 0 0; }
-    to { background-position: 48px 48px; }
-  }
-  @keyframes shimmer {
-    from { background-position: 200% 0; }
-    to { background-position: -200% 0; }
-  }
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 0.45; filter: blur(28px); }
-    50% { opacity: 0.9; filter: blur(40px); }
-  }
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- *  BASE — Resets y defaults del documento
- * ───────────────────────────────────────────────────────────────────────────── */
 @layer base {
-  * {
-    border-color: var(--border);
-    outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
-  }
+  *, *::before, *::after { box-sizing: border-box; border-color: var(--border); }
 
   html {
-    /* Lenis controla el scroll programáticamente; desactivamos el smooth nativo
-       para evitar doble interpolación y degradación de latencia de entrada. */
     scroll-behavior: auto;
-    /* Recorte horizontal a nivel de DOCUMENTO: los tracks de marquesina y los
-       haces del hero son más anchos que el viewport y, aunque cada contenedor
-       los recorta con overflow-hidden, sin este clip el <html> sigue siendo
-       desplazable en horizontal. `clip` (a diferencia de `hidden`) NO crea un
-       scroll container → position: sticky de las tarjetas de proyectos sigue
-       funcionando. */
+    scroll-padding-top: 0;
     overflow-x: clip;
+    background: var(--background);
+    color-scheme: light;
   }
 
   body {
-    background-color: var(--background);
+    margin: 0;
+    background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-    font-weight: 400;
+    font-size: var(--t-body);
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* Reservamos la barra de desplazamiento para evitar CLS por scrollbar */
     overflow-x: clip;
   }
 
-  /* Titulares principales → Geist Sans (solidez geométrica y precisión técnica).
-     Las utilidades explícitas (font-mono) viven en la capa utilities y
-     prevalecen sobre esta base por orden de cascada. */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    text-wrap: balance;
+    margin: 0;
   }
+  h3, h4 { letter-spacing: -0.02em; }
+  p { margin: 0; text-wrap: pretty; }
 
-  ::selection {
-    background: color-mix(in oklch, var(--primary) 30%, transparent);
-    color: var(--foreground);
-  }
+  ::selection { background: var(--p-ink); color: var(--p-bg); }
+  ::placeholder { color: color-mix(in oklab, var(--p-muted) 80%, transparent); }
+  input, textarea, select { caret-color: var(--p-ink); accent-color: var(--p-ink); }
 
-  /* Scrollbar sutil acorde a la estética cibernética */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--background);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
-    border-radius: 9999px;
-    border: 2px solid var(--background);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in oklch, var(--primary) 55%, transparent);
-  }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; border-radius: 4px; }
 
-  /* Accesibilidad: respetar la preferencia de movimiento reducido del usuario.
-     Esto garantiza que el ecosistema cinemático jamás degrade la experiencia
-     de personas con sensibilidad vestibular. */
+  html { scrollbar-color: color-mix(in oklab, var(--p-ink) 35%, transparent) var(--p-bg); scrollbar-width: thin; }
+
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -278,104 +171,173 @@
   }
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
- *  UTILIDADES CUSTOM — Patrones reutilizables del sistema
- * ───────────────────────────────────────────────────────────────────────────── */
+@layer components {
+/* ── Layout: one wrap, one section box ───────────────────────────────────── */
+.wrap { width: min(100% - 2 * var(--gut), 1280px); margin-inline: auto; position: relative; z-index: 1; }
 
-/* Rejilla técnica de fondo: líneas finas cian/neutras estilo blue-print */
-@utility bg-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--border) 55%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklch, var(--border) 55%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
-/* Máscara de desvanecimiento para marquesinas: evita cortes abruptos del track */
-@utility mask-fade-x {
-  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
-}
-
-/* Degradado de texto cian → violeta (identidad "IA" del portafolio) */
-@utility text-gradient-cyber {
-  background-image: linear-gradient(120deg, var(--primary), var(--accent) 65%, color-mix(in oklch, var(--accent) 60%, var(--primary)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Borde degradado animado: botones y tarjetas de alto impacto */
-@utility border-gradient-cyber {
+.section {
   position: relative;
-  background:
-    linear-gradient(var(--card), var(--card)) padding-box,
-    linear-gradient(120deg, var(--primary), var(--accent), var(--primary)) border-box;
-  border: 1px solid transparent;
+  padding-top: var(--padt);
+  padding-bottom: var(--padb);
+  /* Content-driven: at least one screen (or --h screens), never a fixed height, so nothing spills. */
+  min-height: 100lvh;
 }
-
-/* Cursor de terminal parpadeante */
-@utility caret-blink {
-  animation: var(--animate-caret);
-}
-
-/* Texto con brillo tipo "shimmer" para acentos mono */
-@utility text-shimmer {
-  background-image: linear-gradient(
-    110deg,
-    var(--muted-foreground) 35%,
-    var(--foreground) 50%,
-    var(--muted-foreground) 65%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: var(--animate-shimmer);
-}
-
-/* Panel translúcido sobre el Canvas: contraste AA sin tapar la escena. */
-@utility glass-panel {
-  border: 1px solid rgb(255 255 255 / 0.09);
-  background: color-mix(in oklch, var(--card) 72%, transparent);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
-}
-
-/* Drawer de agenda: <dialog> anclado a la derecha con entrada deslizante. */
-dialog.booking-drawer {
-  inset: 0 0 0 auto;
-  margin: 0;
-}
-dialog.booking-drawer[open] {
-  animation: drawer-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes drawer-in {
-  from { transform: translateX(100%); opacity: 0.4; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  dialog.booking-drawer[open] { animation: none; }
-}
-
-/* Entrada del hero en cascada (CSS puro; --d = retraso). */
-.rise {
-  animation: rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--d, 0ms);
-}
-@keyframes rise {
-  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
-  to { opacity: 1; transform: none; filter: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rise { animation: none; }
-}
-
-/* Con el mundo 3D activo en escritorio, la captura la muestra el portal 3D. */
 @media (min-width: 1024px) {
-  html[data-world="3d"] .world-fallback-shot { display: none; }
+  .section { min-height: calc(var(--h, 1) * 100svh); }
+}
+.ground-surface { background: var(--p-surface); }
+.ground-inverse {
+  background: var(--p-inv-bg);
+  color: var(--p-inv-ink);
+  --foreground: var(--p-inv-ink);
+  --muted-foreground: var(--p-inv-muted);
+  --border: color-mix(in oklab, var(--p-inv-ink) 18%, transparent);
+  --line: color-mix(in oklab, var(--p-inv-ink) 18%, transparent);
+  --line-strong: color-mix(in oklab, var(--p-inv-ink) 32%, transparent);
+  --ring: var(--p-inv-ink);
 }
 
-/* Ecualizador del botón de sonido. */
+/* ── Type ───────────────────────────────────────────────────────────────── */
+.t-h1 { font-size: var(--t-h1); line-height: 1.02; letter-spacing: -0.04em; }
+.t-h2 { font-size: var(--t-h2); line-height: 1.08; }
+.t-h3 { font-size: var(--t-h3); line-height: 1.2; }
+.t-lead { font-size: var(--t-lead); line-height: 1.5; color: var(--muted-foreground); }
+.t-label { font-size: var(--t-label); font-weight: 500; line-height: 1.3; }
+.measure { max-width: 62ch; }
+.muted { color: var(--muted-foreground); }
+
+/* ── Buttons (tonal) ────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: var(--btn-h); padding: 0 24px; border-radius: var(--r-btn); border: 1px solid transparent;
+  font: 500 16px/1 var(--font-sans); letter-spacing: 0; white-space: nowrap; cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color var(--m-out) var(--ease-out),
+    color var(--m-out) var(--ease-out),
+    transform var(--m-out) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.btn--primary { background: var(--p-ink); color: var(--p-bg); }
+.btn--secondary { background: color-mix(in oklab, var(--foreground) 8%, transparent); color: var(--foreground); }
+.ground-inverse .btn--primary { background: var(--p-inv-ink); color: var(--p-inv-bg); }
+.btn:active { transform: translateY(1px) scale(0.985); transition-duration: 90ms; }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { transform: translateY(-1px); transition-duration: var(--m-in); }
+  .btn--primary:hover { background: color-mix(in oklab, var(--p-ink) 86%, var(--p-bg)); }
+  .btn--secondary:hover { background: color-mix(in oklab, var(--foreground) 14%, transparent); }
+  .ground-inverse .btn--primary:hover { background: color-mix(in oklab, var(--p-inv-ink) 88%, var(--p-inv-bg)); }
+  .btn:active { transform: translateY(1px) scale(0.985); }
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+@media (max-width: 639px) {
+  .btn-row--stack { flex-direction: column; align-items: stretch; }
+  .btn-row--stack .btn { width: 100%; }
+}
+.btn--xl { height: clamp(64px, 1.4vw + 48px, 72px); padding-inline: 32px; font-size: clamp(18px, 0.6vw + 14px, 22px); }
+
+/* The drawn arrow: its stem grows and its head moves on hover. */
+.m-arrow { flex: none; width: 12px; height: 12px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.m-arrow__stem, .m-arrow__head { transition: transform var(--m-out) var(--ease-out); }
+.m-arrow__stem { transform-origin: 1px 6px; transform: scaleX(0.6); }
+@media (hover: hover) and (pointer: fine) {
+  :is(.btn, .link):hover .m-arrow__stem { transform: scaleX(1); transition-duration: var(--m-in); }
+  :is(.btn, .link):hover .m-arrow__head { transform: translateX(2px); transition-duration: var(--m-in); }
+}
+
+/* ── Links: an underline that draws ─────────────────────────────────────── */
+.link {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--foreground); font-weight: 500;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size var(--m-out) var(--ease-out);
+  padding-bottom: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .link:hover { background-size: 100% 1px; transition-duration: var(--m-in); }
+}
+.link:focus-visible { background-size: 100% 1px; }
+
+/* ── Surfaces ───────────────────────────────────────────────────────────── */
+.card { background: var(--p-surface); border-radius: var(--r-lg); }
+.ground-surface .card { background: var(--p-bg); }
+.window {
+  background: var(--p-paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--p-ink) 4%, transparent), 0 24px 48px -24px color-mix(in oklab, var(--p-ink) 28%, transparent);
+  overflow: hidden;
+}
+.window__bar {
+  display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px;
+  border-bottom: 1px solid var(--line); font-size: var(--t-label); font-weight: 500; color: var(--muted-foreground);
+}
+.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* A frame lit from below: the WebGL entity shows through around the window. */
+.lit-frame {
+  position: relative;
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(120% 90% at 50% 110%, color-mix(in oklab, var(--p-ink) 16%, transparent), transparent 70%),
+    color-mix(in oklab, var(--p-surface) 55%, transparent);
+  border: 1px solid var(--line);
+}
+
+/* ── Nav ────────────────────────────────────────────────────────────────── */
+.site-nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--nav);
+  background: var(--p-bg); border-bottom: 1px solid var(--line);
+}
+
+/* ── Skip link ──────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute; left: 0; top: 50%; translate: 0 -50%; z-index: 2;
+  padding: 10px 14px; border-radius: var(--r-sm); background: var(--p-ink); color: var(--p-bg);
+  font-size: var(--t-small); font-weight: 500; text-decoration: none;
+  clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; white-space: nowrap;
+}
+.skip-link:focus-visible { clip-path: none; width: auto; height: auto; overflow: visible; }
+
+/* ── Hero entrance: once on load, from an already-visible default ───────── */
+.enter { animation: enter 700ms var(--ease-out) both; animation-delay: var(--d, 0ms); }
+@keyframes enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .enter { animation: none; } }
+
+/* ── Word highlight (problem statement) ─────────────────────────────────── */
+.wh-word { color: color-mix(in oklab, var(--foreground) 42%, var(--background)); transition: color 240ms var(--ease-out); }
+.wh-word[data-on] { color: var(--foreground); }
+@media (prefers-reduced-motion: reduce) { .wh-word { color: var(--foreground); } }
+
+/* ── Icon tiles (real full-colour logos) ────────────────────────────────── */
+.ic-tile {
+  display: inline-grid; place-items: center; flex: none;
+  width: 40px; height: 40px; border-radius: 10px; background: var(--p-paper); border: 1px solid var(--line);
+}
+.ic-tile img { width: 22px; height: 22px; object-fit: contain; }
+.ic-tile--wide { width: 56px; }
+.ic-tile--wide img { width: 40px; }
+
+}
+
+/* ── Booking drawer ─────────────────────────────────────────────────────── */
+dialog.booking-drawer { inset: 0 0 0 auto; margin: 0; }
+dialog.booking-drawer::backdrop { background: color-mix(in oklab, var(--p-ink) 30%, transparent); }
+dialog.booking-drawer[open] { animation: drawer-in 380ms var(--ease-out); }
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) { dialog.booking-drawer[open] { animation: none; } }
+
+/* ── Cases: the fallback screenshot hides when the WebGL frame is live ──── */
+html[data-world="3d"] [data-world-frame="cases"][data-gl-ready] .case-shot { opacity: 0 !important; }
+
+/* ── Sound toggle equaliser ─────────────────────────────────────────────── */
 .sound-bar { animation: sound-bar 900ms ease-in-out infinite alternate; transform-origin: bottom; }
 @keyframes sound-bar { from { transform: scaleY(0.4); } to { transform: scaleY(1.8); } }
 @media (prefers-reduced-motion: reduce) { .sound-bar { animation: none; } }

@@ -1,92 +1,101 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
 
 import { siteConfig } from "@/lib/data/site";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
-import { GitHubIcon, LinkedInIcon, WhatsAppIcon } from "@/components/icons";
+import { BookingButton } from "@/components/booking/booking-button";
 
+/**
+ * footer.closing: one screen. Row 1 the close (the brand line, one line, the
+ * main action, then the name set across the wrap); row 2 the directory and the
+ * legal row.
+ */
 export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const t = dict.footer;
-  const links = [
-    { label: dict.nav.services, href: `/${locale}#servicios` },
-    { label: dict.nav.projects, href: `/${locale}#proyectos` },
-    { label: dict.nav.journey, href: `/${locale}#trayectoria` },
-    { label: dict.nav.chat, href: `/${locale}#asistente` },
-    { label: dict.nav.contact, href: `/${locale}#contacto` },
-    { label: dict.nav.about, href: `/${locale}/about` },
+  const home = `/${locale}`;
+  const sections = [
+    { label: dict.nav.tracks, href: `${home}#servicios` },
+    { label: dict.nav.flow, href: `${home}#flujo` },
+    { label: dict.nav.cases, href: `${home}#casos` },
+    { label: dict.nav.chat, href: `${home}#asistente` },
+    { label: dict.nav.founder, href: `${home}#fundador` },
+    { label: dict.nav.contact, href: `${home}#contacto` },
   ];
-  const socials = [
-    { icon: GitHubIcon, href: siteConfig.socials.github, label: "GitHub" },
-    { icon: LinkedInIcon, href: siteConfig.socials.linkedin, label: "LinkedIn" },
-    { icon: WhatsAppIcon, href: siteConfig.socials.whatsapp, label: "WhatsApp" },
-    { icon: Mail, href: siteConfig.socials.email, label: "Email" },
+  const contact = [
+    { label: siteConfig.author.whatsappDisplay, href: siteConfig.socials.whatsapp },
+    { label: siteConfig.author.email, href: siteConfig.socials.email },
+    { label: "LinkedIn", href: siteConfig.socials.linkedin },
+    { label: "Instagram", href: siteConfig.socials.instagram },
+    { label: "GitHub", href: siteConfig.socials.github },
   ];
+  const year = new Date().getFullYear();
 
   return (
-    <footer data-slot="footer" className="relative border-t border-white/10 bg-background/70 backdrop-blur-md">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3">
+    <footer id="cierre" data-slot="footer" className="closing ground-inverse section flex flex-col"
+     >
+      <div className="wrap flex flex-1 flex-col">
         <div>
-          <p className="font-mono text-lg font-bold">
-            IAZR<span className="text-primary">_</span>
-          </p>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">{t.tagline}</p>
-          <div className="mt-5 flex items-center gap-3">
-            {socials.map(({ icon: Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="inline-flex size-9 items-center justify-center rounded-md border border-white/15 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-              >
-                <Icon className="size-4" />
-              </a>
-            ))}
+          <div className="grid gap-x-6 gap-y-6 lg:grid-cols-12 lg:items-end">
+            <h2 className="t-h2 lg:col-span-8">{t.closeTitle}</h2>
+            <div className="flex flex-col items-start gap-4 lg:col-span-4 lg:col-start-9">
+              <p className="text-inverse-muted">{t.closeLead}</p>
+              <BookingButton source="close" className="max-sm:w-full">
+                {dict.hud.book}
+                <svg className="m-arrow" viewBox="0 0 12 12" aria-hidden="true">
+                  <path className="m-arrow__stem" d="M1 6h8" />
+                  <path className="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5" />
+                </svg>
+              </BookingButton>
+            </div>
           </div>
-        </div>
-
-        <nav aria-label={t.footerNav}>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{t.sections}</p>
-          <ul className="mt-4 space-y-2.5">
-            {links.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="text-sm text-muted-foreground transition-colors hover:text-primary">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{t.contact}</p>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li>
-              <a href={siteConfig.socials.email} className="transition-colors hover:text-primary">
-                {siteConfig.author.email}
-              </a>
-            </li>
-            <li>
-              <a href={siteConfig.socials.whatsapp} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary">
-                {siteConfig.author.whatsappDisplay}
-              </a>
-            </li>
-            <li>{t.location}</li>
-            <li className="font-mono text-xs text-muted-foreground/70">
-              {t.timezone}: {siteConfig.timezoneShort}
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-white/5">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-center sm:flex-row sm:text-left">
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {siteConfig.author.name} — {siteConfig.name}. {t.rights}
+          <p
+            aria-hidden="true"
+            className="mt-10 select-none font-display font-medium leading-[0.8] tracking-[-0.06em] max-sm:mt-8"
+            style={{ fontSize: "clamp(96px, 21vw, 300px)" }}
+          >
+            IA-ZR
           </p>
-          <p className="font-mono text-[10px] text-muted-foreground/60">next.js · react 19 · three.js · glsl · web audio</p>
+        </div>
+
+        <div className="mt-auto pt-10">
+          <div className="grid gap-x-6 gap-y-8 border-t border-border pt-8 sm:grid-cols-2 lg:grid-cols-12">
+            <nav aria-label={t.footerNav} className="lg:col-span-4">
+              <h3 className="t-label text-inverse-muted">{t.sections}</h3>
+              <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1">
+                {sections.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="link inline-flex min-h-11 items-center">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="lg:col-span-4 lg:col-start-6">
+              <h3 className="t-label text-inverse-muted">{t.contact}</h3>
+              <ul className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                {contact.map((l) => (
+                  <li key={l.href} className="min-w-0">
+                    <a
+                      href={l.href}
+                      target={l.href.startsWith("mailto") ? undefined : "_blank"}
+                      rel="noopener noreferrer"
+                      className="link inline-flex min-h-11 max-w-full items-center truncate"
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="text-[14px] text-inverse-muted lg:col-span-3 lg:col-start-10">{t.location}</p>
+          </div>
+          <div className="mt-8 grid gap-x-6 gap-y-2 text-[13px] text-inverse-muted lg:grid-cols-12">
+            <p className="lg:col-span-5">
+              © {year} IA-ZR · iazr.tech · {t.rights}
+            </p>
+            <p className="lg:col-span-6 lg:col-start-6">{t.trademarks}</p>
+          </div>
         </div>
       </div>
     </footer>

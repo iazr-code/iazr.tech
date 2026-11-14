@@ -54,10 +54,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="relative">
-      {/* Velo sobre el Canvas: /about prioriza la lectura. */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-[5] bg-background/70" />
       <AboutHeader locale={locale} dict={dict.about} />
-      <section className="px-6 pb-24 pt-6 sm:pb-32">
+      <section className="pb-24 sm:pb-32">
         <SectionHeading eyebrow={dict.about.journeyEyebrow} title={dict.about.journeyTitle} description={dict.about.journeyDescription} />
         <Timeline locale={locale} dict={dict.journey} />
       </section>

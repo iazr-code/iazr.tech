@@ -4,13 +4,28 @@
     {
       "name": "next-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "-p", "3100"],
-      "port": 3100
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "-p",
+        "3100"
+      ],
+      "port": 3100,
+      "env": {
+        "NEXT_DIST_DIR": ".next-preview"
+      }
     },
     {
       "name": "next-prod",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start", "--", "-p", "3200"],
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--",
+        "-p",
+        "3200"
+      ],
       "port": 3200
     }
   ]

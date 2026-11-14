@@ -1,24 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CalendarClock } from "lucide-react";
 
+import { featuredProjects } from "@/lib/data/projects";
+import { siteConfig } from "@/lib/data/site";
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { localize } from "@/lib/i18n/localized";
 import { buildJsonLdGraph } from "@/lib/seo/json-ld";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SectionHeading } from "@/components/section-heading";
-import { Timeline } from "@/components/timeline";
 import { TerminalChat } from "@/components/chat/terminal-chat";
-import { ContactPanel } from "@/components/contact/contact-section";
+import { ContactSection } from "@/components/contact/contact-section";
 import { Footer } from "@/components/footer";
-import { HeroSection } from "@/components/sections/hero-section";
-import { ServicesSection } from "@/components/sections/services-section";
-import { ProjectsSection } from "@/components/sections/projects-section";
-import { BookingButton } from "@/components/booking/booking-button";
+import { Hero } from "@/components/home/hero";
+import { Problem } from "@/components/home/problem";
+import { Tracks } from "@/components/home/tracks";
+import { FlowSection } from "@/components/home/flow";
+import { Cases } from "@/components/home/cases";
+import { Founder } from "@/components/home/founder";
 
 /**
- * Portada por idioma (SSG). Cada sección lleva `data-world-section`: la escena
- * 3D del layout raíz lee su posición para guiar la cámara.
+ * Home per locale (SSG). Each section carries `data-world-section`: the root
+ * layout's 3D scene reads their positions to decide where it is visible.
  */
 
 const OG_LOCALE: Record<Locale, string> = { es: "es_CO", en: "en_US" };
@@ -50,33 +52,62 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
+  const cases = featuredProjects.map((p) => ({
+    id: p.id,
+    name: p.name,
+    role: localize(p.role, locale),
+    year: p.year,
+    description: localize(p.description, locale),
+    stack: p.stack,
+    href: p.href,
+    hrefLabel: localize(p.hrefLabel, locale),
+    image: p.image,
+    imageAlt: `${dict.cases.screenshotAlt} ${p.name}`,
+  }));
+
   return (
     <>
       <JsonLd data={buildJsonLdGraph(locale)} />
-      <HeroSection dict={dict} />
-      <ServicesSection locale={locale} dict={dict} />
-      <ProjectsSection locale={locale} dict={dict} />
+      <Hero dict={dict} />
+      <Problem dict={dict} />
+      <Tracks dict={dict} />
+      <FlowSection t={dict.flow} />
+      <Cases
+        items={cases}
+        title={dict.cases.title}
+        lead={dict.cases.lead}
+        listLabel={dict.cases.listLabel}
+        stackLabel={dict.cases.stack}
+      />
 
-      <section id="trayectoria" data-world-section="journey" className="px-6 py-24 sm:py-32">
-        <SectionHeading eyebrow={dict.journey.eyebrow} title={dict.journey.title} description={dict.journey.description} />
-        <Timeline locale={locale} dict={dict.journey} />
+      <section id="asistente" data-world-section="chat" className="section">
+        <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
+          <div className="flex flex-col lg:col-span-5">
+            <h2 className="t-h2">{dict.chat.title}</h2>
+            <p className="t-lead mt-4">{dict.chat.description}</p>
+            <h3 className="t-label mt-10 text-muted-foreground">{dict.chat.knowsTitle}</h3>
+            <ul className="mt-3">
+              {dict.chat.knows.map((item) => (
+                <li key={item} className="border-t border-border py-3">
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-auto pt-8 text-muted-foreground max-lg:hidden">
+              {dict.chat.human}{" "}
+              <a href={siteConfig.socials.whatsapp} target="_blank" rel="noopener noreferrer" className="link">
+                {dict.chat.humanCta}
+              </a>
+            </p>
+          </div>
+          <div className="flex min-h-0 lg:col-span-7">
+            <TerminalChat dict={dict.chat} locale={locale} />
+          </div>
+        </div>
       </section>
 
-      <section id="asistente" data-world-section="chat" className="px-6 py-24 sm:py-32">
-        <SectionHeading eyebrow={dict.chat.eyebrow} title={dict.chat.title} description={dict.chat.description} />
-        <TerminalChat dict={dict.chat} locale={locale} />
-      </section>
-
-      <section id="contacto" data-world-section="contact" className="px-6 py-24 sm:py-32">
-        <SectionHeading eyebrow={dict.contact.eyebrow} title={dict.contact.title} description={dict.contact.description} />
-        <ContactPanel locale={locale} dict={dict.contact}>
-          <BookingButton source="contact" variant="cyber" className="w-full">
-            <CalendarClock className="size-4" aria-hidden="true" />
-            {dict.hero.ctaBook}
-          </BookingButton>
-        </ContactPanel>
-      </section>
-
+      <Founder dict={dict} locale={locale} />
+      <ContactSection locale={locale} dict={dict} />
       <Footer locale={locale} dict={dict} />
     </>
   );

@@ -4,7 +4,7 @@
  * renders de React.
  */
 
-export const SCENES = ["hero", "services", "projects", "journey", "chat", "contact"] as const;
+export const SCENES = ["hero", "problem", "tracks", "flow", "projects", "chat", "founder", "contact"] as const;
 export type SceneId = (typeof SCENES)[number];
 
 /** Rango de una sección en progreso global de scroll (0..1). */
@@ -26,27 +26,6 @@ export function localProgress(global: number, range: SectionRange): number {
   const span = range.end - range.start;
   if (span <= 0) return global >= range.end ? 1 : 0;
   return (global - range.start) / span;
-}
-
-/**
- * Progreso sobre la curva de cámara: el keyframe i se alcanza cuando la
- * sección i está centrada en pantalla. Monótono con el scroll.
- */
-export function curveProgress(global: number, ranges: SectionRange[]): number {
-  if (ranges.length < 2) return clamp01(global);
-  if (global <= 0) return 0;
-  if (global >= 1) return 1;
-  const segments = ranges.length - 1;
-  const centers = ranges.map((r) => (r.start + r.end) / 2);
-  if (global <= centers[0]) return 0;
-  for (let i = 0; i < segments; i += 1) {
-    if (global <= centers[i + 1]) {
-      const span = centers[i + 1] - centers[i];
-      const t = span > 0 ? (global - centers[i]) / span : 1;
-      return clamp01((i + t) / segments);
-    }
-  }
-  return 1;
 }
 
 export const scrollState: { progress: number; velocity: number; ranges: SectionRange[] } = {

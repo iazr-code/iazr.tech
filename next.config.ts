@@ -19,6 +19,9 @@ import type { NextConfig } from "next";
  * ─────────────────────────────────────────────────────────────────────────────
  */
 const nextConfig: NextConfig = {
+  // A second local server (verification, a parallel build) can use its own
+  // build folder so two processes never write the same .next manifests.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   experimental: {
     // ppr: "incremental", // ← descomentar SOLO en canary / Next 16
   },

@@ -16,7 +16,7 @@ export function LanguageSwitch({ className }: { className?: string }) {
   const current = isLocale(segment) ? segment : defaultLocale;
 
   return (
-    <div role="group" aria-label="Language / Idioma" className={cn("flex items-center rounded-full border border-white/15 p-0.5 font-mono text-[11px]", className)}>
+    <div role="group" aria-label="Language / Idioma" className={cn("flex h-11 items-center rounded-[var(--r-btn)] bg-secondary p-1 text-[13px] font-medium", className)}>
       {locales.map((locale) => {
         const active = locale === current;
         return (
@@ -27,8 +27,8 @@ export function LanguageSwitch({ className }: { className?: string }) {
             hrefLang={locale}
             aria-current={active ? "true" : undefined}
             className={cn(
-              "rounded-full px-2.5 py-1 uppercase tracking-wider transition-colors",
-              active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              "inline-flex h-9 min-w-9 items-center justify-center rounded-[6px] px-2 uppercase transition-colors duration-150",
+              active ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {locale}

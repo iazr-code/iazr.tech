@@ -19,10 +19,10 @@ export function ContactDirect({ locale, dict }: { locale: Locale; dict: Dictiona
   ];
 
   return (
-    <section id="contacto-directo" className="px-6 py-24 sm:py-32">
+    <section id="contacto-directo" className="py-24 sm:py-32">
       <SectionHeading eyebrow={dict.contactEyebrow} title={dict.contactTitle} description={dict.contactDescription} />
 
-      <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.2fr_1fr]">
+      <div className="wrap grid gap-8 lg:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-3">
           {channels.map(({ label, value, href, icon: Icon }) => (
             <a
@@ -30,14 +30,14 @@ export function ContactDirect({ locale, dict }: { locale: Locale; dict: Dictiona
               href={href}
               target={href.startsWith("http") ? "_blank" : undefined}
               rel="noopener noreferrer"
-              className="glass-panel group flex items-center gap-4 rounded-2xl p-5 transition-colors hover:border-primary/40"
+              className="card group flex items-center gap-4 rounded-[var(--r-lg)] p-5"
             >
-              <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-primary/25 bg-primary/5 text-primary">
+              <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg bg-secondary text-foreground">
                 <Icon className="size-5" aria-hidden="true" />
               </span>
               <span className="min-w-0">
-                <span className="block text-xs text-muted-foreground">{label}</span>
-                <span className="block truncate font-mono text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                <span className="block text-[13px] text-muted-foreground">{label}</span>
+                <span className="block truncate text-base font-medium text-foreground transition-colors group-hover:text-primary">
                   {value}
                 </span>
               </span>
@@ -45,19 +45,19 @@ export function ContactDirect({ locale, dict }: { locale: Locale; dict: Dictiona
           ))}
         </div>
 
-        <div className="glass-panel rounded-2xl p-6">
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">{dict.contextTitle}</p>
+        <div className="card rounded-[var(--r-lg)] p-6">
+          <p className="t-label text-muted-foreground">{dict.contextTitle}</p>
           <ul className="mt-5 space-y-5">
             {dict.facts.map(({ title, detail }, i) => {
               const Icon = FACT_ICONS[i] ?? Globe;
               return (
                 <li key={title} className="flex gap-4">
-                  <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-secondary/40 text-primary">
+                  <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary/40 text-primary">
                     <Icon className="size-4" aria-hidden="true" />
                   </span>
                   <div>
                     <p className="text-sm font-medium text-foreground">{title}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{detail}</p>
+                    <p className="mt-0.5 text-muted-foreground">{detail}</p>
                   </div>
                 </li>
               );

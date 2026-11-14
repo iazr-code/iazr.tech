@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useActionState, useRef, useState, type FocusEvent } from "react";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import posthog from "posthog-js";
 
 import { budgetOptions, serviceOptions } from "@/lib/validations/contact";
@@ -25,12 +25,12 @@ import { cn } from "@/lib/utils";
  */
 
 const inputBase =
-  "w-full rounded-lg border border-border bg-secondary/40 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-colors focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring/40";
+  "w-full min-h-12 rounded-[var(--r-sm)] border border-input bg-paper px-4 py-3 text-base text-foreground outline-none transition-colors duration-150 hover:border-[var(--line-strong)] focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring";
 
 function FieldError({ id, error }: { id: string; error?: string }) {
   if (!error) return null;
   return (
-    <p id={id} role="alert" className="mt-1.5 text-xs text-destructive">
+    <p id={id} role="alert" className="mt-1.5 text-[14px] text-destructive">
       {error}
     </p>
   );
@@ -123,14 +123,14 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
     return (
       <div
         role="status"
-        className="flex h-full min-h-72 flex-col items-center justify-center gap-4 rounded-xl border border-success/30 bg-success/5 px-6 py-14 text-center"
+        className="flex h-full min-h-72 flex-col items-start justify-center gap-3 rounded-[var(--r-md)] bg-paper px-6 py-12"
       >
-        <span className="inline-flex size-12 items-center justify-center rounded-full border border-success/40 bg-success/10">
+        <span className="inline-flex size-10 items-center justify-center rounded-full bg-success/10">
           <CheckCircle2 className="size-6 text-success" aria-hidden="true" />
         </span>
-        <p className="font-mono text-sm text-success">{t.successTag}</p>
-        <h3 className="font-display text-xl font-semibold">{t.successTitle}</h3>
-        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+        <p className="t-label text-success">{t.successTag}</p>
+        <h3 className="t-h3">{t.successTitle}</h3>
+        <p className="max-w-md text-muted-foreground">
           {t.successBody}
         </p>
       </div>
@@ -148,7 +148,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
       <input type="hidden" name="locale" value={locale} />
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium">
+          <label htmlFor="contact-name" className="mb-1.5 block text-[14px] font-medium">
             {t.name} *
           </label>
           <input
@@ -166,7 +166,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
         </div>
 
         <div>
-          <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium">
+          <label htmlFor="contact-email" className="mb-1.5 block text-[14px] font-medium">
             {t.email} *
           </label>
           <input
@@ -186,7 +186,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
       </div>
 
       <div>
-        <label htmlFor="contact-company" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="contact-company" className="mb-1.5 block text-[14px] font-medium">
           {t.company} <span className="text-muted-foreground">{t.optional}</span>
         </label>
         <input
@@ -204,7 +204,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="contact-service" className="mb-1.5 block text-sm font-medium">
+          <label htmlFor="contact-service" className="mb-1.5 block text-[14px] font-medium">
             {t.service} *
           </label>
           <select
@@ -229,7 +229,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
         </div>
 
         <div>
-          <label htmlFor="contact-budget" className="mb-1.5 block text-sm font-medium">
+          <label htmlFor="contact-budget" className="mb-1.5 block text-[14px] font-medium">
             {t.budget} <span className="text-muted-foreground">{t.optional}</span>
           </label>
           <select
@@ -254,7 +254,7 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
       </div>
 
       <div className="flex-1">
-        <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="contact-message" className="mb-1.5 block text-[14px] font-medium">
           {t.message} *
         </label>
         <textarea
@@ -283,27 +283,26 @@ export function ContactForm({ dict, locale }: { dict: Dictionary["contact"]; loc
       {state.status === "error" && state.message ? (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          className="rounded-[var(--r-sm)] bg-destructive/10 px-4 py-3 text-[14px] text-destructive"
         >
           {errorText(state.message)}
         </p>
       ) : null}
 
-      <Button type="submit" size="lg" variant="cyber" disabled={pending} className="w-full sm:w-auto">
+      <Button type="submit" disabled={pending} className="w-full sm:w-auto sm:self-start">
         {pending ? (
           <>
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
             {t.sending}
           </>
         ) : (
-          <>
-            <Send className="size-4" aria-hidden="true" />
+          <>
             {t.submit}
           </>
         )}
       </Button>
 
-      <p className="text-xs leading-relaxed text-muted-foreground">
+      <p className="text-[14px] text-muted-foreground">
         {t.privacy}
       </p>
     </form>

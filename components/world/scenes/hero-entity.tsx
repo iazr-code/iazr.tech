@@ -2,15 +2,20 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { AdditiveBlending, BufferGeometry, Color, Float32BufferAttribute, Points, ShaderMaterial, Vector3 } from "three";
+import { BufferGeometry, Float32BufferAttribute, NormalBlending, Points, ShaderMaterial, Vector2, Vector3 } from "three";
 
-import { sceneAnchor } from "@/lib/world/camera-path";
+import { frameState, planeForRect } from "@/lib/world/frames";
 import { TIER_SETTINGS } from "@/lib/world/quality";
 import { localProgress, rangeOf, scrollState } from "@/lib/world/scroll-store";
 import { useTier } from "@/lib/world/tier-store";
 import { entityFragment, entityVertex } from "@/lib/world/shaders/entity";
 
-/** Geometría determinista: puntos en una cáscara gruesa (más densa en el borde). */
+const DISTANCE = 6;
+const FOV = 45;
+/** Outer radius of the cloud in local units (aRadius tops out at 1.9 plus noise). */
+const CLOUD_RADIUS = 2.1;
+
+/** Deterministic points on a thick shell (denser at the rim). */
 function buildGeometry(count: number): BufferGeometry {
   const positions = new Float32Array(count * 3);
   const seeds = new Float32Array(count);
@@ -37,13 +42,17 @@ function buildGeometry(count: number): BufferGeometry {
   return g;
 }
 
+/**
+ * The hero entity: a cobalt particle cloud centred on the hero frame and a
+ * little wider than it, so its dots fill the frame's margins around the window.
+ * It fades at the frame's foot like the frame itself.
+ */
 export function HeroEntity() {
   const tier = useTier();
-  const count = tier === "static" ? 0 : TIER_SETTINGS[tier].particles;
+  const count = tier === "static" ? 0 : Math.round(TIER_SETTINGS[tier].particles * 0.28);
   const points = useRef<Points>(null);
-  const pointerWorld = useRef(new Vector3());
-  const { viewport, pointer, gl } = useThree();
-  const anchor = sceneAnchor("hero");
+  const pointerLocal = useRef(new Vector3());
+  const { pointer, gl, viewport } = useThree();
 
   const geometry = useMemo(() => buildGeometry(count), [count]);
   const material = useMemo(
@@ -52,16 +61,19 @@ export function HeroEntity() {
         vertexShader: entityVertex,
         fragmentShader: entityFragment,
         transparent: true,
+        premultipliedAlpha: true,
         depthWrite: false,
-        blending: AdditiveBlending,
+        blending: NormalBlending,
         uniforms: {
           uTime: { value: 0 },
           uProgress: { value: 0 },
           uPixelRatio: { value: 1 },
-          uSize: { value: 26 },
+          uSize: { value: 20 },
           uPointer: { value: new Vector3() },
-          uColorA: { value: new Color("#5ee7ff") },
-          uColorB: { value: new Color("#a78bfa") },
+          // Raw sRGB values (the canvas output is not colour-managed): cobalt ink and muted cobalt.
+          uColorA: { value: new Vector3(6 / 255, 43 / 255, 138 / 255) },
+          uColorB: { value: new Vector3(50 / 255, 83 / 255, 164 / 255) },
+          uFade: { value: new Vector2(0, 1) },
         },
       }),
     []
@@ -73,34 +85,40 @@ export function HeroEntity() {
   useFrame((state, delta) => {
     const obj = points.current;
     if (!obj) return;
-    const range = rangeOf("hero");
-    const local = range ? localProgress(scrollState.progress, range) : 2;
-    obj.visible = local < 1.15;
-    if (!obj.visible) return;
+    const rect = frameState.rects.hero;
+    obj.visible = Boolean(rect && rect.y + rect.h > 0 && rect.y < frameState.vh);
+    if (!obj.visible || !rect) return;
 
+    const plane = planeForRect(rect, frameState.vw, frameState.vh, DISTANCE, FOV);
+    // Centred on the frame's upper half, wide enough to fill the margins around the window.
+    const scale = (plane.width * 0.56) / CLOUD_RADIUS;
+    obj.position.set(plane.x, plane.y + plane.height * 0.12, 0);
+    obj.scale.setScalar(scale);
+
+    const dpr = gl.getPixelRatio();
+    const bufferH = state.size.height * dpr;
+    const bottom = bufferH - (rect.y + rect.h) * dpr;
+    // Gone before the frame (and the window in it) starts fading at 82% of its height.
+    material.uniforms.uFade.value.set(bottom + rect.h * 0.18 * dpr, rect.h * 0.3 * dpr);
+
+    const range = rangeOf("hero");
+    const local = range ? localProgress(scrollState.progress, range) : 0;
     const u = material.uniforms;
     u.uTime.value = state.clock.elapsedTime;
     u.uProgress.value = Math.max(0, Math.min(1, local * 0.9));
-    u.uPixelRatio.value = gl.getPixelRatio();
-    pointerWorld.current.set((pointer.x * viewport.width) / 2 - obj.position.x, (pointer.y * viewport.height) / 2, 0);
-    u.uPointer.value.lerp(pointerWorld.current, Math.min(1, delta * 4));
-    obj.rotation.y += delta * 0.05;
+    u.uPixelRatio.value = dpr;
+    u.uSize.value = 20 * Math.max(0.7, Math.min(1.3, scale));
+
+    // Pointer in the cloud's local space.
+    pointerLocal.current.set(
+      ((pointer.x * viewport.width) / 2 - obj.position.x) / scale,
+      ((pointer.y * viewport.height) / 2 - obj.position.y) / scale,
+      0
+    );
+    u.uPointer.value.lerp(pointerLocal.current, Math.min(1, delta * 4));
+    obj.rotation.y += delta * 0.04;
   });
 
-  // En pantallas anchas la entidad se desplaza a la derecha, dejando el texto libre.
-  const offsetX = viewport.aspect > 1.15 ? Math.min(3, viewport.width * 0.3) : 0;
-  // En vertical (móvil) baja al pie de la pantalla: el texto queda sobre fondo limpio.
-  const offsetY = viewport.aspect > 1.15 ? 0 : -viewport.height * 0.58;
-
   if (count === 0) return null;
-  return (
-    <points
-      ref={points}
-      geometry={geometry}
-      material={material}
-      position={[anchor[0] + offsetX, anchor[1] + offsetY, anchor[2]]}
-      scale={viewport.aspect > 1.15 ? 0.85 : 0.62}
-      frustumCulled={false}
-    />
-  );
+  return <points ref={points} geometry={geometry} material={material} frustumCulled={false} />;
 }

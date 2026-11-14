@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { detectInitialTier, readTierEnv } from "@/lib/world/quality";
 import { registerSections } from "@/lib/world/scroll-store";
 import { setTier, useTier, useTierResolved } from "@/lib/world/tier-store";
-import { StaticBackdrop } from "@/components/world/static-backdrop";
 
 const WorldCanvas = dynamic(() => import("@/components/world/world-canvas"), { ssr: false });
 
@@ -16,7 +15,6 @@ const WorldCanvas = dynamic(() => import("@/components/world/world-canvas"), { s
  * 1. Detecta el nivel de calidad inicial en el cliente.
  * 2. Carga el Canvas de forma diferida (no bloquea el primer pintado).
  * 3. Registra las secciones [data-world-section] en cada navegación.
- * 4. Muestra el fondo estático mientras carga, en "static" o sin contexto WebGL.
  */
 export function WorldMount() {
   const tier = useTier();
@@ -48,7 +46,6 @@ export function WorldMount() {
 
   return (
     <>
-      <StaticBackdrop visible={!showCanvas || contextLost} />
       {showCanvas ? <WorldCanvas contextLost={contextLost} onContextLost={setContextLost} /> : null}
     </>
   );
