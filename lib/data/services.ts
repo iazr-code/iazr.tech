@@ -1,71 +1,94 @@
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- *  DATA / SERVICES — Oferta B2B (lo que contrata un cliente o empresa).
- *
- *  El portafolio no vende tecnologías sueltas: vende RESULTADOS verificables.
- *  Esta sección traduce el perfil real del CV (dirección tecnológica,
- *  desarrollo Full-Stack, IA aplicada y datos) a entregables de negocio con
- *  un CTA por tarjeta hacia la sección que lo demuestra. Fuente única de
- *  verdad para la grilla de servicios.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Oferta B2B: lo que contrata una startup, una pyme o un cliente internacional.
+ * Vende resultados, no tecnologías sueltas. Los `id` coinciden con
+ * `serviceOptions` del formulario de contacto.
  */
-import {
-  BrainCircuit,
-  Globe,
-  LineChart,
-  ShieldCheck,
-  type LucideIcon,
-} from "lucide-react";
+import { BrainCircuit, Gauge, Network, ShieldCheck, type LucideIcon } from "lucide-react";
+
+import type { Localized } from "@/lib/i18n/localized";
 
 export type Service = {
-  id: string;
-  /** Nombre del servicio (orientado al comprador B2B). */
-  title: string;
-  /** Descripción con resultado medible, no con jerga técnica. */
-  description: string;
-  /** Tecnologías clave que lo respaldan (chips mono). */
+  id: "fullstack" | "ia-datos" | "direccion-tecnologica" | "mentoria";
+  /** Índice del objeto 3D de la escena de servicios. */
+  index: number;
+  title: Localized;
+  description: Localized;
+  outcomes: Localized<string[]>;
   tags: string[];
-  /** Icono lucide del dominio. */
   icon: LucideIcon;
-  /** CTA que lleva a la sección del sitio que demuestra el servicio. */
-  cta: { label: string; href: string };
 };
 
 export const services: Service[] = [
   {
-    id: "direccion-tecnologica",
-    title: "Dirección Tecnológica & Transformación Digital",
-    description:
-      "Dirección de innovación digital de extremo a extremo: asistentes virtuales con IA para ventas (WhatsApp), plataformas CRM y hojas de ruta de transformación para tu empresa.",
-    tags: ["Dirección tecnológica", "Transformación digital", "IA"],
-    icon: ShieldCheck,
-    cta: { label: "iniciar_proyecto()", href: "#contacto" },
-  },
-  {
     id: "fullstack",
-    title: "Desarrollo Full-Stack & Web corporativa",
-    description:
-      "Sitios web corporativos y plataformas web a medida con React, Next.js y Node.js: de la landing a la aplicación completa, con arquitectura y rendimiento medibles.",
-    tags: ["React", "Next.js", "Node.js"],
-    icon: Globe,
-    cta: { label: "ver_proyectos()", href: "#proyectos" },
+    index: 0,
+    title: {
+      es: "Desarrollo web de alto rendimiento",
+      en: "High-performance web development",
+    },
+    description: {
+      es: "Sitios corporativos, plataformas y productos SaaS con React, Next.js y Supabase/Node.js: rápidos, accesibles, medibles y listos para escalar.",
+      en: "Corporate sites, platforms and SaaS products built with React, Next.js and Supabase/Node.js: fast, accessible, measurable and ready to scale.",
+    },
+    outcomes: {
+      es: ["Core Web Vitals en verde", "SEO técnico desde el día uno", "Arquitectura mantenible"],
+      en: ["Green Core Web Vitals", "Technical SEO from day one", "Maintainable architecture"],
+    },
+    tags: ["React", "Next.js", "Supabase", "Node.js", "TypeScript"],
+    icon: Gauge,
   },
   {
     id: "ia-datos",
-    title: "IA aplicada & Datos",
-    description:
-      "Analítica de datos con Power BI y SQL, bases de datos PostgreSQL/MongoDB e integración de inteligencia artificial directamente en tu producto o proceso.",
-    tags: ["Power BI", "SQL", "Machine Learning", "IA"],
+    index: 1,
+    title: {
+      es: "Automatización & IA aplicada",
+      en: "Automation & applied AI",
+    },
+    description: {
+      es: "Asistentes con IA para ventas y soporte, automatización de procesos con n8n y tableros de datos (Power BI, SQL) que convierten operaciones en decisiones.",
+      en: "AI assistants for sales and support, process automation with n8n and data dashboards (Power BI, SQL) that turn operations into decisions.",
+    },
+    outcomes: {
+      es: ["Menos tareas manuales", "Atención 24/7 con IA", "Datos accionables"],
+      en: ["Fewer manual tasks", "24/7 AI-assisted service", "Actionable data"],
+    },
+    tags: ["LLMs", "n8n", "Power BI", "SQL", "WhatsApp"],
     icon: BrainCircuit,
-    cta: { label: "preguntar_al_asistente()", href: "#conversacion" },
+  },
+  {
+    id: "direccion-tecnologica",
+    index: 2,
+    title: {
+      es: "Ecosistemas digitales & dirección tecnológica",
+      en: "Digital ecosystems & technology leadership",
+    },
+    description: {
+      es: "Diseño y dirección de ecosistemas completos (web, CRM, IA y datos conectados) con roadmap, arquitectura y equipo: un socio técnico para proyectos de gran envergadura.",
+      en: "Design and leadership of full ecosystems (web, CRM, AI and data, connected) with roadmap, architecture and team: a technical partner for large-scale projects.",
+    },
+    outcomes: {
+      es: ["Roadmap accionable en 1–2 semanas", "Arquitectura y riesgos claros", "Ejecución acompañada"],
+      en: ["Actionable roadmap in 1–2 weeks", "Clear architecture and risks", "Hands-on execution"],
+    },
+    tags: ["Arquitectura", "CRM", "Cloud", "Scrum"],
+    icon: Network,
   },
   {
     id: "mentoria",
-    title: "Mentoría & Formación Tech",
-    description:
-      "Formación en habilidades digitales, programación y análisis de datos para equipos y programas de impacto: mentor de bootcamps y profesor de cátedra con +500 beneficiarios.",
-    tags: ["Bootcamps", "Habilidades digitales", "Talento TECH"],
-    icon: LineChart,
-    cta: { label: "conocer_trayectoria()", href: "/about" },
+    index: 3,
+    title: {
+      es: "Mentoría & formación de equipos",
+      en: "Team mentoring & training",
+    },
+    description: {
+      es: "Formación en programación, datos e IA para equipos y programas: mentor de bootcamps y profesor universitario con +500 personas formadas.",
+      en: "Training in programming, data and AI for teams and programs: bootcamp mentor and university lecturer with 500+ people trained.",
+    },
+    outcomes: {
+      es: ["Equipos autónomos", "Buenas prácticas de código", "Adopción de IA"],
+      en: ["Autonomous teams", "Solid coding practices", "AI adoption"],
+    },
+    tags: ["Bootcamps", "IA", "Datos", "Talento TECH"],
+    icon: ShieldCheck,
   },
 ];

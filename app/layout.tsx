@@ -4,12 +4,13 @@ import { GeistSans } from "geist/font/sans";
 import localFont from "next/font/local";
 
 import { siteConfig } from "@/lib/data/site";
-import { buildJsonLdGraph } from "@/lib/seo/json-ld";
-import { JsonLd } from "@/components/seo/json-ld";
 import { Providers } from "@/components/providers/providers";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 import { PostHogPageView } from "@/components/providers/posthog-pageview";
-import { Navbar } from "@/components/navbar";
+import { Hud } from "@/components/hud/hud";
+import { LocaleSync } from "@/components/i18n/locale-sync";
+import { WorldMount } from "@/components/world/world-mount";
+import { BookingDrawer } from "@/components/booking/booking-drawer";
 
 import "./globals.css";
 
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.title,
-    template: `%s | ${siteConfig.name} · Director Tecnológico & Full-Stack`,
+    template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
@@ -96,14 +97,6 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
   creator: siteConfig.author.name,
   publisher: siteConfig.author.name,
-  alternates: {
-    canonical: "/",
-    languages: {
-      "es": "/",
-      "es-CO": "/",
-      "x-default": "/",
-    },
-  },
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
@@ -161,38 +154,33 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="es"
+      lang="en"
       suppressHydrationWarning
-      className={`${geist.variable} ${jetbrainsMono.variable}`}
+      className={`dark ${geist.variable} ${jetbrainsMono.variable}`}
     >
       <body>
-        {/*
-         * Providers: next-themes (modo claro/oscuro OKLCH) + Lenis (smooth
-         * scroll). Lenis no debe bloquear el primer pintado: es un cliente
-         * ligero que se adjunta tras la hidratación.
-         */}
         <Providers>
           <PostHogProvider>
-            <Navbar />
-            <main id="inicio">{children}</main>
+            {/* Mundo 3D persistente: un único Canvas fijo detrás del contenido. */}
+            <WorldMount />
+            <Hud />
+            <main id="main" className="relative z-10">
+              {children}
+            </main>
             {/*
              * Pageviews de PostHog (funnel visita → envío); null-render.
              * <Suspense> obligatorio: useSearchParams() en una página estática
              * exige boundary para no abortar el prerender (error de build
              * "missing-suspense-with-csr-bailout").
              */}
+            <BookingDrawer />
             <Suspense fallback={null}>
               <PostHogPageView />
             </Suspense>
           </PostHogProvider>
         </Providers>
 
-        {/*
-         * JSON-LD en el Server Component raíz: los datos estructurados quedan
-         * embebidos en el HTML crudo del servidor para acceso inmediato de las
-         * arañas (sin esperar hidratación de JavaScript).
-         */}
-        <JsonLd data={buildJsonLdGraph()} />
+        <LocaleSync />
       </body>
     </html>
   );

@@ -1,5 +1,10 @@
 import { siteConfig } from "@/lib/data/site";
+import type { Locale } from "@/lib/i18n/config";
 import { certifications, education, experience } from "@/lib/data/experience";
+import { services } from "@/lib/data/services";
+import { localize } from "@/lib/i18n/localized";
+
+const LANGUAGE_TAG: Record<Locale, string> = { es: "es-CO", en: "en-US" };
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -46,18 +51,18 @@ type Organization = {
   slogan: string;
   email: string;
   founder: { "@type": "Person"; name: string; url: string };
-  areaServed: string;
+  areaServed: string[];
   numberOfEmployees: { "@type": "QuantitativeValue"; value: number };
   makesOffer: { "@type": "Offer"; itemOffered: { "@type": "Service"; name: string; description: string } }[];
 };
 
-export function buildPersonSchema(): Person {
+export function buildPersonSchema(locale: Locale): Person {
   return {
     "@type": "Person",
     name: siteConfig.author.name,
     givenName: siteConfig.author.givenName,
     familyName: siteConfig.author.familyName,
-    jobTitle: "Director Tecnológico · Full-Stack Developer · Mentor Tech",
+    jobTitle: locale === "es" ? "Director Tecnológico · Full-Stack Developer" : "Technology Lead · Full-Stack Developer",
     url: siteConfig.url,
     /**
      * image: la foto del perfil professional expuesta como og.png.
@@ -99,7 +104,7 @@ export function buildPersonSchema(): Person {
     hasCredential: [
       ...education.map((e) => ({
         "@type": "EducationalOccupationalCredential" as const,
-        name: e.degree,
+        name: localize(e.degree, locale),
       })),
       ...certifications.flatMap((group) =>
         group.credentials.map((name) => ({
@@ -118,7 +123,7 @@ export function buildPersonSchema(): Person {
   };
 }
 
-export function buildOrganizationSchema(): Organization {
+export function buildOrganizationSchema(locale: Locale): Organization {
   return {
     "@type": "Organization",
     name: "IAZR — Dirección Tecnológica & Full-Stack",
@@ -129,43 +134,16 @@ export function buildOrganizationSchema(): Organization {
     slogan: "Director Tecnológico · Full-Stack Developer · Mentor Tech",
     email: siteConfig.author.email,
     founder: { "@type": "Person", name: siteConfig.author.name, url: siteConfig.url },
-    areaServed: "Global (Colombia · Remoto)",
+    areaServed: ["US", "Latin America", "Worldwide (remote)"],
     numberOfEmployees: { "@type": "QuantitativeValue", value: 1 },
-    makesOffer: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Dirección Tecnológica & Transformación Digital",
-          description:
-            "Dirección de innovación digital, asistentes virtuales con IA, plataformas CRM y web corporativa.",
-        },
+    makesOffer: services.map((service) => ({
+      "@type": "Offer" as const,
+      itemOffered: {
+        "@type": "Service" as const,
+        name: localize(service.title, locale),
+        description: localize(service.description, locale),
       },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Desarrollo Full-Stack",
-          description: "Sitios web corporativos y plataformas con React, Next.js y Node.js.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "IA aplicada & Datos",
-          description: "Analítica con Power BI y SQL, bases de datos e integración de IA en producto.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Mentoría & Formación Tech",
-          description: "Bootcamps y formación en habilidades digitales, programación y análisis de datos.",
-        },
-      },
-    ],
+    })),
   };
 }
 
@@ -175,12 +153,14 @@ export function buildOrganizationSchema(): Organization {
  * como "About Me" / "Profile" y las posiciona con mayor confianza en
  * búsquedas de nombre de persona + cargo.
  */
-export function buildProfilePageSchema() {
-  const person = buildPersonSchema();
+export function buildProfilePageSchema(locale: Locale) {
+  const person = buildPersonSchema(locale);
+  const url = `${siteConfig.url}/${locale}`;
   return {
     "@type": "ProfilePage",
-    "@id": `${siteConfig.url}/#profile`,
-    url: siteConfig.url,
+    "@id": `${url}#profile`,
+    url,
+    inLanguage: LANGUAGE_TAG[locale],
     name: `${siteConfig.author.name} — Portafolio Profesional`,
     description: siteConfig.description,
     dateCreated: "2026-01-01",
@@ -192,8 +172,8 @@ export function buildProfilePageSchema() {
         {
           "@type": "ListItem",
           position: 1,
-          name: "Inicio",
-          item: siteConfig.url,
+          name: locale === "es" ? "Inicio" : "Home",
+          item: url,
         },
       ],
     },
@@ -201,48 +181,34 @@ export function buildProfilePageSchema() {
 }
 
 /**
- * WebSite schema con SearchAction.
- * Habilita el "Sitelinks search box" de Google: cuando alguien busca el
- * nombre del sitio, Google puede mostrar un cuadro de búsqueda directo
- * debajo del resultado principal.
+ * WebSite schema. Sin SearchAction: el sitio no tiene buscador y declarar uno
+ * inexistente es un dato estructurado falso.
  */
-export function buildWebSiteSchema() {
+export function buildWebSiteSchema(locale: Locale) {
   return {
     "@type": "WebSite",
     "@id": `${siteConfig.url}/#website`,
     url: siteConfig.url,
     name: siteConfig.title,
     description: siteConfig.description,
-    inLanguage: "es-CO",
+    inLanguage: LANGUAGE_TAG[locale],
     author: {
       "@type": "Person",
       name: siteConfig.author.name,
       url: siteConfig.url,
     },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${siteConfig.url}/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
-/**
- * Construye el grafo completo. `@graph` permite declarar múltiples nodos
- * independientes en un único bloque application/ld+json, recomendado por Google.
- * Orden: ProfilePage primero (más específico) → Person → Organization → WebSite.
- */
-export function buildJsonLdGraph() {
+/** Grafo completo: ProfilePage → Person → Organization → WebSite. */
+export function buildJsonLdGraph(locale: Locale) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      buildProfilePageSchema(),
-      buildPersonSchema(),
-      buildOrganizationSchema(),
-      buildWebSiteSchema(),
+      buildProfilePageSchema(locale),
+      buildPersonSchema(locale),
+      buildOrganizationSchema(locale),
+      buildWebSiteSchema(locale),
     ],
   };
 }

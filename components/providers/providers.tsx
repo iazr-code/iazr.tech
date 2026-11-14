@@ -1,57 +1,46 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import Lenis from "lenis";
 
-/**
- * ─────────────────────────────────────────────────────────────────────────────
- *  PROVIDERS — Capa de proveedores de la raíz (Client Components).
- *
- *  · NextThemesProvider (next-themes): gestiona el modo claro/oscuro con la
- *    clase `.dark` en <html> (los tokens OKLCH de globals.css reaccionan al
- *    toggle sin reconstruir CSS).
- *  · Lenis: smooth scrolling lineal sobre el scroll NATIVO (no virtualiza el
- *    DOM). Con `anchors: true` las anclas (#proyectos, #contacto) se resuelven
- *    con interpolación lineal de cámara. `autoRaf` conecta el bucle de
- *    requestAnimationFrame internamente (cero trabajo cuando no hay scroll).
- *
- *  Los Server Components del árbol se pasan como `children` a este wrapper
- *  client: React los serializa en el servidor y los hidrata intactos.
- * ─────────────────────────────────────────────────────────────────────────────
- */
+import { setScroll } from "@/lib/world/scroll-store";
 
-function LenisProvider({ children }: { children: ReactNode }) {
+/**
+ * Lenis: scroll suave sobre el scroll NATIVO (no virtualiza el DOM, así que
+ * teclado, anclas y lectores de pantalla siguen funcionando). Cada evento de
+ * scroll alimenta la tienda del mundo 3D (progreso + velocidad).
+ * Con prefers-reduced-motion no se crea Lenis: scroll nativo inmediato.
+ */
+let lenisInstance: Lenis | null = null;
+
+export function getLenis(): Lenis | null {
+  return lenisInstance;
+}
+
+function readNativeScroll() {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  setScroll(max > 0 ? window.scrollY / max : 0, 0);
+}
+
+export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Un solo Lenis por documento; se destruye al desmontar (Strict Mode safe).
-    const lenis = new Lenis({
-      autoRaf: true,
-      anchors: true,
-      // Duración de la interpolación (ms) — cinematográfica pero sin lentitud.
-      duration: 1.1,
-      // Suavizado sensitivo al dispositivo de entrada (rueda vs trackpad).
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.5,
-    });
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      readNativeScroll();
+      window.addEventListener("scroll", readNativeScroll, { passive: true });
+      return () => window.removeEventListener("scroll", readNativeScroll);
+    }
+
+    const lenis = new Lenis({ autoRaf: true, anchors: true, duration: 1.15, smoothWheel: true, touchMultiplier: 1.5 });
+    lenisInstance = lenis;
+    lenis.on("scroll", (l: Lenis) => setScroll(l.progress, l.velocity));
+    setScroll(lenis.progress, 0);
 
     return () => {
       lenis.destroy();
+      lenisInstance = null;
     };
   }, []);
 
   return children;
-}
-
-export function Providers({ children }: { children: ReactNode }) {
-  return (
-    <NextThemesProvider
-      attribute="class"
-      defaultTheme="dark"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <LenisProvider>{children}</LenisProvider>
-    </NextThemesProvider>
-  );
 }
