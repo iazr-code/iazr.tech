@@ -21,7 +21,11 @@
 - Web workflow, in this order: Impeccable init → Taste art direction (wait for OK) → emil-design-eng for motion → Impeccable audit → Playwright at 1440x900 and 390x844 with 0 console errors.
 - The WebGL world must never compete with text. Only the hero and the Projects section get full 3D; elsewhere the scene fades back. No excessive neon or bloom.
 - Never use violet.
+- Every home section names its own ground (`.g-ivory`, `.g-night`, `.g-white`, `.g-sand`, `.g-engine`, `.g-cobalt` in `app/globals.css`); text pairs are AAA on each. Sections holding a WebGL frame (hero, cases) keep `bg-transparent`: an opaque section background hides the fixed canvas behind it.
+- Interactive demos stay honest: telemetry shows only measured or verified values, the ROI calculator shows its assumptions, the passkey portal says it is a local demo, payments go to `NEXT_PUBLIC_CHECKOUT_*` links or WhatsApp (never card fields on the site).
 - Never invent figures, reviews or clients.
 
 ## Tech notes
 - `npm run dev` relies on `scripts/patch-next-dev-manifest.mjs` (postinstall). It makes Next 15.5's dev prerender-manifest write atomic. Without it, concurrent first requests to `/[locale]` return 500 with `SyntaxError: Unexpected end of JSON input`.
+- Do not write destructuring assignments to object members (`[s.a, s.b] = f()`): the production SWC minifier folded them to `[0,0]=` and broke the page bundle. Assign each member explicitly.
+- The service worker (`public/sw.js`) registers only in production builds; icons are rendered from `app/icon.svg` by `node scripts/build-icons.mjs`.

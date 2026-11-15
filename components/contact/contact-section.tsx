@@ -4,6 +4,7 @@ import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { BrandIcon } from "@/components/home/brand-icon";
 import { ContactForm } from "@/components/contact/contact-form";
 import { BookingButton } from "@/components/booking/booking-button";
+import { PortalButton } from "@/components/passkey/portal-button";
 
 /** Contact: direct channels on the left, the enquiry form on the right. */
 export function ContactSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -16,7 +17,7 @@ export function ContactSection({ locale, dict }: { locale: Locale; dict: Diction
   ];
 
   return (
-    <section id="contacto" data-world-section="contact" className="section">
+    <section id="contacto" data-world-section="contact" className="section g-cobalt border-t border-border">
       <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="flex flex-col lg:col-span-5">
           <h2 className="t-h2">{t.title}</h2>
@@ -44,6 +45,11 @@ export function ContactSection({ locale, dict }: { locale: Locale; dict: Diction
           <BookingButton source="contact" variant="secondary" className="mt-8 self-start max-sm:w-full">
             {dict.hud.book}
           </BookingButton>
+          <div className="card-dark mt-8 p-5">
+            <h3 className="font-medium">{dict.portal.title}</h3>
+            <p className="mt-1 text-[14px] text-muted-foreground">{dict.portal.teaser}</p>
+            <PortalButton t={dict.portal} className="mt-4 max-sm:w-full" />
+          </div>
         </div>
         <div className="card p-8 max-sm:p-5 lg:col-span-7">
           <h3 className="t-h3">{t.formTitle}</h3>

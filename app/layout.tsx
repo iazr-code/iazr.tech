@@ -11,6 +11,7 @@ import { Hud } from "@/components/hud/hud";
 import { LocaleSync } from "@/components/i18n/locale-sync";
 import { WorldMount } from "@/components/world/world-mount";
 import { BookingDrawer } from "@/components/booking/booking-drawer";
+import { PwaBoot } from "@/components/pwa/install-button";
 
 import "./globals.css";
 
@@ -51,7 +52,7 @@ const jetbrainsMono = localFont({
  *   previniendo títulos duplicados o genéricos ante Googlebot.
  */
 export const viewport: Viewport = {
-  themeColor: "#e6dbc7",
+  themeColor: "#f7f4ed",
   colorScheme: "light",
 };
 
@@ -78,26 +79,8 @@ export const metadata: Metadata = {
    * reciba el origen sin exponer la ruta completa a terceros.
    */
   referrer: "origin-when-cross-origin",
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      /**
-       * SVG favicon: Chrome 77+, Edge 79+, Firefox 41+ lo usan cuando está
-       * disponible. Es resolución infinita y cambia de color automáticamente
-       * en modo oscuro del SO si se usa currentColor en el SVG.
-       */
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    other: [
-      { rel: "mask-icon", url: "/favicon.svg", color: "#062b8a" },
-    ],
-  },
-  manifest: "/site.webmanifest",
+  // Icons come from app/icon.svg, app/apple-icon.png and app/favicon.ico; the
+  // manifest from app/manifest.ts (file conventions, linked by Next).
   keywords: siteConfig.keywords,
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
   creator: siteConfig.author.name,
@@ -181,6 +164,7 @@ export default function RootLayout({
              * "missing-suspense-with-csr-bailout").
              */}
             <BookingDrawer />
+            <PwaBoot />
             <Suspense fallback={null}>
               <PostHogPageView />
             </Suspense>

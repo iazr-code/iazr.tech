@@ -16,15 +16,23 @@ export type Project = {
   hrefLabel: Localized;
   image: string;
   year: string;
-  /** Verified results, said as sentences (never a stat strip). */
+  /** Verified results, said as sentences. */
   results?: Localized<string[]>;
+  /** Verified headline figures shown as badges (only where the client confirmed them). */
+  highlights?: { value: string; label: Localized }[];
+  /** Industries for the case filter, read from what each deployment is. */
+  industries: Industry[];
 };
+
+export type Industry = "health" | "b2b" | "education" | "ai" | "culture";
+export const INDUSTRIES: Industry[] = ["health", "b2b", "education", "ai", "culture"];
 
 const visit: Localized = { es: "Visitar sitio", en: "Visit site" };
 
 export const featuredProjects: Project[] = [
   {
     id: "zolaris",
+    industries: ["ai", "b2b"],
     codename: "zolarisweb",
     role: { es: "Asistente IA, CRM y web", en: "AI assistant, CRM and website" },
     name: "Zolaris Ingeniería",
@@ -44,6 +52,11 @@ export const featuredProjects: Project[] = [
         "99.9% uptime for the corporate site wired into n8n.",
       ],
     },
+    highlights: [
+      { value: "> 80 %", label: { es: "menos tiempo de atención inicial", en: "less time to first response" } },
+      { value: "100 %", label: { es: "trazabilidad en el CRM", en: "traceability in the CRM" } },
+      { value: "99,9 %", label: { es: "disponibilidad del portal", en: "site uptime" } },
+    ],
     stack: ["Next.js", "Supabase", "n8n", "WhatsApp API", "IA"],
     href: "https://zolarisweb.vercel.app/",
     hrefLabel: visit,
@@ -52,6 +65,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "la-campana",
+    industries: ["b2b"],
     codename: "lacampana.co",
     role: { es: "Web corporativa", en: "Corporate website" },
     name: "La Campana",
@@ -67,6 +81,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "emssanar-eps",
+    industries: ["health"],
     codename: "emssanareps.co",
     role: { es: "Portal institucional", en: "Institutional portal" },
     name: "Emssanar EPS",
@@ -82,6 +97,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "paisajes-sonoros",
+    industries: ["culture"],
     codename: "paisajes-sonoros",
     role: { es: "Experiencia cultural", en: "Cultural experience" },
     name: "Paisajes Sonoros",
@@ -97,6 +113,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "dozurcol-pasto",
+    industries: ["b2b"],
     codename: "dozurcol-pasto",
     role: { es: "Sitio comercial", en: "Commercial site" },
     name: "Dozurcol Pasto",
@@ -112,6 +129,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "portafolio-sandra",
+    industries: ["health"],
     codename: "portafolio-sandra-sst",
     role: { es: "Portafolio profesional", en: "Professional portfolio" },
     name: "Portafolio Sandra Gómez",
@@ -127,6 +145,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "panini-2026",
+    industries: ["culture"],
     codename: "panini26",
     role: { es: "Experiencia de colección", en: "Collector experience" },
     name: "Panini 2026",
@@ -142,6 +161,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "metodo-sonora",
+    industries: ["education"],
     codename: "metodo-sonora",
     role: { es: "Plataforma educativa", en: "Learning platform" },
     name: "Método Sonora",
@@ -157,6 +177,7 @@ export const featuredProjects: Project[] = [
   },
   {
     id: "sst-medsys",
+    industries: ["health"],
     codename: "sst-med-sys",
     role: { es: "Dashboard de salud", en: "Health dashboard" },
     name: "SST MedSys",

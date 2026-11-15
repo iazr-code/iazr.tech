@@ -14,7 +14,7 @@ export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) 
   const roles = experience.slice(0, 3);
 
   return (
-    <section id="fundador" data-world-section="founder" className="section">
+    <section id="fundador" data-world-section="founder" className="section g-cobalt">
       <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="w-full max-w-[302px] rounded-[var(--r-lg)] bg-surface p-3">

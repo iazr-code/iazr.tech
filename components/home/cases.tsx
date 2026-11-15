@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 
 import { setHoveredProject, setSelectedProject } from "@/lib/world/interaction-store";
+import { caseStore } from "@/lib/case-store";
+import { INDUSTRIES, type Industry } from "@/lib/data/projects";
+import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export type CaseItem = {
@@ -19,6 +22,8 @@ export type CaseItem = {
   imageAlt: string;
   results?: string[];
   resultsLabel?: string;
+  highlights?: { value: string; label: string }[];
+  industries: Industry[];
 };
 
 /**
@@ -32,38 +37,78 @@ export function Cases({
   lead,
   listLabel,
   stackLabel,
+  filters,
 }: {
   items: CaseItem[];
   title: string;
   lead: string;
   listLabel: string;
   stackLabel: string;
+  filters: { label: string; all: string; names: Record<Industry, string> };
 }) {
   const [active, setActive] = useState(0);
+  const [filter, setFilter] = useState<Industry | "all">("all");
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const current = items[active];
+  const visible = items.map((item, i) => ({ item, i })).filter(({ item }) => filter === "all" || item.industries.includes(filter));
 
   useEffect(() => {
     setSelectedProject(active);
   }, [active]);
 
+  // The AI agent can ask for a case by id ("show me Zolaris").
+  const request = useStore(caseStore, (s) => s.nonce);
+  useEffect(() => {
+    const id = caseStore.get().requested;
+    if (!id) return;
+    const i = items.findIndex((it) => it.id === id);
+    if (i >= 0) {
+      setFilter("all");
+      setActive(i);
+    }
+  }, [request, items]);
+
+  const choose = (f: Industry | "all") => {
+    setFilter(f);
+    const first = items.findIndex((it) => f === "all" || it.industries.includes(f));
+    if (first >= 0 && !(f === "all" || items[active].industries.includes(f))) setActive(first);
+  };
+
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     const dir = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
     if (!dir) return;
     e.preventDefault();
-    const next = (active + dir + items.length) % items.length;
+    const pos = Math.max(0, visible.findIndex((v) => v.i === active));
+    const next = visible[(pos + dir + visible.length) % visible.length].i;
     setActive(next);
     tabs.current[next]?.focus();
   };
 
   return (
-    <section id="casos" data-world-section="projects" className="section">
+    <section id="casos" data-world-section="projects" className="section g-ivory bg-transparent">
       <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="flex flex-col lg:col-span-5">
           <h2 className="t-h2">{title}</h2>
           <p className="t-lead mt-4">{lead}</p>
-          <div role="tablist" aria-label={listLabel} aria-orientation="vertical" onKeyDown={onKey} className="mt-8 flex flex-col">
-            {items.map((item, i) => {
+          <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label={filters.label}>
+            {(["all", ...INDUSTRIES] as const).map((f) => {
+              const count = f === "all" ? items.length : items.filter((it) => it.industries.includes(f)).length;
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  aria-pressed={filter === f}
+                  onClick={() => choose(f)}
+                  className={cn("chip", filter === f && "chip--on")}
+                >
+                  {f === "all" ? filters.all : filters.names[f]}
+                  <span className="font-mono text-[13px] opacity-70">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div role="tablist" aria-label={listLabel} aria-orientation="vertical" onKeyDown={onKey} className="mt-5 flex flex-col">
+            {visible.map(({ item, i }) => {
               const on = i === active;
               return (
                 <button
@@ -127,6 +172,16 @@ export function Cases({
                 {current.stack.join(", ")}
               </p>
               <p className="mt-2 max-w-[60ch]">{current.description}</p>
+              {current.highlights ? (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {current.highlights.map((h) => (
+                    <li key={h.value} className="metric-badge">
+                      <span className="font-display text-[20px] font-medium tracking-[-0.02em]">{h.value}</span>
+                      <span className="text-[13px]">{h.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               {current.results ? (
                 <>
                   <h3 className="sr-only">{current.resultsLabel}</h3>

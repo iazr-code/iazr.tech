@@ -3,7 +3,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { streamText, convertToModelMessages } from "ai";
 import { MockLanguageModelV4, simulateReadableStream } from "ai/test";
 
-import { buildSystemPrompt } from "@/lib/ai/system-prompt";
+import { buildSystemPrompt, describeActions } from "@/lib/ai/system-prompt";
 import { getActiveModelConfig } from "@/lib/ai/model-config";
 import { chatLimiter, getClientIp } from "@/lib/security/rate-limit";
 import { parseChatRequest } from "@/lib/validations/chat";
@@ -119,7 +119,7 @@ export async function POST(req: Request) {
   const parsed = parseChatRequest(body);
   if (!parsed.ok) return jsonError(parsed.status, parsed.error);
 
-  const system = buildSystemPrompt(parsed.locale);
+  const system = buildSystemPrompt(parsed.locale) + describeActions(parsed.actions, parsed.locale);
   const { provider, model: modelId } = getActiveModelConfig();
   const messages = await convertToModelMessages(parsed.messages);
 

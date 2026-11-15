@@ -1,5 +1,5 @@
 /*
- * IA-ZR — design system (cobalt on sand).
+ * IA-ZR — design system (Vanguardia 2027: cobalt across six section grounds).
  * One system per page: one ink, one accent, one radius scale, one button pair,
  * one hairline, one section box. Tokens are written once on :root; Tailwind
  * reads them through @theme inline.
@@ -8,18 +8,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Palette dealt by Taste (cobalt-on-sand, two-tone). */
-  --p-bg: #e6dbc7;
-  --p-surface: #ddd0b9;
-  --p-paper: #f0e8da;
-  --p-ink: #062b8a;
-  --p-muted: #3253a4;
-  --p-inv-bg: #062b8a;
-  --p-inv-surface: #153a90;
-  --p-inv-ink: #e6dbc7;
-  --p-inv-muted: #b8c2dc;
+  /* Section grounds (Vanguardia 2027): every section names its own ground. */
+  --c-ivory: #f7f4ed;
+  --c-white: #faf8f5;
+  --c-sand: #eae2d3;
+  --c-night: #05153f;
+  --c-engine: #081c4a;
+  --c-cobalt: #062b8a;
+  --c-signal: #8fb0ff;
+  --c-signal-dot: #5b8cff;
+  --c-live: #3d6bff;
 
-  /* Semantic tokens (components read these). */
+  /* Default ground: ivory. A .g-* class swaps these five per section. */
+  --p-bg: var(--c-ivory);
+  --p-surface: #efe9dc;
+  --p-paper: #fcfaf6;
+  --p-ink: var(--c-cobalt);
+  --p-muted: #263f8e;
+  --p-accent: var(--c-cobalt);
+  --p-inv-bg: var(--c-cobalt);
+  --p-inv-surface: #153a90;
+  --p-inv-ink: var(--c-ivory);
+  --p-inv-muted: #c9d3ec;
+  --grid-line: rgba(6, 43, 138, 0.05);
+
+  --destructive: #9f2a1c;
+  --success: #1c6a3e;
+  --warning: #8a5a00;
+}
+
+/* Semantic tokens resolve on every ground, so a section's --p-* values flow into its components. */
+:root, .g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .ground-surface, .ground-inverse {
   --background: var(--p-bg);
   --foreground: var(--p-ink);
   --card: var(--p-surface);
@@ -32,18 +51,17 @@
   --secondary-foreground: var(--p-ink);
   --muted: var(--p-surface);
   --muted-foreground: var(--p-muted);
-  --accent: var(--p-ink);
+  --accent: var(--p-accent);
   --accent-foreground: var(--p-bg);
-  --destructive: #9f2a1c;
   --destructive-foreground: var(--p-bg);
-  --success: #1c6a3e;
-  --warning: #8a5a00;
   --border: color-mix(in oklab, var(--p-ink) 14%, transparent);
   --input: color-mix(in oklab, var(--p-ink) 24%, transparent);
   --ring: var(--p-ink);
   --line: color-mix(in oklab, var(--p-ink) 14%, transparent);
   --line-strong: color-mix(in oklab, var(--p-ink) 28%, transparent);
+}
 
+:root {
   /* Rhythm (desktop / phone). */
   --nav: 72px;
   --padt: 120px;
@@ -68,10 +86,12 @@
   --r-md: 12px;
   --r-lg: 20px;
   --r-btn: 8px;
+  /* Rounded data-end on chart bars (dataviz mark spec). */
+  --r-data: 4px;
   --btn-h: 44px;
 
   /* Motion: exponential ease-out; quick in, slower out. */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --m-in: 160ms;
   --m-out: 260ms;
@@ -186,17 +206,39 @@
 @media (min-width: 1024px) {
   .section { min-height: calc(var(--h, 1) * 100svh); }
 }
-.ground-surface { background: var(--p-surface); }
+/*
+ * Section grounds. Each sets the five --p-* values and paints itself; the
+ * shared semantic rule above turns them into --background, --foreground, etc.
+ * Every text pair below is AAA (7:1 or more) on its own ground.
+ */
+.g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt { background: var(--p-bg); color: var(--p-ink); }
+.g-ivory { --p-bg: var(--c-ivory); --p-surface: #efe9dc; --p-paper: #fcfaf6; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
+.g-white { --p-bg: var(--c-white); --p-surface: #f1ece3; --p-paper: #ffffff; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
+.g-sand { --p-bg: var(--c-sand); --p-surface: #f3eee4; --p-paper: #faf7f1; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
+.g-night, .g-engine, .g-cobalt, .ground-inverse { color-scheme: dark; --p-ink: var(--c-ivory); --p-accent: var(--c-signal); --grid-line: rgba(247, 244, 237, 0.06); --destructive: #ffb4a6; --success: #8fd3a8; }
+.g-night { --p-bg: var(--c-night); --p-surface: #0b2159; --p-paper: #0e2763; --p-muted: #b8c2dc; }
+.g-engine { --p-bg: var(--c-engine); --p-surface: #0d2558; --p-paper: #102b63; --p-muted: #b8c2dc; }
+.g-cobalt { --p-bg: var(--c-cobalt); --p-surface: #0f3596; --p-paper: #153a90; --p-muted: #c9d3ec; }
+/* Legacy names kept for /about and the footer. */
+.ground-surface { --p-bg: #efe9dc; --p-surface: var(--c-ivory); background: var(--p-bg); }
 .ground-inverse {
-  background: var(--p-inv-bg);
-  color: var(--p-inv-ink);
-  --foreground: var(--p-inv-ink);
-  --muted-foreground: var(--p-inv-muted);
-  --border: color-mix(in oklab, var(--p-inv-ink) 18%, transparent);
-  --line: color-mix(in oklab, var(--p-inv-ink) 18%, transparent);
-  --line-strong: color-mix(in oklab, var(--p-inv-ink) 32%, transparent);
-  --ring: var(--p-inv-ink);
+  --p-bg: var(--c-cobalt); --p-surface: #0f3596; --p-paper: #153a90; --p-ink: var(--c-ivory); --p-muted: #c9d3ec; --p-accent: var(--c-signal);
+  background: var(--p-bg); color: var(--p-ink); color-scheme: dark;
 }
+/* The hero's architectural grid: 24px lines, 5% cobalt. */
+.arch-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+}
+/* Logo tiles stay on paper on dark grounds: the real logos are drawn for light. */
+:is(.g-night, .g-engine, .g-cobalt, .ground-inverse) .ic-tile { background: var(--c-ivory); border-color: transparent; }
+:is(.g-night, .g-engine, .g-cobalt, .ground-inverse) .ic-tile > svg { color: var(--c-cobalt); }
+/* A glass card on the dark grounds. */
+.card-dark { background: color-mix(in oklab, var(--p-surface) 78%, transparent); border: 1px solid var(--line); border-radius: var(--r-lg); backdrop-filter: blur(6px); }
+.signal { color: var(--c-signal); }
 
 /* ── Type ───────────────────────────────────────────────────────────────── */
 .t-h1 { font-size: var(--t-h1); line-height: 1.02; letter-spacing: -0.04em; }
@@ -224,13 +266,11 @@
 }
 .btn--primary { background: var(--p-ink); color: var(--p-bg); }
 .btn--secondary { background: color-mix(in oklab, var(--foreground) 8%, transparent); color: var(--foreground); }
-.ground-inverse .btn--primary { background: var(--p-inv-ink); color: var(--p-inv-bg); }
 .btn:active { transform: translateY(1px) scale(0.985); transition-duration: 90ms; }
 @media (hover: hover) and (pointer: fine) {
   .btn:hover { transform: translateY(-1px); transition-duration: var(--m-in); }
   .btn--primary:hover { background: color-mix(in oklab, var(--p-ink) 86%, var(--p-bg)); }
   .btn--secondary:hover { background: color-mix(in oklab, var(--foreground) 14%, transparent); }
-  .ground-inverse .btn--primary:hover { background: color-mix(in oklab, var(--p-inv-ink) 88%, var(--p-inv-bg)); }
   .btn:active { transform: translateY(1px) scale(0.985); }
 }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
@@ -288,10 +328,118 @@
   border: 1px solid var(--line);
 }
 
+/* ── Hero composition: the window floats left, the neural core sits right ─ */
+.hero-core { position: absolute; left: 50%; top: 10px; width: 132px; height: 132px; translate: -50% 0; pointer-events: none; }
+.hero-window { position: relative; padding: 152px 16px 0; text-align: left; }
+@media (min-width: 640px) {
+  .hero-core { top: 16px; width: 180px; height: 180px; }
+  .hero-window { padding: 212px 32px 0; }
+}
+@media (min-width: 1024px) {
+  .hero-core { left: auto; right: 4%; top: 50%; translate: 0 -50%; height: min(84%, 420px); width: auto; aspect-ratio: 1; }
+  .hero-window { width: 64%; padding: 32px 0 0 32px; }
+}
+.hero-fallback { position: absolute; inset: 0; transition: opacity 400ms var(--ease-out); }
+html[data-world="3d"] [data-world-frame="hero"][data-gl-ready] .hero-fallback { opacity: 0; }
+
+/* A card with layered elevation: contact shadow, near shadow, far ambient. */
+.float-card { border-radius: var(--r-lg); box-shadow:
+  0 1px 1px color-mix(in oklab, var(--c-cobalt) 6%, transparent),
+  0 6px 12px -4px color-mix(in oklab, var(--c-cobalt) 10%, transparent),
+  0 20px 40px -12px color-mix(in oklab, var(--c-cobalt) 16%, transparent),
+  0 48px 96px -32px color-mix(in oklab, var(--c-cobalt) 24%, transparent); }
+.float-card > .window { box-shadow: none; }
+
+/* ── Telemetry ticker ───────────────────────────────────────────────────── */
+.telemetry { display: flex; align-items: center; gap: 16px; height: 44px; border-top: 1px solid var(--line); font-size: var(--t-label); }
+.telemetry__live { display: inline-flex; align-items: center; gap: 8px; flex: none; font-weight: 500; }
+.telemetry__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 0 color-mix(in oklab, var(--success) 50%, transparent); animation: live-dot 2s var(--ease-out) infinite; }
+@keyframes live-dot { 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.telemetry__track { position: relative; flex: 1; min-width: 0; overflow: hidden; mask-image: linear-gradient(90deg, transparent, var(--c-cobalt) 4%, var(--c-cobalt) 96%, transparent); border-radius: var(--r-sm); }
+.telemetry__belt { display: flex; width: max-content; animation: belt 48s linear infinite; }
+.telemetry__track:hover .telemetry__belt, .telemetry__track:focus-visible .telemetry__belt { animation-play-state: paused; }
+.telemetry__row { display: flex; gap: 32px; padding-right: 32px; margin: 0; list-style: none; }
+.telemetry__item { display: inline-flex; gap: 8px; white-space: nowrap; }
+@keyframes belt { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .telemetry__belt { animation: none; }
+  .telemetry__track { overflow-x: auto; }
+  .telemetry__row[aria-hidden] { display: none; }
+}
+
+/* ── Track cards ────────────────────────────────────────────────────────── */
+.track-card { background: var(--p-paper); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.track-card--live { border: 2px solid var(--c-cobalt); box-shadow: 0 24px 48px -28px color-mix(in oklab, var(--c-cobalt) 45%, transparent); }
+
+/* ── Hover lift: a linked card rises 2px ───────────────────────────────── */
+.lift { transition: transform var(--m-out) var(--ease-out), border-color var(--m-out) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .lift:hover { transform: translateY(-2px); transition-duration: var(--m-in); }
+}
+
+/* ── NFC card (CSS 3D) ──────────────────────────────────────────────────── */
+.nfc-stage { perspective: 1100px; width: min(100%, 360px); padding: 24px 12px; touch-action: pan-y; }
+.nfc-hit { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--r-lg); }
+.nfc-card { position: relative; width: 100%; aspect-ratio: 85.6 / 54; transform-style: preserve-3d; will-change: transform; border-radius: var(--r-lg); }
+.nfc-face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; padding: 22px; border-radius: var(--r-lg);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
+}
+.nfc-face--front {
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--c-cobalt) 78%, var(--c-live)) 0%, transparent 55%),
+    linear-gradient(135deg, var(--c-cobalt), var(--c-night));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-ivory) 12%, transparent), 0 2px 4px color-mix(in oklab, var(--c-night) 18%, transparent), 0 24px 48px -16px color-mix(in oklab, var(--c-night) 45%, transparent);
+}
+.nfc-face--back { transform: rotateY(180deg); background: #f3eee4; box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-cobalt) 14%, transparent), 0 24px 48px -16px color-mix(in oklab, var(--c-night) 35%, transparent); }
+.nfc-sheen {
+  position: absolute; inset: 0; border-radius: var(--r-lg); pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(60% 80% at var(--sheen-x, 50%) var(--sheen-y, 50%), color-mix(in oklab, var(--c-ivory) 45%, transparent), transparent 60%);
+  transform: translateZ(1px);
+}
+.nfc-hit:focus-visible { outline: 2px solid var(--ring); outline-offset: 6px; }
+
+/* ── ROI calculator ─────────────────────────────────────────────────────── */
+.roi-range { -webkit-appearance: none; appearance: none; height: 28px; background: transparent; cursor: pointer; }
+.roi-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--c-signal) var(--fill), color-mix(in oklab, var(--p-ink) 18%, transparent) var(--fill)); }
+.roi-range::-moz-range-track { height: 4px; border-radius: 4px; background: color-mix(in oklab, var(--p-ink) 18%, transparent); }
+.roi-range::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--c-signal); }
+.roi-range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--c-ivory); border: 2px solid var(--c-signal); box-shadow: 0 2px 8px color-mix(in oklab, var(--c-night) 40%, transparent); transition: transform var(--m-in) var(--ease-out); }
+.roi-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--c-ivory); border: 2px solid var(--c-signal); }
+.roi-range:active::-webkit-slider-thumb { transform: scale(1.12); }
+.roi-range:focus-visible { outline: 2px solid var(--c-signal); outline-offset: 4px; }
+.roi-panel { background: color-mix(in oklab, var(--p-surface) 85%, transparent); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 28px; transition: box-shadow 600ms var(--ease-out); }
+.roi-panel--flash { box-shadow: 0 0 0 2px var(--c-signal); }
+@media (max-width: 639px) { .roi-panel { padding: 20px; } }
+.roi-tile { border-radius: var(--r-md); background: color-mix(in oklab, var(--p-ink) 6%, transparent); padding: 16px; }
+.roi-figure { margin-top: 6px; font-family: var(--font-display); font-size: var(--t-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.roi-bar { border-radius: var(--r-data) var(--r-data) 0 0; background: var(--c-signal); transition: height 420ms var(--ease-out), opacity 160ms var(--ease-out); }
+.roi-option { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--line); text-align: left; color: var(--foreground); text-decoration: none; background: transparent; cursor: pointer; transition: background-color var(--m-out) var(--ease-out), transform var(--m-out) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .roi-option:hover { background: color-mix(in oklab, var(--p-ink) 8%, transparent); transform: translateY(-1px); } }
+.roi-details summary::-webkit-details-marker { display: none; }
+
+/* ── Dialogs (scanner, passkey) ─────────────────────────────────────────── */
+dialog.app-dialog, dialog.scanner-dialog { max-height: calc(100dvh - 32px); overflow: auto; color: var(--foreground); }
+dialog.app-dialog::backdrop, dialog.scanner-dialog::backdrop { background: color-mix(in oklab, var(--c-night) 62%, transparent); backdrop-filter: blur(4px); }
+dialog.app-dialog[open], dialog.scanner-dialog[open] { animation: dialog-in 260ms var(--ease-out); }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { dialog.app-dialog[open], dialog.scanner-dialog[open] { animation: none; } }
+
+/* ── Filter chips and metric badges ─────────────────────────────────────── */
+.chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--foreground); font-size: var(--t-body); font-weight: 500; cursor: pointer; transition: background-color var(--m-out) var(--ease-out), color var(--m-out) var(--ease-out), transform 90ms var(--ease-out); }
+.chip:active { transform: scale(0.97); }
+.chip--on { background: var(--p-ink); color: var(--p-bg); border-color: var(--p-ink); }
+@media (hover: hover) and (pointer: fine) { .chip:not(.chip--on):hover { background: color-mix(in oklab, var(--p-ink) 8%, transparent); } }
+.metric-badge { display: inline-flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: var(--r-md); background: var(--c-cobalt); color: var(--c-ivory); line-height: 1.2; }
+.mic-live { box-shadow: 0 0 0 0 color-mix(in oklab, var(--c-signal) 60%, transparent); animation: mic-ring 1.4s var(--ease-out) infinite; }
+@keyframes mic-ring { to { box-shadow: 0 0 0 10px transparent; } }
+@media (prefers-reduced-motion: reduce) { .mic-live { animation: none; } }
+
 /* ── Nav ────────────────────────────────────────────────────────────────── */
 .site-nav {
   position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--nav);
-  background: var(--p-bg); border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--c-ivory) 94%, transparent); border-bottom: 1px solid var(--line);
+  backdrop-filter: saturate(1.2) blur(10px);
 }
 
 /* ── Skip link ──────────────────────────────────────────────────────────── */

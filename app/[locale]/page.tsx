@@ -17,6 +17,7 @@ import { Tracks } from "@/components/home/tracks";
 import { FlowSection } from "@/components/home/flow";
 import { Cases } from "@/components/home/cases";
 import { Founder } from "@/components/home/founder";
+import { RoiSection } from "@/components/roi/roi-section";
 
 /**
  * Home per locale (SSG). Each section carries `data-world-section`: the root
@@ -64,30 +65,41 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     image: p.image,
     imageAlt: `${dict.cases.screenshotAlt} ${p.name}`,
     results: p.results ? localize(p.results, locale) : undefined,
+    highlights: p.highlights?.map((h) => ({ value: h.value, label: localize(h.label, locale) })),
+    industries: p.industries,
     resultsLabel: dict.cases.resultsLabel,
   }));
 
   return (
     <>
       <JsonLd data={buildJsonLdGraph(locale)} />
-      <Hero dict={dict} />
+      <Hero dict={dict} locale={locale} />
       <Problem dict={dict} />
       <Tracks dict={dict} />
       <FlowSection t={dict.flow} />
+      <RoiSection t={dict.roi} tracks={dict.tracks} locale={locale} />
       <Cases
         items={cases}
         title={dict.cases.title}
         lead={dict.cases.lead}
         listLabel={dict.cases.listLabel}
         stackLabel={dict.cases.stack}
+        filters={dict.cases.filters}
       />
 
-      <section id="asistente" data-world-section="chat" className="section">
+      <section id="asistente" data-world-section="chat" className="section g-white">
         <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
           <div className="flex flex-col lg:col-span-5">
             <h2 className="t-h2">{dict.chat.title}</h2>
             <p className="t-lead mt-4">{dict.chat.description}</p>
-            <h3 className="t-label mt-10 text-muted-foreground">{dict.chat.knowsTitle}</h3>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {dict.chat.capabilities.map((c) => (
+                <li key={c} className="rounded-full border border-[var(--line-strong)] px-3 py-1.5 text-[14px] font-medium">
+                  {c}
+                </li>
+              ))}
+            </ul>
+            <h3 className="t-label mt-8 text-muted-foreground">{dict.chat.knowsTitle}</h3>
             <ul className="mt-3">
               {dict.chat.knows.map((item) => (
                 <li key={item} className="border-t border-border py-3">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
-import { Star } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import dynamic from "next/dynamic";
+import { ScanLine, Star } from "lucide-react";
 
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { cn } from "@/lib/utils";
@@ -9,12 +10,42 @@ import { BrandIcon } from "@/components/home/brand-icon";
 
 type Flow = Dictionary["flow"];
 
+// The scanner (camera, canvas analysis) loads only when the visitor opens it.
+const ScannerDialog = dynamic(() => import("@/components/scanner/scanner-dialog").then((m) => m.ScannerDialog), { ssr: false });
+
+/** Rail behind the step numbers: its cobalt fill runs from step 1 to the active step. */
+function useRail(list: HTMLDivElement | null, step: number) {
+  const [rail, setRail] = useState({ top: 0, length: 0, fill: 0 });
+  useEffect(() => {
+    if (!list) return;
+    const measure = () => {
+      const dots = Array.from(list.querySelectorAll<HTMLElement>("[data-step-dot]"));
+      if (dots.length < 2) return;
+      const base = list.getBoundingClientRect().top;
+      const centre = (el: HTMLElement) => {
+        const r = el.getBoundingClientRect();
+        return r.top + r.height / 2 - base;
+      };
+      const first = centre(dots[0]);
+      setRail({ top: first, length: centre(dots[dots.length - 1]) - first, fill: centre(dots[step]) - first });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(list);
+    return () => ro.disconnect();
+  }, [list, step]);
+  return rail;
+}
+
 /**
  * One customer end to end: four click-driven steps (tabs, arrow keys move
  * between them) re-render the IA-ZR Control window. Nothing advances on a timer.
  */
 export function FlowSection({ t }: { t: Flow }) {
   const [step, setStep] = useState(0);
+  const [scanner, setScanner] = useState(false);
+  const [list, setList] = useState<HTMLDivElement | null>(null);
+  const rail = useRail(list, step);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -27,12 +58,18 @@ export function FlowSection({ t }: { t: Flow }) {
   };
 
   return (
-    <section id="flujo" data-world-section="flow" className="section ground-surface">
+    <section id="flujo" data-world-section="flow" className="section g-sand">
       <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="flex flex-col lg:col-span-5">
           <h2 className="t-h2">{t.title}</h2>
           <p className="t-lead mt-4">{t.lead}</p>
-          <div role="tablist" aria-label={t.stepsLabel} aria-orientation="vertical" onKeyDown={onKey} data-edge-free className="mt-8 flex flex-col">
+          <div ref={setList} role="tablist" aria-label={t.stepsLabel} aria-orientation="vertical" onKeyDown={onKey} data-edge-free className="relative mt-8 flex flex-col">
+            <span aria-hidden="true" className="pointer-events-none absolute left-[15.5px] w-px bg-[var(--line-strong)]" style={{ top: rail.top, height: rail.length }}>
+              <span
+                className="absolute inset-x-0 top-0 h-full origin-top bg-primary transition-transform duration-500 ease-[var(--ease-out)]"
+                style={{ transform: `scaleY(${rail.length ? rail.fill / rail.length : 0})` }}
+              />
+            </span>
             {t.steps.map((s, i) => {
               const active = i === step;
               return (
@@ -53,9 +90,14 @@ export function FlowSection({ t }: { t: Flow }) {
                   )}
                 >
                   <span
+                    data-step-dot
                     className={cn(
-                      "inline-grid size-8 place-items-center rounded-full font-mono text-[13px] transition-colors duration-200",
-                      active ? "bg-primary text-primary-foreground" : "bg-background"
+                      "relative z-[1] inline-grid size-8 place-items-center rounded-full font-mono text-[13px] transition-[background-color,color,box-shadow] duration-300",
+                      active
+                        ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_color-mix(in_oklab,var(--c-live)_22%,transparent)]"
+                        : i < step
+                          ? "bg-paper text-foreground shadow-[inset_0_0_0_1.5px_var(--p-ink)]"
+                          : "bg-paper"
                     )}
                   >
                     {i + 1}
@@ -72,6 +114,13 @@ export function FlowSection({ t }: { t: Flow }) {
                 </button>
               );
             })}
+          </div>
+          <div className="mt-6 flex flex-col items-start gap-2">
+            <button type="button" onClick={() => setScanner(true)} className="btn btn--secondary" aria-haspopup="dialog">
+              <ScanLine className="size-4" aria-hidden="true" />
+              {t.scanner.open}
+            </button>
+            <p className="text-[14px] text-muted-foreground">{t.scanner.note}</p>
           </div>
         </div>
 
@@ -90,6 +139,7 @@ export function FlowSection({ t }: { t: Flow }) {
           </div>
         </div>
       </div>
+      {scanner ? <ScannerDialog t={t.scanner} onClose={() => setScanner(false)} /> : null}
     </section>
   );
 }

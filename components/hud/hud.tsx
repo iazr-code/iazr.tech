@@ -10,6 +10,8 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { BookingButton } from "@/components/booking/booking-button";
 import { LanguageSwitch } from "@/components/hud/language-switch";
 import { SoundToggle } from "@/components/hud/sound-toggle";
+import { BrandLogo } from "@/components/brand/brand-logo";
+import { InstallButton } from "@/components/pwa/install-button";
 
 /**
  * The site's one fixed bar: opaque ground, a hairline from the first paint, the
@@ -39,12 +41,14 @@ export function Hud() {
   }, [open]);
 
   const home = `/${locale}`;
+  // "wide" links only fit next to the controls from 1280px up; the sheet lists them all.
   const links = [
-    { label: dict.nav.tracks, href: `${home}#servicios` },
-    { label: dict.nav.flow, href: `${home}#flujo` },
-    { label: dict.nav.cases, href: `${home}#casos` },
-    { label: dict.nav.chat, href: `${home}#asistente` },
-    { label: dict.nav.founder, href: `${home}#fundador` },
+    { label: dict.nav.tracks, href: `${home}#servicios`, wide: false },
+    { label: dict.nav.flow, href: `${home}#flujo`, wide: true },
+    { label: dict.nav.roi, href: `${home}#roi`, wide: false },
+    { label: dict.nav.cases, href: `${home}#casos`, wide: false },
+    { label: dict.nav.chat, href: `${home}#asistente`, wide: false },
+    { label: dict.nav.founder, href: `${home}#fundador`, wide: true },
   ];
 
   return (
@@ -53,19 +57,21 @@ export function Hud() {
         <a href="#main" className="skip-link">
           {dict.nav.skip}
         </a>
-        <Link href={home} aria-label="IA-ZR" className="font-display text-[20px] font-medium tracking-[-0.03em] text-foreground">
-          IA-ZR
+        <Link href={home} aria-label="IA-ZR, inicio" className="shrink-0">
+          <BrandLogo badge={false} className="sm:hidden" />
+          <BrandLogo className="max-sm:hidden" />
         </Link>
 
         <nav aria-label={dict.nav.primary} className="hidden items-center gap-7 lg:flex">
           {links.map((item) => (
-            <Link key={item.href} href={item.href} className="link text-base">
+            <Link key={item.href} href={item.href} className={`link text-base ${item.wide ? "hidden xl:inline-flex" : ""}`}>
               {item.label}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
+          <InstallButton label={dict.pwa.install} icon className="hidden xl:inline-flex" />
           <LanguageSwitch className="hidden sm:flex" />
           <SoundToggle labelOn={dict.hud.soundOn} labelOff={dict.hud.soundOff} hint={dict.hud.soundHint} />
           <BookingButton source="hud" className="hidden sm:inline-flex">
@@ -104,6 +110,7 @@ export function Hud() {
               <BookingButton source="hud" className="w-full">
                 {dict.hud.book}
               </BookingButton>
+              <InstallButton label={dict.pwa.install} className="w-full" />
               <LanguageSwitch className="self-start" />
             </div>
           </div>

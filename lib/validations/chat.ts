@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { UIMessage } from "ai";
 
 import { defaultLocale, locales, type Locale } from "@/lib/i18n/config";
+import { ACTION_CODES, type ActionCode } from "@/lib/agent/actions";
 
 /**
  * Límites del contexto que llega al modelo:
@@ -20,7 +21,7 @@ export const CHAT_LIMITS = {
 } as const;
 
 export type ChatParseResult =
-  | { ok: true; messages: UIMessage[]; locale: Locale }
+  | { ok: true; messages: UIMessage[]; locale: Locale; actions: ActionCode[] }
   | { ok: false; status: 400 | 413; error: string };
 
 const partSchema = z.looseObject({ type: z.string(), text: z.unknown().optional() });
@@ -36,6 +37,8 @@ const bodySchema = z.object({
     )
     .max(CHAT_LIMITS.maxRawMessages),
   locale: z.enum(locales).optional(),
+  /** Page actions the client already ran for the last message (codes only, never free text). */
+  actions: z.array(z.enum(ACTION_CODES as [ActionCode, ...ActionCode[]])).max(5).optional(),
 });
 
 // Controles C0 (salvo \t y \n), \r, DEL y C1.
@@ -93,5 +96,6 @@ export function parseChatRequest(body: unknown): ChatParseResult {
     ok: true,
     messages: kept.map((m) => ({ id: m.id, role: m.role, parts: [{ type: "text", text: m.text }] })),
     locale: parsed.data.locale ?? defaultLocale,
+    actions: [...new Set(parsed.data.actions ?? [])],
   };
 }

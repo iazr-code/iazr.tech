@@ -2,13 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { Eraser, Send, Square } from "lucide-react";
+import { Eraser, Mic, Send, Square, Volume2, VolumeX, Zap } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { ModelConfig } from "@/lib/ai/model-config";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { siteConfig } from "@/lib/data/site";
+import { detectActions, type AgentAction } from "@/lib/agent/actions";
+import { runAction } from "@/lib/agent/run";
+import { telemetryStore } from "@/lib/telemetry-store";
+import { useVoice } from "@/components/chat/use-voice";
+import { VoiceWave } from "@/components/chat/voice-wave";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -41,6 +46,20 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
   // El input es estado local del componente (el hook v4 no lo gestiona).
   const [input, setInput] = useState("");
   const isLoading = status === "submitted" || status === "streaming";
+
+  // Page actions the agent ran, keyed by the index of the visitor message that asked for them.
+  const [notes, setNotes] = useState<Record<number, string[]>>({});
+  const sentAt = useRef<number | null>(null);
+  const prevStatus = useRef(status);
+
+  const actionLabel = (a: AgentAction) =>
+    a.code === "roi" ? (Object.keys(a.prefill).length ? dict.actions.roiPrefilled : dict.actions.roi) : dict.actions[a.code];
+
+  const voice = useVoice({
+    locale,
+    onInterim: (text) => setInput(text),
+    onFinal: (text) => submit(text),
+  });
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
@@ -101,28 +120,56 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
     };
   }, []);
 
-  /** Envía un mensaje al asistente (input libre o chip de sugerencia). */
-  const submit = (text: string) => {
-    if (!text.trim() || isLoading) return;
-    void sendMessage({ text }, { body: { locale } });
+  /**
+   * Sends a message (typed, dictated or a suggestion). Intents the page can
+   * carry out run first, client side; their codes travel with the message so
+   * the model can mention them.
+   */
+  function submit(text: string) {
+    const clean = text.trim();
+    if (!clean || isLoading) return;
+    const actions = detectActions(clean);
+    if (actions.length) {
+      setNotes((n) => ({ ...n, [messages.length]: actions.map(actionLabel) }));
+      window.setTimeout(() => actions.forEach(runAction), 350);
+    }
+    voice.silence();
+    sentAt.current = performance.now();
+    void sendMessage({ text: clean }, { body: { locale, actions: actions.map((a) => a.code) } });
     setInput("");
-  };
+  }
 
-  const submitSuggestion = (text: string) => {
-    if (isLoading) return;
-    void sendMessage({ text }, { body: { locale } });
-  };
+  const submitSuggestion = (text: string) => submit(text);
+
+  // Measured first response (telemetry), then the spoken reply once the stream ends.
+  const { speak } = voice;
+  useEffect(() => {
+    const before = prevStatus.current;
+    prevStatus.current = status;
+    if (status === "streaming" && sentAt.current !== null) {
+      telemetryStore.set({ firstTokenMs: Math.round(performance.now() - sentAt.current) });
+      sentAt.current = null;
+    }
+    if (before === "streaming" && status === "ready") {
+      const last = messages[messages.length - 1];
+      if (last?.role === "assistant") {
+        speak(last.parts.filter((part) => part.type === "text").map((part) => part.text).join(""));
+      }
+    }
+  }, [status, messages, speak]);
 
   const clearConversation = () => {
     // Reinicia el estado local del Chat: mensajes e input vuelven a vacío
     // sin recargar la página (cero fricción para el reclutador).
     setMessages([]);
     setInput("");
+    setNotes({});
+    voice.silence();
     clearError();
   };
 
   return (
-    <div data-slot="terminal-chat" className="window panel flex h-full min-h-[460px] w-full flex-col">
+    <div data-slot="terminal-chat" className="g-night window panel flex h-full min-h-[520px] w-full flex-col">
       <div className="window__bar">
         <span className="ic-tile !size-7 !rounded-[7px] bg-primary !border-0 text-[13px] font-medium text-primary-foreground" aria-hidden="true">
           IA
@@ -134,6 +181,18 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
               <span aria-hidden="true" className={cn("size-2 shrink-0 rounded-full", connState.dot, connState.pulse && "animate-pulse")} />
               <span className="hidden sm:inline">{connState.label}</span>
             </span>
+          )}
+          {mounted && voice.supported.tts && (
+            <button
+              type="button"
+              onClick={() => voice.setVoiceOn(!voice.voiceOn)}
+              aria-pressed={voice.voiceOn}
+              aria-label={dict.voice.replies}
+              title={dict.voice.replies}
+              className={cn("btn !h-9 !w-9 !p-0", voice.voiceOn ? "btn--primary" : "btn--secondary")}
+            >
+              {voice.voiceOn ? <Volume2 className="size-4" aria-hidden="true" /> : <VolumeX className="size-4" aria-hidden="true" />}
+            </button>
           )}
           {mounted && (
             <button
@@ -182,7 +241,7 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {messages.map((message) => {
+            {messages.map((message, index) => {
               const text = message.parts
                 .filter((part) => part.type === "text")
                 .map((part) => part.text)
@@ -190,12 +249,17 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
 
               if (message.role === "user") {
                 return (
-                  <p
-                    key={message.id}
-                    className="max-w-[85%] self-end whitespace-pre-wrap rounded-[14px] rounded-tr-[4px] bg-primary px-3.5 py-2.5 text-primary-foreground"
-                  >
-                    {text}
-                  </p>
+                  <div key={message.id} className="flex flex-col items-end gap-1.5">
+                    <p className="max-w-[85%] whitespace-pre-wrap rounded-[14px] rounded-tr-[4px] bg-primary px-3.5 py-2.5 text-primary-foreground">
+                      {text}
+                    </p>
+                    {notes[index]?.map((label) => (
+                      <p key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[13px] text-muted-foreground">
+                        <Zap className="size-3.5 signal" aria-hidden="true" />
+                        {label}
+                      </p>
+                    ))}
+                  </div>
                 );
               }
 
@@ -234,6 +298,28 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
         )}
       </div>
 
+      {voice.listening || voice.speaking || voice.error ? (
+        <div className="flex items-center gap-3 border-t border-border px-4 py-2.5" role="status">
+          <VoiceWave analyser={voice.analyser} active={voice.listening || voice.speaking} className="h-8 w-32 shrink-0 signal" />
+          <span className="min-w-0 text-[14px] text-muted-foreground">
+            {voice.error
+              ? (dict.voice.errors[voice.error as keyof typeof dict.voice.errors] ?? dict.voice.errors.failed)
+              : voice.listening
+                ? dict.voice.listening
+                : dict.voice.speaking}
+          </span>
+          {voice.speaking ? (
+            <button type="button" onClick={voice.silence} className="link ml-auto shrink-0 text-[14px]">
+              {dict.voice.stop}
+            </button>
+          ) : null}
+          {voice.error ? (
+            <button type="button" onClick={voice.clearError} className="link ml-auto shrink-0 text-[14px]">
+              {dict.voice.dismiss}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -241,6 +327,18 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
         }}
         className="flex items-center gap-2 border-t border-border p-3"
       >
+        {mounted ? (
+          <button
+            type="button"
+            onClick={() => (voice.listening ? voice.stopListening() : void voice.listen())}
+            aria-pressed={voice.listening}
+            aria-label={voice.listening ? dict.voice.stopMic : dict.voice.mic}
+            title={voice.supported.stt ? (voice.listening ? dict.voice.stopMic : dict.voice.mic) : dict.voice.errors.unsupported}
+            className={cn("btn !h-12 !w-12 shrink-0 !p-0", voice.listening ? "btn--primary mic-live" : "btn--secondary")}
+          >
+            <Mic className="size-4" aria-hidden="true" />
+          </button>
+        ) : null}
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
