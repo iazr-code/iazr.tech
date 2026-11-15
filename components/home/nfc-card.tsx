@@ -8,6 +8,11 @@ import { springStep } from "@/lib/world/neural";
 import { enableGyro, gyroStore, initGyro } from "@/lib/world/gyro";
 import { useStore } from "@/lib/store";
 import { BrandMark } from "@/components/brand/brand-logo";
+import { siteConfig } from "@/lib/data/site";
+import { encodeQr, qrPath } from "@/lib/qr";
+
+/** The card's mini-QR opens the IA-ZR WhatsApp, like the NFC tap does (real code, verified in tests). */
+const QR = qrPath(encodeQr(siteConfig.socials.whatsapp), 2);
 
 type T = Dictionary["tracks"]["nfc"];
 
@@ -102,19 +107,29 @@ export function NfcCard({ t }: { t: T }) {
           <div ref={card} className="nfc-card">
             <div className="nfc-face nfc-face--front">
               <div className="flex items-start justify-between">
-                <span className="inline-flex items-center gap-2 text-[var(--c-ivory)]">
-                  <BrandMark className="size-9 [--c-live:#8fb0ff]" />
-                  <span className="font-display text-[22px] font-medium tracking-[-0.03em]">IA-ZR</span>
+                <span className="inline-flex items-center gap-2.5 text-[var(--c-ivory)]">
+                  <BrandMark className="size-10 [--c-live:var(--c-signal)]" />
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="font-display text-[length:var(--t-h3)] font-semibold leading-none tracking-[-0.03em]">IA-ZR</span>
+                    <span className="font-mono text-[13px] text-[var(--c-signal)]">.tech</span>
+                  </span>
                 </span>
-                <svg viewBox="0 0 24 24" className="size-7 text-[var(--c-signal)]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+                <svg viewBox="0 0 24 24" className="size-7 text-[var(--c-ivory)]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
                   <path d="M6 8.5a5 5 0 0 1 0 7" />
                   <path d="M9.5 6a9 9 0 0 1 0 12" />
                   <path d="M13 3.5a13 13 0 0 1 0 17" />
                 </svg>
               </div>
-              <div className="mt-auto text-left">
-                <p className="text-base font-medium text-[var(--c-ivory)]">{t.front}</p>
-                <p className="mt-1 font-mono text-[13px] text-[#c9d3ec]">iazr.tech</p>
+              <div className="mt-auto flex items-end justify-between gap-3">
+                <div className="min-w-0 text-left">
+                  <span className="nfc-chip" aria-hidden="true" />
+                  <p className="mt-3 text-base font-medium leading-tight text-[var(--c-ivory)]">{t.front}</p>
+                  <p className="mt-1 font-mono text-[13px] text-[#c9d3ec]">iazr.tech</p>
+                </div>
+                <svg viewBox={`0 0 ${QR.size} ${QR.size}`} className="nfc-qr" role="img" aria-label={t.qrLabel} shapeRendering="crispEdges">
+                  <rect width={QR.size} height={QR.size} fill="#ffffff" />
+                  <path d={QR.d} fill="#062b8a" />
+                </svg>
               </div>
             </div>
             <div className="nfc-face nfc-face--back">

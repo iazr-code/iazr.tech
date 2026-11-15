@@ -13,7 +13,8 @@ describe("architecture sandbox", () => {
     expect(classify(SAMPLES[0].text).entities).toMatchObject({ day: "jueves", time: "10:30" });
     expect(classify(SAMPLES[1].text).intent).toBe("review");
     expect(classify(SAMPLES[2].text)).toMatchObject({ intent: "quote", entities: { sites: 3, invoicesPerDay: 40, erp: "Siigo Nube" } });
-    expect(classify(en.tracks.sandbox.samples[0].text).intent).toBe("booking");
+    expect(classify(en.tracks.sandbox.scenarios[0].text).intent).toBe("booking");
+    expect(es.tracks.sandbox.scenarios.map((s) => classify(s.text).intent)).toEqual(["booking", "review", "quote"]);
   });
 
   it("measures every stage with the given clock and routes by intent", () => {

@@ -21,7 +21,7 @@ import "./globals.css";
  */
 const host = Host_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "800"],
   variable: "--font-host",
   display: "swap",
 });

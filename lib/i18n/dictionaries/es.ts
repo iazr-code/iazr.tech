@@ -83,7 +83,7 @@ export const es = {
     latency: "Latencia de este sitio",
     model: "Asistente de IA",
     demo: "modo demostración",
-    firstToken: "Primera respuesta del asistente",
+    firstToken: "Mejor respuesta del asistente",
     firstTokenIdle: "pregúntale algo",
     uptime: "Disponibilidad portal Zolaris",
     uptimeValue: "99,9 % (verificado)",
@@ -172,6 +172,7 @@ export const es = {
       hint: "Mueve el puntero o inclina el teléfono · toca para girarla",
       gyro: "Activar giroscopio",
       showFront: "Mostrar el frente de la tarjeta NFC",
+      qrLabel: "Código QR: abre el WhatsApp de IA-ZR",
       showBack: "Girar la tarjeta NFC para ver la antena",
     },
     sandbox: {
@@ -189,11 +190,12 @@ export const es = {
       note: "Datos de ejemplo. El procesamiento y los tiempos son reales y se miden al ejecutarse; la etapa de IA usa el clasificador de intención del sitio, sin consumir el modelo.",
       idle: "Aún no hay transacción. Pulsa «Simular transacción en vivo».",
       error: "El simulador no respondió. Inténtalo de nuevo en un momento.",
-      samples: [
-        { source: "whatsapp", text: "Hola, ¿tienen cita para una valoración el jueves a las 10:30?" },
-        { source: "nfc", text: "Escaneo NFC en mostrador: quiero dejar una reseña" },
-        { source: "whatsapp", text: "Necesito cotizar la integración de 3 sedes con Siigo, unas 40 facturas al día" },
-      ] as { source: "whatsapp" | "nfc"; text: string }[],
+      scenariosLabel: "Escenario por industria",
+      scenarios: [
+        { id: "health", label: "Clínica / Salud", source: "whatsapp", text: "Hola, ¿tienen cita para una valoración el jueves a las 10:30?" },
+        { id: "retail", label: "Comercio / B2B", source: "nfc", text: "Escaneo NFC en el stand de la tienda: quiero dejar una reseña de 5 estrellas" },
+        { id: "erp", label: "ERP / Corporativo", source: "whatsapp", text: "Necesito cotizar la integración de 3 sedes con Siigo, unas 40 facturas al día" },
+      ] as { id: string; label: string; source: "whatsapp" | "nfc"; text: string }[],
     },
   },
   flow: {
@@ -358,10 +360,18 @@ export const es = {
     education: "Formación",
   },
   founder: {
-    title: "Hablas con quien diseña y construye tu sistema",
-    lead: "Iván Andrés Zúñiga Romo dirige IA-ZR. Ingeniero de Sistemas y Telecomunicaciones, MBA con mención de honor, especialista en Alta Gerencia y en Inteligencia Artificial (UNIR).",
-    record:
-      "Más de 7 años construyendo producto, más de 500 personas formadas en Talento TECH y la Universidad de Antioquia con el 100 % de los MVP entregados, y {certs} certificaciones internacionales verificables de Microsoft, Google, AWS, SAP, Tableau, Adobe y Huawei.",
+    nameA: "IVÁN",
+    nameB: "ZÚÑIGA",
+    nameLabel: "Iván Andrés Zúñiga Romo, fundador de IA-ZR",
+    role: "Director Tecnológico, Arquitecto IA & Fundador",
+    summary:
+      "Hablas directamente con quien diseña y construye tu sistema. Ingeniero de Sistemas y Telecomunicaciones, MBA (Mención de Honor), Especialista en Alta Gerencia e IA (UNIR). +7 años en producción, +500 talentos formados y {certs} certificaciones internacionales.",
+    ctaCollab: "Colaborar / Agendar",
+    revealHint: "Pasa el cursor o toca el retrato para verlo a color",
+    channelsLabel: "Canales directos del fundador",
+    githubMeta: "/andreszuniga96 · 63 repos",
+    certsLabel: "{certs} Certificaciones",
+    certsMeta: "Verificables en Coursera, Huawei, Google y Microsoft",
     rolesTitle: "Cargos recientes",
     portraitAlt: "Iván Andrés Zúñiga Romo, fundador de IA-ZR",
     ctaCv: "Descargar CV",

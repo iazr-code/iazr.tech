@@ -159,7 +159,9 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
     const before = prevStatus.current;
     prevStatus.current = status;
     if (status === "streaming" && sentAt.current !== null) {
-      telemetryStore.set({ firstTokenMs: Math.round(performance.now() - sentAt.current) });
+      // Keep the best measured first response: the first call after a while pays a cold start.
+      const ms = Math.round(performance.now() - sentAt.current);
+      telemetryStore.set((s) => ({ firstTokenMs: s.firstTokenMs === null ? ms : Math.min(s.firstTokenMs, ms) }));
       sentAt.current = null;
     }
     if (before === "streaming" && status === "ready") {

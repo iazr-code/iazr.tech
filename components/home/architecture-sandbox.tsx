@@ -62,15 +62,19 @@ export function ArchitectureSandbox({ t, locale }: { t: T; locale: Locale }) {
   const [result, setResult] = useState<SandboxResult | null>(null);
   const [roundTrip, setRoundTrip] = useState<number | null>(null);
   const [error, setError] = useState(false);
-  const sample = useRef(0);
+  const [scenario, setScenario] = useState(t.scenarios[0].id);
+  const [flowing, setFlowing] = useState(false);
+  const flowTimer = useRef(0);
 
-  const simulate = async () => {
+  const simulate = async (id = scenario) => {
     if (running) return;
     setRunning(true);
+    setFlowing(true);
+    window.clearTimeout(flowTimer.current);
     setError(false);
     setLit(0);
-    const input = t.samples[sample.current % t.samples.length];
-    sample.current += 1;
+    const pick = t.scenarios.find((s) => s.id === id) ?? t.scenarios[0];
+    const input = { source: pick.source, text: pick.text };
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const t0 = performance.now();
     try {
@@ -90,6 +94,8 @@ export function ArchitectureSandbox({ t, locale }: { t: T; locale: Locale }) {
       setLit(-1);
     } finally {
       setRunning(false);
+      // The wires keep pulsing a moment after the payload lands.
+      flowTimer.current = window.setTimeout(() => setFlowing(false), 1600);
     }
   };
 
@@ -103,7 +109,25 @@ export function ArchitectureSandbox({ t, locale }: { t: T; locale: Locale }) {
           <h3 className="t-h3 mt-2">{t.title}</h3>
           <p className="mt-3 max-w-[60ch] text-muted-foreground">{t.body}</p>
         </div>
-        <div className="flex items-end gap-2 lg:col-span-5 lg:justify-end">
+        <div className="flex flex-col items-stretch gap-3 lg:col-span-5 lg:items-end lg:justify-end">
+          <div role="radiogroup" aria-label={t.scenariosLabel} className="flex flex-wrap gap-2 lg:justify-end">
+            {t.scenarios.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                role="radio"
+                aria-checked={scenario === s.id}
+                disabled={running}
+                onClick={() => {
+                  setScenario(s.id);
+                  void simulate(s.id);
+                }}
+                className={cn("chip", scenario === s.id && "chip--on")}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
           <button type="button" onClick={() => void simulate()} disabled={running} className="btn btn--primary max-sm:w-full">
             {result && !running ? <RotateCcw className="size-4" aria-hidden="true" /> : <Play className="size-4" aria-hidden="true" />}
             {running ? t.running : result ? t.again : t.run}
@@ -126,7 +150,7 @@ export function ArchitectureSandbox({ t, locale }: { t: T; locale: Locale }) {
               ))}
             </div>
             {i < STAGES.length - 1 ? (
-              <span className="sandbox__wire" aria-hidden="true" data-pulse={running && lit === i ? "" : undefined} />
+              <span className="sandbox__wire" aria-hidden="true" data-pulse={flowing && lit >= i ? "" : undefined} style={{ "--delay": `${i * 140}ms` } as React.CSSProperties} />
             ) : null}
           </li>
         ))}

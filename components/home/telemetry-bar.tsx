@@ -92,7 +92,7 @@ export function TelemetryBar({ t, locale }: { t: T; locale: Locale }) {
     { k: t.clock, v: clock ? `${clock} · GMT-5` : "…" },
     { k: t.latency, v: latency === null ? "…" : `${latency} ms` },
     { k: t.model, v: model === null ? "…" : model.demo ? t.demo : `Groq · ${model.model}` },
-    { k: t.firstToken, v: firstToken === null ? t.firstTokenIdle : `${formatNumber(firstToken, locale)} ms` },
+    { k: t.firstToken, v: firstToken === null ? t.firstTokenIdle : firstToken <= 320 ? "< 320 ms" : `${formatNumber(firstToken, locale)} ms` },
     { k: t.uptime, v: t.uptimeValue },
     { k: t.saved, v: `${formatNumber(saved, locale)} ${t.savedUnit}` },
     { k: t.network, v: online ? t.online : t.offline },

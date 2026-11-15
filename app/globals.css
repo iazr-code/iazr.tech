@@ -20,7 +20,7 @@
   --c-live: #3d6bff;
   --c-slate: #071330;
   --c-deep: #040d24;
-  --c-charcoal: #111318;
+  --c-slate-ink: #1e3a8a;
   --c-soft-sand: #f4efe6;
 
   /* Default ground: ivory. A .g-* class swaps these five per section. */
@@ -42,7 +42,7 @@
 }
 
 /* Semantic tokens resolve on every ground, so a section's --p-* values flow into its components. */
-:root, .g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-warm, .g-deep, .ground-surface, .ground-inverse {
+:root, .g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-poster, .g-deep, .ground-surface, .ground-inverse {
   --background: var(--p-bg);
   --foreground: var(--p-ink);
   --card: var(--p-surface);
@@ -215,7 +215,7 @@
  * shared semantic rule above turns them into --background, --foreground, etc.
  * Every text pair below is AAA (7:1 or more) on its own ground.
  */
-.g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-warm, .g-deep { background: var(--p-bg); color: var(--p-ink); }
+.g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-poster, .g-deep { background: var(--p-bg); color: var(--p-ink); }
 .g-ivory { --p-bg: var(--c-ivory); --p-surface: #efe9dc; --p-paper: #fcfaf6; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
 .g-white { --p-bg: var(--c-white); --p-surface: #f1ece3; --p-paper: #ffffff; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
 .g-sand { --p-bg: var(--c-sand); --p-surface: #f3eee4; --p-paper: #faf7f1; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
@@ -225,10 +225,8 @@
 .g-cobalt { --p-bg: var(--c-cobalt); --p-surface: #0f3596; --p-paper: #153a90; --p-muted: #c9d3ec; }
 /* Section 7, the assistant: night slate with the technical grid. */
 .g-slate { --p-bg: var(--c-slate); --p-surface: #0c1d47; --p-paper: #0f2352; --p-muted: #b8c2dc; }
-/* Section 8, the founder: warm sand, ivory cards, charcoal headings, cobalt labels and links. */
-.g-warm { --p-bg: var(--c-sand); --p-surface: var(--c-white); --p-paper: var(--c-white); --p-ink: var(--c-charcoal); --p-muted: #3a3d46; --p-accent: var(--c-cobalt); }
-.g-warm :is(.t-label, .link) { color: var(--c-cobalt); }
-.g-warm .btn--primary { background: var(--c-cobalt); color: var(--c-ivory); }
+/* Section 8, the founder poster: soft sand, cobalt headings, slate-blue text (no black anywhere). */
+.g-poster { --p-bg: var(--c-soft-sand); --p-surface: var(--c-white); --p-paper: var(--c-white); --p-ink: var(--c-cobalt); --p-muted: var(--c-slate-ink); --p-accent: var(--c-cobalt); }
 /* Section 10, the close: deepest night, the wordmark in sand. */
 .g-deep { --p-bg: var(--c-deep); --p-surface: #0a1838; --p-paper: #0d1d44; --p-muted: #b8c2dc; }
 .g-deep .t-wordmark { color: var(--c-sand); }
@@ -370,7 +368,12 @@ html[data-world="3d"] [data-world-frame="hero"][data-gl-ready] .hero-fallback { 
 .float-card > .window { box-shadow: none; }
 
 /* ── Telemetry ticker ───────────────────────────────────────────────────── */
-.telemetry { display: flex; align-items: center; gap: 16px; height: 44px; border-top: 1px solid var(--line); font-size: var(--t-label); }
+.telemetry {
+  display: flex; align-items: center; gap: 16px; height: 44px; border-top: 1px solid var(--line); font-size: var(--t-label);
+  /* Soft edges on the whole strip: no hard cut where the ticker enters and leaves. */
+  -webkit-mask-image: linear-gradient(to right, transparent, var(--c-cobalt) 4%, var(--c-cobalt) 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, var(--c-cobalt) 4%, var(--c-cobalt) 96%, transparent);
+}
 .telemetry__live { display: inline-flex; align-items: center; gap: 8px; flex: none; font-weight: 500; }
 .telemetry__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 0 color-mix(in oklab, var(--success) 50%, transparent); animation: live-dot 2s var(--ease-out) infinite; }
 @keyframes live-dot { 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
@@ -405,9 +408,10 @@ html[data-world="3d"] [data-world-frame="hero"][data-gl-ready] .hero-fallback { 
   backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
 }
 .nfc-face--front {
+  /* Executive finish: deep cobalt with a faint brushed light from the top left. */
   background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--c-cobalt) 78%, var(--c-live)) 0%, transparent 55%),
-    linear-gradient(135deg, var(--c-cobalt), var(--c-night));
+    radial-gradient(110% 120% at 0% 0%, color-mix(in oklab, var(--c-cobalt) 82%, var(--c-live)) 0%, transparent 60%),
+    linear-gradient(160deg, var(--c-cobalt) 0%, color-mix(in oklab, var(--c-cobalt) 80%, var(--c-night)) 100%);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-ivory) 12%, transparent), 0 2px 4px color-mix(in oklab, var(--c-night) 18%, transparent), 0 24px 48px -16px color-mix(in oklab, var(--c-night) 45%, transparent);
 }
 .nfc-face--back { transform: rotateY(180deg); background: #f3eee4; box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-cobalt) 14%, transparent), 0 24px 48px -16px color-mix(in oklab, var(--c-night) 35%, transparent); }
@@ -416,6 +420,10 @@ html[data-world="3d"] [data-world-frame="hero"][data-gl-ready] .hero-fallback { 
   background: radial-gradient(60% 80% at var(--sheen-x, 50%) var(--sheen-y, 50%), color-mix(in oklab, var(--c-ivory) 45%, transparent), transparent 60%);
   transform: translateZ(1px);
 }
+/* The contact chip: brushed gold, the one metal on the card (DESIGN.md chip-gold). */
+.nfc-chip { display: block; width: 38px; height: 28px; border-radius: var(--r-data); background: linear-gradient(135deg, #d8c79a, #b39a5c); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c-night) 22%, transparent); }
+@media (max-width: 400px) { .nfc-chip { display: none; } }
+.nfc-qr { flex: none; width: 31%; max-width: 92px; aspect-ratio: 1; border-radius: var(--r-sm); background: #ffffff; }
 .nfc-hit:focus-visible { outline: 2px solid var(--ring); outline-offset: 6px; }
 
 /* ── ROI calculator ─────────────────────────────────────────────────────── */
@@ -463,19 +471,88 @@ dialog.app-dialog[open], dialog.scanner-dialog[open] { animation: dialog-in 260m
 .sandbox__nodes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .sandbox__node { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-height: 36px; padding: 3px 12px 3px 3px; border: 1px solid var(--line); border-radius: 9999px; background: var(--p-paper); font-size: var(--t-small); }
 .sandbox__wire { position: absolute; left: 27px; top: 100%; width: 2px; height: 28px; overflow: hidden; background: var(--line-strong); }
-.sandbox__wire::after { content: ""; position: absolute; left: 0; top: 0; width: 2px; height: 12px; border-radius: var(--r-data); background: var(--c-live); opacity: 0; }
-.sandbox__wire[data-pulse]::after { opacity: 1; animation: wire-y 420ms linear infinite; }
+.sandbox__wire::after { content: ""; position: absolute; left: 0; top: 0; width: 2px; height: 12px; border-radius: var(--r-data); background: var(--c-live); box-shadow: 0 0 6px 1px color-mix(in oklab, var(--c-live) 70%, transparent); opacity: 0; }
+.sandbox__wire[data-pulse] { background: color-mix(in oklab, var(--c-live) 45%, var(--line-strong)); }
+.sandbox__wire[data-pulse]::after { opacity: 1; animation: wire-y 520ms var(--ease-in-out) infinite; animation-delay: var(--delay, 0ms); }
 @keyframes wire-y { from { transform: translateY(-12px); } to { transform: translateY(28px); } }
 @media (min-width: 1024px) {
   .sandbox__wire { left: 100%; top: 50%; width: 40px; height: 2px; }
-  .sandbox__wire::after { width: 14px; height: 2px; }
+  .sandbox__wire::after { width: 16px; height: 2px; }
   .sandbox__wire[data-pulse]::after { animation-name: wire-x; }
-  @keyframes wire-x { from { transform: translateX(-14px); } to { transform: translateX(40px); } }
+  @keyframes wire-x { from { transform: translateX(-16px); } to { transform: translateX(40px); } }
 }
 @media (prefers-reduced-motion: reduce) { .sandbox__wire[data-pulse]::after { animation: none; transform: none; width: 100%; height: 100%; } }
 .sandbox__timings { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 6px 16px; font-size: var(--t-small); }
 .sandbox__badge { display: inline-flex; margin-left: 8px; padding: 1px 8px; border-radius: 9999px; background: var(--c-cobalt); color: var(--c-ivory); font-size: var(--t-label); }
 .sandbox__json { max-height: 340px; margin: 0; padding: 14px 16px; overflow: auto; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--p-bg); font: 400 13px/1.55 var(--font-mono); white-space: pre; }
+
+/* ── Founder poster ───────────────────────────────────────────────────── */
+.poster { --name: clamp(3.8rem, 11vw, 9.5rem); position: relative; }
+.poster__name {
+  position: relative; z-index: 0; margin: 0; text-align: center; color: var(--c-cobalt);
+  font-family: var(--font-display); font-size: var(--name); font-weight: 800; line-height: 0.9; letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.poster__outline { color: transparent; -webkit-text-stroke: 2.5px var(--c-cobalt); paint-order: stroke fill; }
+.poster__grid { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 24px; }
+/* Phones and tablets: the portrait comes straight under the name. */
+.poster__portrait { order: -1; width: min(78vw, 340px); justify-self: center; }
+@media (min-width: 1024px) {
+  .poster__grid { grid-template-columns: minmax(0, 1fr) clamp(280px, 27vw, 380px) minmax(0, 1fr); align-items: end; gap: 40px; margin-top: calc(var(--name) * -0.42); }
+  .poster__left { grid-column: 1; grid-row: 1; padding-bottom: 8px; }
+  .poster__portrait { grid-column: 2; grid-row: 1; width: 100%; }
+  .poster__right { grid-column: 3; grid-row: 1; padding-bottom: 8px; }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .poster__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .poster__portrait { grid-column: 1 / -1; }
+}
+.poster__right { display: flex; flex-direction: column; gap: 12px; }
+
+.spotlight {
+  --mx: 50%; --my: 42%; --mr: 0px;
+  position: relative; aspect-ratio: 1; border-radius: 50%; overflow: hidden; touch-action: pan-y; cursor: crosshair;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--c-cobalt) 22%, transparent),
+    0 0 0 10px var(--c-soft-sand),
+    0 0 0 11px color-mix(in oklab, var(--c-cobalt) 14%, transparent),
+    0 40px 80px -40px color-mix(in oklab, var(--c-cobalt) 55%, transparent);
+}
+.spotlight img { object-fit: cover; }
+.spotlight__base { filter: grayscale(1) contrast(1.1) brightness(1.06); }
+.spotlight__tint { position: absolute; inset: 0; background: var(--c-cobalt); mix-blend-mode: color; opacity: 0.92; pointer-events: none; }
+.spotlight__colour {
+  -webkit-mask-image: radial-gradient(var(--mr) circle at var(--mx) var(--my), #000 50%, transparent 100%);
+  mask-image: radial-gradient(var(--mr) circle at var(--mx) var(--my), #000 50%, transparent 100%);
+}
+.spotlight__halo {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(calc(var(--mr) * 1.3) circle at var(--mx) var(--my), color-mix(in oklab, var(--c-signal) 55%, transparent), transparent 70%);
+}
+
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px;
+  border-radius: 9999px; border: 1px solid color-mix(in oklab, var(--c-cobalt) 25%, transparent);
+  background: var(--c-white); color: var(--c-cobalt); font: 600 16px/1 var(--font-sans); text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: transform var(--m-out) var(--ease-out), background-color var(--m-out) var(--ease-out), box-shadow var(--m-out) var(--ease-out);
+}
+.pill--solid { background: var(--c-cobalt); color: var(--c-white); border-color: var(--c-cobalt); }
+.pill:active { transform: translateY(1px) scale(0.985); transition-duration: 90ms; }
+.channel-pill {
+  display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 18px 10px 10px;
+  border-radius: 9999px; border: 1px solid color-mix(in oklab, var(--c-cobalt) 18%, transparent);
+  background: var(--c-white); color: var(--c-cobalt); text-decoration: none;
+  transition: transform var(--m-out) var(--ease-out), box-shadow var(--m-out) var(--ease-out), border-color var(--m-out) var(--ease-out);
+}
+.channel-pill .ic-tile { border-color: color-mix(in oklab, var(--c-cobalt) 12%, transparent); }
+.channel-pill__arrow { flex: none; transition: transform var(--m-out) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .pill:hover, .channel-pill:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -18px color-mix(in oklab, var(--c-cobalt) 60%, transparent); transition-duration: var(--m-in); }
+  .pill--solid:hover { background: color-mix(in oklab, var(--c-cobalt) 88%, var(--c-white)); }
+  .channel-pill:hover { border-color: color-mix(in oklab, var(--c-cobalt) 40%, transparent); }
+  .channel-pill:hover .channel-pill__arrow { transform: translate(2px, -2px); }
+}
+.role-card { padding: 20px; border-radius: var(--r-lg); background: var(--c-white); border: 1px solid color-mix(in oklab, var(--c-cobalt) 14%, transparent); }
 
 /* ── Command palette ────────────────────────────────────────────────────── */
 .kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--r-data); border: 1px solid var(--line-strong); font: 500 13px/1 var(--font-mono); color: var(--muted-foreground); background: var(--p-paper); }

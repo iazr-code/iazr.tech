@@ -81,7 +81,7 @@ export const en: Dictionary = {
     latency: "This site's latency",
     model: "AI assistant",
     demo: "demo mode",
-    firstToken: "Assistant's first response",
+    firstToken: "Assistant's best response",
     firstTokenIdle: "ask it something",
     uptime: "Zolaris site uptime",
     uptimeValue: "99.9% (verified)",
@@ -170,6 +170,7 @@ export const en: Dictionary = {
       hint: "Move the pointer or tilt your phone · tap to flip it",
       gyro: "Turn on tilt",
       showFront: "Show the front of the NFC card",
+      qrLabel: "QR code: opens IA-ZR's WhatsApp",
       showBack: "Flip the NFC card to see the antenna",
     },
     sandbox: {
@@ -187,11 +188,12 @@ export const en: Dictionary = {
       note: "Sample data. The processing and the timings are real, measured as it runs; the AI stage uses the site's intent classifier and does not call the model.",
       idle: "No transaction yet. Press “Simulate a live transaction”.",
       error: "The simulator did not answer. Try again in a moment.",
-      samples: [
-        { source: "whatsapp", text: "Hi, do you have an assessment slot on Thursday at 10:30?" },
-        { source: "nfc", text: "NFC tap at the counter: I want to leave a review" },
-        { source: "whatsapp", text: "I need a quote to integrate 3 sites with Siigo, about 40 invoices a day" },
-      ] as { source: "whatsapp" | "nfc"; text: string }[],
+      scenariosLabel: "Industry scenario",
+      scenarios: [
+        { id: "health", label: "Clinic / Health", source: "whatsapp", text: "Hi, do you have an assessment slot on Thursday at 10:30?" },
+        { id: "retail", label: "Retail / B2B", source: "nfc", text: "NFC tap at the shop stand: I want to leave a 5-star review" },
+        { id: "erp", label: "ERP / Corporate", source: "whatsapp", text: "I need a quote to integrate 3 sites with Siigo, about 40 invoices a day" },
+      ] as { id: string; label: string; source: "whatsapp" | "nfc"; text: string }[],
     },
   },
   flow: {
@@ -356,10 +358,18 @@ export const en: Dictionary = {
     education: "Education",
   },
   founder: {
-    title: "You talk to the person who designs and builds your system",
-    lead: "Iván Andrés Zúñiga Romo leads IA-ZR. Systems and Telecommunications Engineer, MBA with honours, specialist in Senior Management and in Artificial Intelligence (UNIR).",
-    record:
-      "Over 7 years building products, more than 500 people trained through Talento TECH and the University of Antioquia with 100% of their MVPs delivered, and {certs} verifiable international certifications from Microsoft, Google, AWS, SAP, Tableau, Adobe and Huawei.",
+    nameA: "IVÁN",
+    nameB: "ZÚÑIGA",
+    nameLabel: "Iván Andrés Zúñiga Romo, founder of IA-ZR",
+    role: "Chief Technology Officer, AI Architect & Founder",
+    summary:
+      "You talk directly to the person who designs and builds your system. Systems and Telecommunications Engineer, MBA (with honours), Specialist in Senior Management and AI (UNIR). 7+ years in production, 500+ people trained and {certs} international certifications.",
+    ctaCollab: "Collaborate / Book",
+    revealHint: "Hover or tap the portrait to see it in colour",
+    channelsLabel: "The founder's direct channels",
+    githubMeta: "/andreszuniga96 · 63 repos",
+    certsLabel: "{certs} Certifications",
+    certsMeta: "Verifiable on Coursera, Huawei, Google and Microsoft",
     rolesTitle: "Recent roles",
     portraitAlt: "Iván Andrés Zúñiga Romo, founder of IA-ZR",
     ctaCv: "Download the CV",
