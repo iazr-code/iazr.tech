@@ -29,7 +29,7 @@ export function buildOrganizationSchema(locale: Locale) {
     "@type": "Organization",
     "@id": ORG_ID,
     name: "IA-ZR",
-    alternateName: "iazr.tech",
+    alternateName: ["IAZR", "IAZR tech", "IA-ZR tech", "iazr.tech"],
     url: siteConfig.url,
     logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
     description: dict.meta.description,
@@ -113,7 +113,8 @@ export function buildWebSiteSchema(locale: Locale) {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     url: siteConfig.url,
-    name: getDictionary(locale).meta.title,
+    name: "IA-ZR",
+    alternateName: ["IAZR tech", "iazr.tech", getDictionary(locale).meta.title],
     inLanguage: LANGUAGE_TAG[locale],
     publisher: { "@id": ORG_ID },
   };

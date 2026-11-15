@@ -82,6 +82,9 @@ export const metadata: Metadata = {
   // Icons come from app/icon.svg, app/apple-icon.png and app/favicon.ico; the
   // manifest from app/manifest.ts (file conventions, linked by Next).
   keywords: siteConfig.keywords,
+  // Google Search Console: paste the token from "HTML tag" verification into GOOGLE_SITE_VERIFICATION.
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
+  formatDetection: { telephone: false, email: false, address: false },
   authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
   creator: siteConfig.author.name,
   publisher: siteConfig.author.name,

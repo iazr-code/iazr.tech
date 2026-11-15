@@ -4,7 +4,7 @@ export const en: Dictionary = {
   meta: {
     title: "IA-ZR | Engineering, AI & Business Automation",
     description:
-      "IA-ZR designs and builds WhatsApp AI agents, booking, CRM, n8n automation and ERP integrations for businesses and companies in the US and LATAM.",
+      "IA-ZR (IAZR tech) designs and builds WhatsApp AI agents, booking, CRM, n8n automation and ERP integrations for businesses and companies in the US and LATAM.",
     aboutTitle: "Founder",
     aboutDescription:
       "Career, education and certifications of Iván Andrés Zúñiga Romo, founder of IA-ZR: systems engineer, MBA and AI specialist.",

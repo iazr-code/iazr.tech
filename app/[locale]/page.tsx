@@ -43,8 +43,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       canonical: `/${locale}`,
       languages: { es: "/es", en: "/en", "x-default": "/en" },
     },
-    openGraph: { title: dict.meta.title, description: dict.meta.description, locale: OG_LOCALE[locale], url: `/${locale}` },
-    twitter: { title: dict.meta.title, description: dict.meta.description },
+    openGraph: {
+      type: "website",
+      siteName: "IA-ZR · iazr.tech",
+      title: dict.meta.title,
+      description: dict.meta.description,
+      locale: OG_LOCALE[locale],
+      alternateLocale: [OG_LOCALE[locale === "es" ? "en" : "es"]],
+      url: `/${locale}`,
+    },
+    twitter: { card: "summary_large_image", title: dict.meta.title, description: dict.meta.description },
   };
 }
 

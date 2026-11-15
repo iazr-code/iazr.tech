@@ -4,6 +4,8 @@ import { streamText, convertToModelMessages } from "ai";
 import { MockLanguageModelV4, simulateReadableStream } from "ai/test";
 
 import { buildSystemPrompt, describeActions } from "@/lib/ai/system-prompt";
+import { detectLanguage, languageDirective } from "@/lib/ai/language";
+import type { Locale } from "@/lib/i18n/config";
 import { getActiveModelConfig } from "@/lib/ai/model-config";
 import { chatLimiter, getClientIp } from "@/lib/security/rate-limit";
 import { parseChatRequest } from "@/lib/validations/chat";
@@ -41,13 +43,25 @@ const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-/** Respuesta de "modo demo" cuando no hay clave configurada. */
-const DEMO_REPLY = [
-  "  // modo_demo: sin GROQ_API_KEY el asistente usa una respuesta predefinida.\n\n",
-  "Hola, soy el asistente de IAZR — Iván Andrés Zúñiga. 👋\n\n",
-  "Con mi contexto verificado puedo orientarte sobre desarrollo Full-Stack (React, Next.js, Node.js, Python), datos e IA (Power BI, SQL, Machine Learning), dirección tecnológica y mentoría tech. Trabajo remoto global, franja GMT-5 (Colombia), con proyectos arrancando en 1–2 semanas.\n\n",
-  "Revisa la sección de proyectos para ver 9 despliegues en producción o escríbeme por el formulario de contacto para empezar. 🔧",
-].join("");
+/**
+ * Reply used when no GROQ_API_KEY is configured (or Groq fails before streaming).
+ * Written for visitors: real IA-ZR facts and the human channels, no technical
+ * jargon and no invented prices. One version per language.
+ */
+const DEMO_REPLY: Record<Locale, string> = {
+  es: [
+    "Ahora mismo el asistente en vivo no está conectado, pero te dejo lo esencial de IA-ZR:\n\n",
+    "• Vía 01, Ecosistema IA-ZR Control: agente de IA en WhatsApp 24/7, agenda y recordatorios, tarjetas y stands NFC, QR para reseñas en Google, landing y mini-CRM. Funciona en días.\n",
+    "• Vía 02, sistemas a medida: automatización con n8n, integraciones con SAP y Siigo Nube, tableros en Power BI y SQL, y plataformas web o SaaS.\n\n",
+    "El precio se cotiza después de un diagnóstico de 30 minutos, según el alcance. Escríbenos por WhatsApp al +57 322 913 2643 o pulsa «Agendar diagnóstico» y te respondemos en menos de 24 horas hábiles.",
+  ].join(""),
+  en: [
+    "The live assistant isn't connected right now, but here is what IA-ZR offers:\n\n",
+    "• Track 01, IA-ZR Control Ecosystem: a 24/7 WhatsApp AI agent, booking and reminders, NFC cards and stands, a QR code for Google reviews, a landing page and a mini-CRM. Live in days.\n",
+    "• Track 02, custom systems: n8n automation, SAP and Siigo Nube integrations, Power BI and SQL dashboards, and web or SaaS platforms.\n\n",
+    "Pricing is quoted after a 30-minute diagnosis, based on scope. Message us on WhatsApp at +57 322 913 2643 or press “Book a diagnosis” and we'll reply within 24 business hours.",
+  ].join(""),
+};
 
 /**
  * Construye un modelo simulado que emite la respuesta demo en fragmentos.
@@ -62,14 +76,15 @@ const DEMO_REPLY = [
  * simulateReadableStream añade un pequeño retardo entre chunks para que el
  * efecto de "streaming" se perciba igual que con el modelo real.
  */
-function buildDemoModel() {
+function buildDemoModel(lang: Locale) {
+  const reply = DEMO_REPLY[lang];
   // Los chunks se tipan explícitamente como LanguageModelV4StreamPart para que
   // el literal no amplíe "stop" a string ni omita campos del usage (v4 exige
   // inputTokens/outputTokens con cacheRead/cacheWrite).
   const chunks: LanguageModelV4StreamPart[] = [
     { type: "stream-start", warnings: [] },
     { type: "text-start", id: DEMO_TEXT_ID },
-    { type: "text-delta", id: DEMO_TEXT_ID, delta: DEMO_REPLY },
+    { type: "text-delta", id: DEMO_TEXT_ID, delta: reply },
     { type: "text-end", id: DEMO_TEXT_ID },
     {
       type: "finish",
@@ -78,8 +93,8 @@ function buildDemoModel() {
       usage: {
         inputTokens: { total: 8, noCache: 8, cacheRead: 0, cacheWrite: 0 },
         outputTokens: {
-          total: Math.max(1, Math.round(DEMO_REPLY.length / 4)),
-          text: Math.max(1, Math.round(DEMO_REPLY.length / 4)),
+          total: Math.max(1, Math.round(reply.length / 4)),
+          text: Math.max(1, Math.round(reply.length / 4)),
           reasoning: 0,
         },
       },
@@ -119,7 +134,11 @@ export async function POST(req: Request) {
   const parsed = parseChatRequest(body);
   if (!parsed.ok) return jsonError(parsed.status, parsed.error);
 
-  const system = buildSystemPrompt(parsed.locale) + describeActions(parsed.actions, parsed.locale);
+  // Reply in the language the visitor just wrote in; the page language is only the fallback.
+  const lastUser = [...parsed.messages].reverse().find((m) => m.role === "user");
+  const lastText = lastUser?.parts.map((p) => (p.type === "text" ? p.text : "")).join(" ") ?? "";
+  const lang = detectLanguage(lastText) ?? parsed.locale;
+  const system = buildSystemPrompt(lang) + describeActions(parsed.actions, lang) + languageDirective(lang);
   const { provider, model: modelId } = getActiveModelConfig();
   const messages = await convertToModelMessages(parsed.messages);
 
@@ -127,7 +146,7 @@ export async function POST(req: Request) {
   //    cliente muestra su estado de error (ya no se duplica la latencia).
   try {
     const result = streamText({
-      model: provider === "groq" ? groq(modelId) : buildDemoModel(),
+      model: provider === "groq" ? groq(modelId) : buildDemoModel(lang),
       system,
       messages,
       temperature: 0.6,
@@ -142,6 +161,6 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse();
   } catch (error: unknown) {
     console.error("[/api/chat] Error inesperado:", error);
-    return streamText({ model: buildDemoModel(), system, messages }).toUIMessageStreamResponse();
+    return streamText({ model: buildDemoModel(lang), system, messages }).toUIMessageStreamResponse();
   }
 }

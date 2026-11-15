@@ -6,7 +6,7 @@ export const es = {
   meta: {
     title: "IA-ZR | Ingeniería, IA & Automatización Empresarial",
     description:
-      "IA-ZR diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
+      "IA-ZR (IAZR tech) diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
     aboutTitle: "Fundador",
     aboutDescription:
       "Trayectoria, formación y certificaciones de Iván Andrés Zúñiga Romo, fundador de IA-ZR: ingeniero de sistemas, MBA y especialista en IA.",

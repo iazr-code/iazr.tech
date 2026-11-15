@@ -13,36 +13,43 @@ export const siteConfig = {
   /** Título por defecto de la landing (sin plantilla aplicada) */
   title: "IA-ZR | Ingeniería, IA & Automatización Empresarial",
   description:
-    "IA-ZR diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
+    "IA-ZR (IAZR tech) diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
   /** metadataBase: todas las URLs relativas de SEO/OG se resuelven contra este origen */
-  // Official domain; NEXT_PUBLIC_SITE_URL overrides it (e.g. https://portafolio-iazr.vercel.app on previews).
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://iazr.tech").replace(/\/$/, ""),
+  // 1) NEXT_PUBLIC_SITE_URL if set; 2) Vercel's production domain (VERCEL_PROJECT_PRODUCTION_URL:
+  //    iazr-tech.vercel.app today, iazr.tech by itself once that domain is attached); 3) the official domain.
+  // Share images and canonical URLs must resolve, so never point at a domain that does not answer yet.
+  url: (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
+    "https://iazr.tech"
+  ).replace(/\/$/, ""),
   locale: "es_CO",
   // Cast explícito: `as const` (del objeto contenedor) haría el tuple readonly
   // e incompatible con el tipo string[] que exige la API de Metadatos de Next.
   keywords: [
+    "IAZR",
+    "IAZR tech",
     "IA-ZR",
     "iazr.tech",
-    "Agente de IA WhatsApp",
-    "Automatización n8n",
-    "NFC",
-    "IAZR",
-    "Iván Andrés Zúñiga",
-    "Director Tecnológico",
-    "Full-Stack Developer",
-    "Mentor Tech",
-    "Ingeniero de Sistemas",
-    "Magíster en Administración",
-    "Inteligencia Artificial",
-    "React",
-    "Next.js",
-    "Node.js",
-    "Power BI",
-    "Azure",
-    "Huawei Cloud",
-    "Transformación Digital",
-    "Talento TECH",
+    "IA-ZR tech",
+    "agencia de inteligencia artificial",
+    "automatización de procesos",
+    "agente de IA en WhatsApp",
+    "chatbot WhatsApp para negocios",
+    "automatización con n8n",
+    "integración SAP",
+    "integración Siigo Nube",
+    "tableros Power BI",
+    "CRM a medida",
+    "tarjetas NFC para negocios",
+    "reseñas Google con QR",
+    "desarrollo web Next.js",
+    "AI automation agency",
+    "WhatsApp AI agent",
+    "Iván Andrés Zúñiga Romo",
     "Colombia",
+    "LATAM",
+    "Estados Unidos",
   ] as string[],
   /** Ubicación y horario del ingeniero (footer, contacto, about, JSON-LD). */
   location: "Colombia · Remoto global",

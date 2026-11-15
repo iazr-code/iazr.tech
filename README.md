@@ -68,7 +68,8 @@ The install button and offline mode only appear in a production build (`npm run 
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Recommended | Canonical origin for metadata, sitemap and JSON-LD. Default `https://iazr.tech`; set `https://portafolio-iazr.vercel.app` until the domain points to Vercel |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical origin for metadata, sitemap and JSON-LD. If unset, Vercel's production domain is used (`VERCEL_PROJECT_PRODUCTION_URL`: `iazr-tech.vercel.app` today, `iazr.tech` once attached). Never set a domain that does not answer yet |
+| `GOOGLE_SITE_VERIFICATION` | No | Google Search Console "HTML tag" token |
 | `GROQ_API_KEY` | For the live assistant | Without it the assistant answers in demo mode |
 | `GROQ_MODEL` | No | Model override (default `openai/gpt-oss-20b`) |
 | `RESEND_API_KEY`, `RESEND_FROM` | For the contact form | Without them the form runs in demo mode |
