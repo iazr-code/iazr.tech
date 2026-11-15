@@ -1,147 +1,106 @@
-# IAZR — Portafolio inmersivo de Iván Andrés Zúñiga
+# IA-ZR · iazr.tech
 
-Portafolio bilingüe (ES/EN) construido como un **mundo 3D continuo**: un único
-Canvas WebGL fijo que la cámara recorre con el scroll, con todo el contenido real
-en HTML accesible por encima. Escenas procedurales (GLSL), post-procesado
-cinematográfico, sonido generativo opt-in, asistente con IA y agenda integrada.
+**IA-ZR** is an engineering, AI and automation agency for B2B clients in the US and LATAM.
+*"Transformamos ideas y operaciones manuales en sistemas inteligentes que funcionan solos."*
 
-| Capa | Tecnología |
-| --- | --- |
-| Framework | Next.js 15.5 (App Router, SSG por idioma) + React 19 |
-| Estilos | Tailwind CSS v4 (`@theme` en `app/globals.css`), tema oscuro único |
-| 3D | three 0.185 · @react-three/fiber 9.7 · drei · @react-three/postprocessing 3.2 |
-| Scroll | Lenis (scroll nativo suavizado) → tienda de scroll leída por `useFrame` |
-| Audio | Web Audio API (síntesis, sin archivos) |
-| IA | Vercel AI SDK v7 + Groq (`/api/chat`, streaming) |
-| Formularios | Server Action + Zod + Resend · telemetría PostHog |
-| Calidad | Vitest · ESLint (CLI, config plana) · TypeScript estricto |
+This repository is the agency's bilingual site (`/es`, `/en`). It sells two service tracks and
+shows them working in the browser: a WhatsApp AI agent flow, a live ROI calculator with a PDF
+proposal, a vision scanner, an AI assistant you can talk to, a passkey client-portal demo and a
+live architecture sandbox. Founder: Iván Andrés Zúñiga Romo.
 
-## Puesta en marcha
+## What the site offers
+
+| Track | For | What it includes |
+| --- | --- | --- |
+| **01 · Ecosistema IA-ZR Control** (ready-made) | Clinics, offices, shops | WhatsApp AI agent 24/7, booking and reminders, NFC cards and stands, QR for Google reviews, landing page, mini-CRM |
+| **02 · Sistemas a medida** (custom) | Companies and institutions | n8n automation, SAP and Siigo Nube integrations, Power BI and SQL dashboards, full-stack SaaS |
+
+Nine production deployments (`lib/data/projects.ts`) and fifteen verifiable certifications
+(`lib/data/experience.ts`) back it. Figures shown on the site are only verified ones.
+
+## Interactive modules
+
+| Module | Where | How it works |
+| --- | --- | --- |
+| Neural core (WebGL) | Hero | One fixed R3F canvas, drawn only inside DOM frames (scissor); spring lean to pointer or phone tilt |
+| Live telemetry | Hero | Measured site latency (`/api/health`), assistant model and first response, verified uptime, the visitor's ROI estimate |
+| NFC card (CSS 3D) | Track 01 | Leans to pointer / gyroscope, flips to the antenna |
+| Architecture sandbox | Track 02 | `POST /api/sandbox` runs a sample contact through ingest → AI intent → n8n/ERP/Supabase → Power BI/CRM, with real measured stage timings |
+| Vision scanner | Flow | `getUserMedia` + canvas analysis (brightness, contrast, motion, edges) + `BarcodeDetector` QR; simulation fallback; nothing uploaded |
+| ROI calculator + PDF | Calculator | Visible, editable assumptions; one-page PDF written in the browser (`lib/pdf`), no prices; reservation via booking, checkout links or WhatsApp |
+| AI assistant | Assistant | Groq via the Vercel AI SDK, streamed; dictation (`SpeechRecognition`), spoken replies (`speechSynthesis`), on-page actions (booking, ROI prefill, cases, scanner, portal) |
+| Passkey portal | Contact | Real WebAuthn ceremony on the device, labelled as a local demo (no server, nothing sent) |
+| Command centre | Nav, `Ctrl+K` / `⌘K` | Searchable palette for every action above, CV, certifications, language and WhatsApp |
+| PWA | Everywhere | `app/manifest.ts`, production-only service worker (`public/sw.js`), install button when the browser offers it |
+
+## Stack
+
+Next.js 15.5 (App Router, SSG per locale) · React 19 · Tailwind CSS v4 (tokens in `app/globals.css`) ·
+three / @react-three/fiber · Vercel AI SDK + Groq · Zod · Resend · PostHog · Vitest · ESLint · TypeScript strict.
+
+```
+app/            routes: /[locale], /[locale]/about, api/{chat,health,sandbox}, manifest, icons, OG images, sitemap, robots
+components/     home sections, chat (voice), roi, scanner, passkey, palette, pwa, world (WebGL), hud, brand
+lib/            data, i18n dictionaries, ai prompt, agent actions, roi, pdf writer, sandbox, vision, voice, seo, stores
+public/         images (founder portrait), icons, pwa icons, project screenshots, textures, sw.js
+scripts/        patch-next-dev-manifest (postinstall), build-icons, build-textures
+tests/          Vitest suites
+```
+
+## Run it
 
 ```bash
-npm install
-cp .env.example .env.local   # rellena las claves que necesites
-npm run dev                  # http://localhost:3000 → redirige a /en o /es
+npm install          # also patches Next's dev manifest write (postinstall)
+cp .env.example .env.local
+npm run dev          # http://localhost:3000 → /es or /en
 ```
 
-| Script | Qué hace |
+| Script | Does |
 | --- | --- |
-| `npm run dev` / `build` / `start` | Desarrollo, build de producción y servidor |
-| `npm test` | Pruebas unitarias (Vitest) |
-| `npm run lint` | ESLint (`eslint .`; `next lint` está deprecado) |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run textures` | Regenera las texturas de los portales desde `public/proyectos/*.png` |
-| `npm run test:adversarial` | Batería anti-jailbreak del chat (requiere servidor + `GROQ_API_KEY`) |
+| `npm run dev` / `build` / `start` | Development, production build, production server |
+| `npm test` | Unit tests (Vitest) |
+| `npm run lint` · `npm run typecheck` | ESLint · TypeScript |
+| `node scripts/build-icons.mjs` | Re-renders favicon, Apple and PWA icons from `app/icon.svg` |
 
-## Variables de entorno
+The install button and offline mode only appear in a production build (`npm run build && npm start`).
 
-| Variable | Uso | Sin ella |
+## Environment variables
+
+| Variable | Required | Purpose |
 | --- | --- | --- |
-| `GROQ_API_KEY` | Asistente IA real (`GROQ_MODEL` opcional) | Modo demo con respuesta predefinida |
-| `RESEND_API_KEY` / `RESEND_FROM` | Entrega del formulario y autorespuesta | Modo demo (éxito sin envío) |
-| `POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_KEY` | Embudo visita → lead (sin PII) | No se registra nada |
-| `NEXT_PUBLIC_BOOKING_URL` | URL **https** de Cal.com o Calendly para el drawer "Agendar" | El drawer muestra email y WhatsApp |
-| `NEXT_PUBLIC_SITE_URL` | URL canónica (SEO, OG, JSON-LD) | `https://portafolio-iazr.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | Recommended | Canonical origin for metadata, sitemap and JSON-LD. Default `https://iazr.tech`; set `https://portafolio-iazr.vercel.app` until the domain points to Vercel |
+| `GROQ_API_KEY` | For the live assistant | Without it the assistant answers in demo mode |
+| `GROQ_MODEL` | No | Model override (default `openai/gpt-oss-20b`) |
+| `RESEND_API_KEY`, `RESEND_FROM` | For the contact form | Without them the form runs in demo mode |
+| `NEXT_PUBLIC_BOOKING_URL` | No | https Cal.com / Calendly link for the booking drawer |
+| `NEXT_PUBLIC_CHECKOUT_CARD_URL`, `NEXT_PUBLIC_CHECKOUT_PSE_URL`, `NEXT_PUBLIC_CHECKOUT_CRYPTO_URL` | No | https payment links; without them each option opens WhatsApp. No card data ever passes through the site |
+| `NEXT_PUBLIC_POSTHOG_KEY`, `POSTHOG_KEY`, hosts | No | Analytics |
 
-En Vercel, añade las mismas variables en **Settings → Environment Variables**
-(las `NEXT_PUBLIC_*` se incrustan al compilar: redeploy tras cambiarlas).
+## Deploy (Vercel)
 
-## Arquitectura
+1. Import the GitHub repository in Vercel (framework preset: Next.js).
+2. Add the variables above under *Settings → Environment Variables*.
+3. Point `iazr.tech` to the project under *Settings → Domains*, then set `NEXT_PUBLIC_SITE_URL=https://iazr.tech`.
+4. Every push to `main` deploys.
 
-```
-app/
-├── layout.tsx            # Layout raíz PERSISTENTE: WorldMount (Canvas), Hud, BookingDrawer, LocaleSync
-├── [locale]/page.tsx     # Portada SSG (/es, /en): secciones con data-world-section
-├── [locale]/about/       # Trayectoria, credenciales, contacto
-├── api/chat/             # Streaming con rate limit + validación Zod
-├── actions/contact.ts    # Server Action del formulario (rate limit por IP)
-├── sitemap.ts · robots.ts
-middleware.ts             # "/" y rutas sin idioma → /es | /en según Accept-Language (fallback EN)
-components/
-├── world/                # world-mount, world-canvas, camera-rig, effects, static-backdrop
-│   └── scenes/           # hero-entity, service-forms, project-portals, journey-ribbon, network, contact-gate
-├── sections/             # HTML del recorrido: hero, servicios, proyectos (+ trayectoria, chat, contacto)
-├── hud/                  # hud, language-switch, sound-toggle
-├── booking/              # drawer (<dialog>) y botón de agenda
-lib/
-├── i18n/                 # config (locales, redirecciones), diccionarios es/en, Localized<T>
-├── world/                # scroll-store, camera-path, quality (niveles), tier-store, textures, geometry, shaders/
-├── audio/engine.ts       # motor Web Audio
-├── security/rate-limit.ts
-├── validations/          # chat y contacto (Zod)
-├── data/                 # proyectos, servicios, experiencia, skills (campos bilingües)
-└── ai/                   # system prompt por idioma, config del modelo
-```
+Response headers (`next.config.ts`): `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN` and a
+`Permissions-Policy` that allows camera, microphone and passkeys for this origin only.
 
-### Mundo continuo
+## SEO
 
-- **Un solo `<Canvas>`** en el layout raíz: no se remonta al navegar ni al
-  cambiar de idioma (el cambio ES/EN es navegación blanda con `scroll={false}`).
-- Lenis publica progreso y velocidad en `lib/world/scroll-store.ts`; cada sección
-  HTML declara `data-world-section` y su rango se recalcula con `ResizeObserver`.
-  La cámara recorre una curva Catmull-Rom (`camera-path.ts`) y alcanza el
-  keyframe de cada escena cuando su sección está centrada.
-- La escena **no contiene texto**: el `<canvas>` es `aria-hidden` y sin eventos de
-  puntero; teclado, lectores de pantalla y SEO trabajan sobre el HTML.
+Per-locale metadata with `hreflang` (`es`, `en`, `x-default`), generated share images
+(`app/[locale]/opengraph-image.tsx`), `sitemap.xml`, `robots.txt` and a JSON-LD graph:
+Organization, ProfessionalService (both tracks), Person (founder, 15 certifications, portrait) and WebSite.
 
-### Rendimiento adaptativo
+## Security
 
-| Nivel | DPR | Partículas | Post-procesado | Texturas |
-| --- | --- | --- | --- | --- |
-| `high` | 1–2 | 24 000 | bloom + grano + viñeta | 1024×512, aniso ≤8 |
-| `medium` | 1–1.5 | 12 000 | bloom ligero + grano | 1024×512, aniso ≤4 |
-| `low` | 1 | 5 000 | ninguno | 512×256, aniso 1 |
-| `static` | — | sin Canvas | — | capturas HTML |
+- `/api/chat`: 20 requests / 10 min per IP, validated messages, page actions sent as fixed codes only.
+- `/api/sandbox`: 30 requests / 10 min per IP, validated sample input.
+- Contact form: 3 submissions / 10 min per IP plus a honeypot.
+- Rate-limit store is in memory per instance (best effort on serverless); `RateLimitStore` accepts a shared store.
 
-- Nivel inicial por capacidades (`detectInitialTier`); `prefers-reduced-motion`,
-  `Save-Data` o falta de WebGL → `static`. `PerformanceMonitor` sube o baja un
-  nivel según los FPS reales (banda 45–57 a 60 Hz) y siempre puede recuperarse.
-- Una geometría por efecto: la red del asistente es **una** `LineSegments` con
-  pulsos GLSL; los nodos de la trayectoria, **un** `InstancedMesh`.
-- Portales: texturas webp en potencia de 2 (563 KB las 18, frente a 9,3 MB de
-  PNG), decodificadas con `createImageBitmap` y subidas a GPU **una por frame**;
-  se liberan con `dispose()` al cambiar de nivel o al desmontar.
-- Bucle pausado con la pestaña oculta; `webglcontextlost` → fondo estático.
-- Depuración: `?debug` expone `window.__IAZR_WORLD__` (nivel, FPS, draw calls,
-  texturas); `?tier=high|medium|low|static` fuerza un nivel.
+## Notes for contributors
 
-### Sonido
-
-Paisaje generativo (acordes por escena, filtro ligado a la velocidad de scroll,
-reverb sintética, clics). **Opt-in estricto**: no se crea ningún `AudioContext`
-hasta pulsar el botón del HUD; se suspende con la pestaña oculta.
-
-### Seguridad
-
-- `/api/chat`: rate limit **20 solicitudes / 10 min por IP**; máx. 20 mensajes,
-  2 000 caracteres por mensaje y 12 000 en total; solo roles `user`/`assistant` y
-  partes de texto, con caracteres de control eliminados. Sin llamada previa a Groq.
-- Formulario: **3 envíos / 10 min por IP** + honeypot.
-- El almacén del rate limit vive en memoria **por instancia** (mejor esfuerzo en
-  serverless). `RateLimitStore` permite enchufar Upstash Redis sin tocar consumidores.
-
-### Decisiones y límites conocidos
-
-- **Sin modo claro**: el bloom y el blending aditivo necesitan fondo oscuro.
-- **React Compiler desactivado** a propósito (las mutaciones en `useFrame` de R3F).
-- Sin Partial Prerendering: las páginas son SSG puras.
-- `<html lang>` se sincroniza en cliente (el layout raíz no ve el segmento
-  `[locale]`); `hreflang`, metadatos y contenido por ruta cubren el SEO.
-- `scripts/adversarial.mjs` fija `locale: "es"`; la frase anti-jailbreak tiene
-  versión EN en el prompt inglés.
-
-## Proyectos en producción
-
-| Proyecto | URL |
-| --- | --- |
-| La Campana | https://lacampana.co/ |
-| Emssanar EPS | https://emssanareps.co/ |
-| Paisajes Sonoros | https://paisajes-sonoros.vercel.app/ |
-| Dozurcol Pasto | https://dozurcol-pasto.vercel.app/ |
-| Portafolio Sandra Gómez | https://portafolio-sandra-sst.vercel.app/ |
-| Panini 2026 | https://panini26.vercel.app/ |
-| Método Sonora | https://metodo-sonora.vercel.app/ |
-| Zolaris | https://zolarisweb.vercel.app/ |
-| SST MedSys | https://sst-med-sys.vercel.app/dashboard |
-
-Perfil de GitHub: https://github.com/andreszuniga96
+Project rules live in `CLAUDE.md`, product context in `PRODUCT.md`, the design system in `DESIGN.md`.
+Never invent figures, clients or reviews. Never use violet.

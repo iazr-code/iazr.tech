@@ -33,6 +33,30 @@ const nextConfig: NextConfig = {
   // anclar el root de trazado evita el warning de inferencia de Next y hace
   // el tracing determinista en el despliegue.
   outputFileTracingRoot: __dirname,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Permissions-Policy",
+            value:
+              "camera=(self), microphone=(self), publickey-credentials-get=(self), publickey-credentials-create=(self), geolocation=(), payment=(), usb=()",
+          },
+        ],
+      },
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

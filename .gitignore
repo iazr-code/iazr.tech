@@ -43,3 +43,8 @@ Thumbs.db
 # Isolated build folder for a second local server
 /.next-preview/
 /.next-verify/
+
+# Local Claude Code tooling (agents, skills, personal settings)
+.claude/agents/
+.claude/skills/
+.claude/settings.local.json

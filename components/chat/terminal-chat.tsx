@@ -10,7 +10,8 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { siteConfig } from "@/lib/data/site";
 import { detectActions, type AgentAction } from "@/lib/agent/actions";
-import { runAction } from "@/lib/agent/run";
+import { runAction, scrollToSection } from "@/lib/agent/run";
+import { on, PAGE_EVENTS } from "@/lib/events";
 import { telemetryStore } from "@/lib/telemetry-store";
 import { useVoice } from "@/components/chat/use-voice";
 import { VoiceWave } from "@/components/chat/voice-wave";
@@ -141,6 +142,17 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
 
   const submitSuggestion = (text: string) => submit(text);
 
+  // Command palette: "talk to the assistant" scrolls here and opens the microphone.
+  const { listen } = voice;
+  useEffect(
+    () =>
+      on(PAGE_EVENTS.voice, () => {
+        scrollToSection("asistente");
+        void listen();
+      }),
+    [listen]
+  );
+
   // Measured first response (telemetry), then the spoken reply once the stream ends.
   const { speak } = voice;
   useEffect(() => {
@@ -169,7 +181,7 @@ export function TerminalChat({ dict, locale }: { dict: Dictionary["chat"]; local
   };
 
   return (
-    <div data-slot="terminal-chat" className="g-night window panel flex h-full min-h-[520px] w-full flex-col">
+    <div data-slot="terminal-chat" className="g-night window panel console-glow flex h-full min-h-[520px] w-full flex-col">
       <div className="window__bar">
         <span className="ic-tile !size-7 !rounded-[7px] bg-primary !border-0 text-[13px] font-medium text-primary-foreground" aria-hidden="true">
           IA

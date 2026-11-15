@@ -15,8 +15,8 @@ export const siteConfig = {
   description:
     "IA-ZR diseña e implementa agentes de IA en WhatsApp, agendamiento, CRM, automatización con n8n e integraciones con ERP para negocios y empresas en EE. UU. y LATAM.",
   /** metadataBase: todas las URLs relativas de SEO/OG se resuelven contra este origen */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://portafolio-iazr.vercel.app",
-  ogImage: "/og.png",
+  // Official domain; NEXT_PUBLIC_SITE_URL overrides it (e.g. https://portafolio-iazr.vercel.app on previews).
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://iazr.tech").replace(/\/$/, ""),
   locale: "es_CO",
   // Cast explícito: `as const` (del objeto contenedor) haría el tuple readonly
   // e incompatible con el tipo string[] que exige la API de Metadatos de Next.

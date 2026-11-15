@@ -34,7 +34,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="cierre" data-slot="footer" className="closing g-night section flex flex-col">
+    <footer id="cierre" data-slot="footer" className="closing g-deep section flex flex-col">
       <div className="wrap flex flex-1 flex-col">
         <div>
           <div className="grid gap-x-6 gap-y-6 lg:grid-cols-12 lg:items-end">

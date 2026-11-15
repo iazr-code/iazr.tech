@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { CalendarCheck, CreditCard, FileDown, Landmark, Coins, ChevronDown } from "lucide-react";
 
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
@@ -12,6 +12,8 @@ import { CURRENCY_RANGES, INPUT_RANGES, computeRoi, formatMoney, formatNumber, t
 import { roiStore } from "@/lib/roi-store";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { on, PAGE_EVENTS } from "@/lib/events";
+import { scrollToSection } from "@/lib/agent/run";
 
 type T = Dictionary["roi"];
 
@@ -177,6 +179,20 @@ export function RoiSection({ t, tracks, locale }: { t: T; tracks: Dictionary["tr
     a.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 4000);
   };
+
+  // Command palette: "download the proposal" scrolls here and builds the PDF.
+  const pdfRef = useRef(downloadPdf);
+  useEffect(() => {
+    pdfRef.current = downloadPdf;
+  });
+  useEffect(
+    () =>
+      on(PAGE_EVENTS.roiPdf, () => {
+        scrollToSection("roi");
+        void pdfRef.current();
+      }),
+    []
+  );
 
   const pay: { id: PayMethod; label: string; icon: typeof CreditCard }[] = [
     { id: "card", label: t.pay.card, icon: CreditCard },

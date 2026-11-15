@@ -1,221 +1,129 @@
 import { siteConfig } from "@/lib/data/site";
 import type { Locale } from "@/lib/i18n/config";
-import { certifications, education, experience } from "@/lib/data/experience";
-import { services } from "@/lib/data/services";
+import { certifications, education } from "@/lib/data/experience";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { localize } from "@/lib/i18n/localized";
 
 const LANGUAGE_TAG: Record<Locale, string> = { es: "es-CO", en: "en-US" };
 
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- *  JSON-LD — Datos Estructurados Schema.org
- *  Se renderizan en el SERVIDOR dentro de app/layout.tsx (Server Component),
- *  fusionados con el HTML crudo de la primera pasada. Esto garantiza que las
- *  arañas de Googlebot accedan a la topología semántica sin ejecutar JavaScript.
- *
- *  Topología doble exigida por la especificación:
- *   · @type: "Person"      → identidad individual de Iván Andrés Zúñiga
- *   · @type: "Organization"→ entidad consultora B2B (dirección tecnológica)
- *
- *  El objeto devuelto se serializa con JSON.stringify (saneado contra XSS por
- *  Next al escaparlo) en el componente <JsonLd>.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Schema.org graph for the home page, rendered on the server: the agency
+ * (Organization), the service it sells (ProfessionalService with both tracks),
+ * its founder (Person, with the 15 verifiable certifications and the current
+ * portrait) and the WebSite. Every value comes from the site's own data.
  */
 
-type Person = {
-  "@type": "Person";
-  name: string;
-  givenName: string;
-  familyName: string;
-  jobTitle: string;
-  url: string;
-  image: string;
-  sameAs: string[];
-  email: string;
-  telephone: string;
-  knowsAbout: string[];
-  alumniOf: { "@type": "CollegeOrUniversity"; name: string }[];
-  hasCredential: {
-    "@type": "EducationalOccupationalCredential";
-    name: string;
-    recognizedBy?: { "@type": "Organization"; name: string };
-    url?: string;
-  }[];
-  worksFor: { "@type": "Organization"; name: string }[];
-  knowsLanguage: string;
-  address: { "@type": "PostalAddress"; addressCountry: string; addressLocality: string };
-};
+const ORG_ID = `${siteConfig.url}/#organization`;
+const SERVICE_ID = `${siteConfig.url}/#service`;
+const PERSON_ID = `${siteConfig.url}/#founder`;
+const WEBSITE_ID = `${siteConfig.url}/#website`;
 
-type Organization = {
-  "@type": "Organization";
-  name: string;
-  alternateName: string;
-  url: string;
-  logo: string;
-  description: string;
-  slogan: string;
-  email: string;
-  founder: { "@type": "Person"; name: string; url: string };
-  areaServed: string[];
-  numberOfEmployees: { "@type": "QuantitativeValue"; value: number };
-  makesOffer: { "@type": "Offer"; itemOffered: { "@type": "Service"; name: string; description: string } }[];
-};
+export const PORTRAIT_URL = `${siteConfig.url}/images/ivan-zuniga.jpg`;
+export const LOGO_URL = `${siteConfig.url}/pwa/icon-512.png`;
 
-export function buildPersonSchema(locale: Locale): Person {
+const SAME_AS = [siteConfig.socials.instagram, siteConfig.socials.linkedin, siteConfig.socials.github];
+
+export function buildOrganizationSchema(locale: Locale) {
+  const dict = getDictionary(locale);
   return {
-    "@type": "Person",
-    name: siteConfig.author.name,
-    givenName: siteConfig.author.givenName,
-    familyName: siteConfig.author.familyName,
-    jobTitle: locale === "es" ? "Director Tecnológico · Full-Stack Developer" : "Technology Lead · Full-Stack Developer",
+    "@type": "Organization",
+    "@id": ORG_ID,
+    name: "IA-ZR",
+    alternateName: "iazr.tech",
     url: siteConfig.url,
-    /**
-     * image: la foto del perfil professional expuesta como og.png.
-     * Google usa este campo para poblar el Knowledge Panel cuando
-     * el autor aparece en búsquedas de nombre propio.
-     */
-    image: `${siteConfig.url}/og.png`,
-    sameAs: [
-      siteConfig.author.github,
-      ...siteConfig.author.githubAlt,
-      siteConfig.author.linkedin,
-    ],
+    logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
+    description: dict.meta.description,
+    slogan: "Transformamos ideas y operaciones manuales en sistemas inteligentes que funcionan solos.",
     email: siteConfig.author.email,
     telephone: siteConfig.author.whatsappDisplay,
-    knowsAbout: [
-      "Desarrollo Full-Stack",
-      "React",
-      "Next.js",
-      "Node.js",
-      "Python",
-      "Bases de datos",
-      "PostgreSQL",
-      "MongoDB",
-      "Analítica de datos",
-      "Power BI",
-      "SQL",
-      "Machine Learning",
-      "Inteligencia Artificial",
-      "Cloud",
-      "Azure",
-      "Huawei Cloud",
-      "Ciberseguridad",
-      "Transformación digital",
-      "Gestión de proyectos",
-    ],
+    founder: { "@id": PERSON_ID },
+    areaServed: ["US", "Latin America"],
+    sameAs: SAME_AS,
+  };
+}
+
+export function buildServiceSchema(locale: Locale) {
+  const dict = getDictionary(locale);
+  return {
+    "@type": "ProfessionalService",
+    "@id": SERVICE_ID,
+    name: "IA-ZR",
+    url: `${siteConfig.url}/${locale}`,
+    image: LOGO_URL,
+    description: dict.meta.description,
+    telephone: siteConfig.author.whatsappDisplay,
+    email: siteConfig.author.email,
+    address: { "@type": "PostalAddress", addressCountry: "CO" },
+    areaServed: ["US", "Latin America"],
+    parentOrganization: { "@id": ORG_ID },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: dict.tracks.title,
+      itemListElement: dict.tracks.items.map((track) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: `${track.tag}: ${track.title}`,
+          description: `${track.audience} ${track.features.map((f) => f.text).join(", ")}.`,
+        },
+      })),
+    },
+  };
+}
+
+export function buildPersonSchema(locale: Locale) {
+  return {
+    "@type": "Person",
+    "@id": PERSON_ID,
+    name: "Iván Andrés Zúñiga Romo",
+    givenName: siteConfig.author.givenName,
+    familyName: "Zúñiga Romo",
+    jobTitle: locale === "es" ? "Fundador de IA-ZR" : "Founder of IA-ZR",
+    url: `${siteConfig.url}/${locale}/about`,
+    image: { "@type": "ImageObject", url: PORTRAIT_URL, width: 800, height: 800 },
+    sameAs: [siteConfig.author.linkedin, siteConfig.author.github],
+    email: siteConfig.author.email,
+    worksFor: { "@id": ORG_ID },
+    knowsLanguage: ["es", "en"],
     alumniOf: education
-      .filter((e) => e.id !== "unir-ia") // UNIR está en curso; el resto son títulos completados
+      .filter((e) => e.id !== "unir-ia")
       .map((e) => ({ "@type": "CollegeOrUniversity" as const, name: e.institution })),
     hasCredential: [
       ...education.map((e) => ({
         "@type": "EducationalOccupationalCredential" as const,
+        credentialCategory: "degree",
         name: localize(e.degree, locale),
       })),
+      // The 15 international certifications (lib/data/experience.ts drives the count).
       ...certifications.flatMap((group) =>
         group.credentials.map((c) => ({
           "@type": "EducationalOccupationalCredential" as const,
+          credentialCategory: "certificate",
           name: c.name,
           recognizedBy: { "@type": "Organization" as const, name: c.issuer },
           ...(c.verifyUrl ? { url: c.verifyUrl } : {}),
         }))
       ),
     ],
-    worksFor: experience.map((e) => ({ "@type": "Organization" as const, name: e.org })),
-    knowsLanguage: "es, en",
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "CO",
-      addressLocality: "Colombia",
-    },
   };
 }
 
-export function buildOrganizationSchema(locale: Locale): Organization {
-  return {
-    "@type": "Organization",
-    name: "IAZR — Dirección Tecnológica & Full-Stack",
-    alternateName: "IAZR · IA, Full-Stack & Formación",
-    url: siteConfig.url,
-    logo: `${siteConfig.url}${siteConfig.ogImage}`,
-    description: siteConfig.description,
-    slogan: "Director Tecnológico · Full-Stack Developer · Mentor Tech",
-    email: siteConfig.author.email,
-    founder: { "@type": "Person", name: siteConfig.author.name, url: siteConfig.url },
-    areaServed: ["US", "Latin America", "Worldwide (remote)"],
-    numberOfEmployees: { "@type": "QuantitativeValue", value: 1 },
-    makesOffer: services.map((service) => ({
-      "@type": "Offer" as const,
-      itemOffered: {
-        "@type": "Service" as const,
-        name: localize(service.title, locale),
-        description: localize(service.description, locale),
-      },
-    })),
-  };
-}
-
-/**
- * ProfilePage schema (Schema.org 2024).
- * Señal directa para páginas de portafolio personal: Google las identifica
- * como "About Me" / "Profile" y las posiciona con mayor confianza en
- * búsquedas de nombre de persona + cargo.
- */
-export function buildProfilePageSchema(locale: Locale) {
-  const person = buildPersonSchema(locale);
-  const url = `${siteConfig.url}/${locale}`;
-  return {
-    "@type": "ProfilePage",
-    "@id": `${url}#profile`,
-    url,
-    inLanguage: LANGUAGE_TAG[locale],
-    name: `${siteConfig.author.name} — Portafolio Profesional`,
-    description: siteConfig.description,
-    dateCreated: "2026-01-01",
-    dateModified: new Date().toISOString().split("T")[0],
-    mainEntity: person,
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: locale === "es" ? "Inicio" : "Home",
-          item: url,
-        },
-      ],
-    },
-  };
-}
-
-/**
- * WebSite schema. Sin SearchAction: el sitio no tiene buscador y declarar uno
- * inexistente es un dato estructurado falso.
- */
 export function buildWebSiteSchema(locale: Locale) {
   return {
     "@type": "WebSite",
-    "@id": `${siteConfig.url}/#website`,
+    "@id": WEBSITE_ID,
     url: siteConfig.url,
-    name: siteConfig.title,
-    description: siteConfig.description,
+    name: getDictionary(locale).meta.title,
     inLanguage: LANGUAGE_TAG[locale],
-    author: {
-      "@type": "Person",
-      name: siteConfig.author.name,
-      url: siteConfig.url,
-    },
+    publisher: { "@id": ORG_ID },
   };
 }
 
-/** Grafo completo: ProfilePage → Person → Organization → WebSite. */
+/** The full graph: Organization → ProfessionalService → Person → WebSite. */
 export function buildJsonLdGraph(locale: Locale) {
   return {
     "@context": "https://schema.org",
-    "@graph": [
-      buildProfilePageSchema(locale),
-      buildPersonSchema(locale),
-      buildOrganizationSchema(locale),
-      buildWebSiteSchema(locale),
-    ],
+    "@graph": [buildOrganizationSchema(locale), buildServiceSchema(locale), buildPersonSchema(locale), buildWebSiteSchema(locale)],
   };
 }
+

@@ -23,6 +23,11 @@ colors:
   live: "#3d6bff"
   cobalt-ink: "#062b8a"
   cobalt-muted: "#263f8e"
+  slate-ground: "#071330"
+  deep-ground: "#040d24"
+  charcoal-ink: "#111318"
+  charcoal-muted: "#3a3d46"
+  soft-sand: "#f4efe6"
   dark-destructive: "#ffb4a6"
   dark-success: "#8fd3a8"
   white: "#ffffff"
@@ -202,6 +207,23 @@ A strict two-tone: warm sand grounds and a deep cobalt that is ink, accent and a
 **The One Ink Rule.** Cobalt is the only hue. A second accent is never introduced; emphasis is weight, size, or the inverse band. Full-colour brand logos inside icon tiles are content, not palette.
 
 **The Opaque Rule.** Surfaces are solid sand steps. No transparency, blur or glass on the ground; the only translucent fills are the tint mixes defined above.
+
+### Section grounds
+
+Every home section names its own ground and no two neighbours share one. Each text pair is AAA (7:1 or more).
+
+| # | Section | Ground | Text | Secondary | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Hero | ivory #f7f4ed (transparent, body paints it) | cobalt #062b8a | #263f8e | architectural 48px grid; WebGL frame |
+| 2 | Problem | night #05153f | ivory #f7f4ed | #b8c2dc | glass cards #0b2159, signal #8fb0ff |
+| 3 | Tracks | white #faf8f5 | cobalt | #263f8e | Track 01 card with a 2px cobalt border |
+| 4 | Flow | sand #eae2d3 | cobalt | #263f8e | cards #f3eee4 |
+| 5 | ROI | engine #081c4a | ivory | #b8c2dc | chart bars signal #8fb0ff |
+| 6 | Cases | ivory (transparent) | cobalt | #263f8e | WebGL frame |
+| 7 | Assistant | slate #071330 | ivory | #b8c2dc | technical grid; console with a luminous edge |
+| 8 | Founder | warm sand #eae2d3 | charcoal #111318 | #3a3d46 | ivory cards #faf8f5, cobalt labels and links |
+| 9 | Contact | white #faf8f5 | cobalt | #263f8e | form shell #f4efe6 with a border; passkey card engine #081c4a |
+| 10 | Footer | deep night #040d24 | ivory | #b8c2dc | wordmark in sand #eae2d3 |
 
 ## Typography
 

@@ -9,9 +9,9 @@ import { defaultLocale, isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { BookingButton } from "@/components/booking/booking-button";
 import { LanguageSwitch } from "@/components/hud/language-switch";
-import { SoundToggle } from "@/components/hud/sound-toggle";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { InstallButton } from "@/components/pwa/install-button";
+import { CommandButton } from "@/components/palette/command-palette";
 
 /**
  * The site's one fixed bar: opaque ground, a hairline from the first paint, the
@@ -54,7 +54,7 @@ export function Hud() {
   return (
     <header data-slot="hud" className="site-nav">
       <div className="wrap flex h-full items-center justify-between gap-6">
-        <a href="#main" className="skip-link">
+        <a href="#main" className="skip-link sr-only focus-visible:not-sr-only">
           {dict.nav.skip}
         </a>
         <Link href={home} aria-label="IA-ZR, inicio" className="shrink-0">
@@ -73,7 +73,7 @@ export function Hud() {
         <div className="flex items-center gap-2">
           <InstallButton label={dict.pwa.install} icon className="hidden xl:inline-flex" />
           <LanguageSwitch className="hidden sm:flex" />
-          <SoundToggle labelOn={dict.hud.soundOn} labelOff={dict.hud.soundOff} hint={dict.hud.soundHint} />
+          <CommandButton label={dict.palette.open} />
           <BookingButton source="hud" className="hidden sm:inline-flex">
             {dict.hud.book}
           </BookingButton>

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       languages: { es: "/es/about", en: "/en/about", "x-default": "/en/about" },
     },
     openGraph: {
-      title: `${dict.meta.aboutTitle} — IAZR`,
+      title: `${dict.meta.aboutTitle} | IA-ZR`,
       description: dict.meta.aboutDescription,
       url: `/${locale}/about`,
       type: "profile",

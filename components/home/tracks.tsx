@@ -1,12 +1,14 @@
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { BrandIcon } from "@/components/home/brand-icon";
 import { NfcCard } from "@/components/home/nfc-card";
+import { ArchitectureSandbox } from "@/components/home/architecture-sandbox";
+import type { Locale } from "@/lib/i18n/config";
 
 /**
  * Two service tracks on architectural white. Track 01 carries the live cobalt
  * border; under both, the band with the IA-ZR NFC card that Track 01 includes.
  */
-export function Tracks({ dict }: { dict: Dictionary }) {
+export function Tracks({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const t = dict.tracks;
   return (
     <section id="servicios" data-world-section="tracks" className="section g-white">
@@ -68,6 +70,8 @@ export function Tracks({ dict }: { dict: Dictionary }) {
             <NfcCard t={t.nfc} />
           </div>
         </div>
+
+        <ArchitectureSandbox t={t.sandbox} locale={locale} />
       </div>
     </section>
   );

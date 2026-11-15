@@ -6,6 +6,8 @@ import { ScanLine, Star } from "lucide-react";
 
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { cn } from "@/lib/utils";
+import { on, PAGE_EVENTS } from "@/lib/events";
+import { scrollToSection } from "@/lib/agent/run";
 import { BrandIcon } from "@/components/home/brand-icon";
 
 type Flow = Dictionary["flow"];
@@ -46,6 +48,14 @@ export function FlowSection({ t }: { t: Flow }) {
   const [scanner, setScanner] = useState(false);
   const [list, setList] = useState<HTMLDivElement | null>(null);
   const rail = useRail(list, step);
+  useEffect(
+    () =>
+      on(PAGE_EVENTS.scanner, () => {
+        scrollToSection("flujo");
+        setScanner(true);
+      }),
+    []
+  );
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -59,7 +69,7 @@ export function FlowSection({ t }: { t: Flow }) {
 
   return (
     <section id="flujo" data-world-section="flow" className="section g-sand">
-      <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
+      <div className="wrap grid grid-cols-1 h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="flex flex-col lg:col-span-5">
           <h2 className="t-h2">{t.title}</h2>
           <p className="t-lead mt-4">{t.lead}</p>

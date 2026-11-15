@@ -98,14 +98,14 @@ ${projectsBlock}
 const ACTION_TEXT: Record<Locale, Record<ActionCode, string>> = {
   es: {
     booking: "se abrió el panel para agendar un diagnóstico",
-    roi: "la página se desplazó a la calculadora de ROI y la prellenó con las cifras del visitante (si las dio); allí puede ajustar los supuestos y descargar su propuesta en PDF",
+    roi: "la página se desplazó a la calculadora de ROI y la prellenó con las cifras del visitante (si las dio). La calculadora usa SOLO: consultas diarias en WhatsApp, horas semanales en tareas manuales, valor promedio por cliente (USD o COP) y tres supuestos editables (consultas perdidas por responder tarde, cierre de las recuperadas, parte automatizada). Calcula horas recuperadas al mes, ingresos recuperados al mes y al año, y el servicio recomendado; descarga una propuesta en PDF sin precios. NO pide inversión, licencias ni costos",
     case: "la página se desplazó a los casos en producción y mostró el caso pedido",
     flow: "la página se desplazó al flujo de 4 pasos, donde está el escáner de visión con cámara en vivo",
     portal: "la página se desplazó a contacto, donde está la demostración de acceso biométrico con passkey",
   },
   en: {
     booking: "the booking panel opened so they can schedule a diagnosis",
-    roi: "the page scrolled to the ROI calculator and prefilled it with the visitor's figures (if given); there they can adjust the assumptions and download their PDF proposal",
+    roi: "the page scrolled to the ROI calculator and prefilled it with the visitor's figures (if given). The calculator uses ONLY: daily WhatsApp enquiries, weekly hours on manual tasks, average value per customer (USD or COP) and three editable assumptions (enquiries lost to slow replies, close rate of those recovered, share automated). It works out hours back per month, revenue recovered per month and per year, and the recommended service; it downloads a PDF proposal without prices. It does NOT ask for investment, licences or costs",
     case: "the page scrolled to the production case studies and showed the requested case",
     flow: "the page scrolled to the 4-step flow, which holds the live-camera vision scanner",
     portal: "the page scrolled to contact, which holds the biometric passkey sign-in demo",

@@ -1,4 +1,4 @@
-import { CalendarCheck, LayoutTemplate, MessageCircle, Nfc, QrCode, Star, UserRound, type LucideIcon } from "lucide-react";
+import { CalendarCheck, Cpu, LayoutTemplate, MessageCircle, Nfc, QrCode, ReceiptText, Star, UserRound, Users, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,9 @@ const GLYPHS: Record<string, LucideIcon> = {
   "ui-star": Star,
   "ui-calendar-check": CalendarCheck,
   "ui-message-circle": MessageCircle,
+  "ui-cpu": Cpu,
+  "ui-receipt": ReceiptText,
+  "ui-users": Users,
 };
 
 const NAMES: Record<string, string> = {

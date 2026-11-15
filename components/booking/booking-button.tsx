@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 import { openBooking } from "@/lib/booking-store";
 import { Button } from "@/components/ui/button";
 
-export type BookingSource = "hero" | "services" | "contact" | "hud" | "close" | "founder" | "roi" | "assistant";
+export type BookingSource = "hero" | "services" | "contact" | "hud" | "close" | "founder" | "roi" | "assistant" | "palette";
 
 /** Every "book" action opens the drawer without leaving the page. */
 export function BookingButton({

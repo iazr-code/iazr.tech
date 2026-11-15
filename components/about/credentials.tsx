@@ -16,7 +16,7 @@ export function Credentials({ locale, dict }: { locale: Locale; dict: Dictionary
     <section id="credenciales" className="py-24 sm:py-32">
       <SectionHeading eyebrow={dict.credentialsEyebrow} title={dict.credentialsTitle} description={dict.credentialsDescription} />
 
-      <div className="wrap grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="wrap grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {education.map((entry) => (
           <article key={entry.id} className="card flex flex-col rounded-[var(--r-lg)] p-6">
             <span className="inline-flex size-11 items-center justify-center rounded-lg bg-secondary text-foreground">

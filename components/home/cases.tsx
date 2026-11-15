@@ -86,7 +86,7 @@ export function Cases({
 
   return (
     <section id="casos" data-world-section="projects" className="section g-ivory bg-transparent">
-      <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
+      <div className="wrap grid grid-cols-1 h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="flex flex-col lg:col-span-5">
           <h2 className="t-h2">{title}</h2>
           <p className="t-lead mt-4">{lead}</p>

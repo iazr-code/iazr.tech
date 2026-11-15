@@ -75,7 +75,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <JsonLd data={buildJsonLdGraph(locale)} />
       <Hero dict={dict} locale={locale} />
       <Problem dict={dict} />
-      <Tracks dict={dict} />
+      <Tracks dict={dict} locale={locale} />
       <FlowSection t={dict.flow} />
       <RoiSection t={dict.roi} tracks={dict.tracks} locale={locale} />
       <Cases
@@ -87,8 +87,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         filters={dict.cases.filters}
       />
 
-      <section id="asistente" data-world-section="chat" className="section g-white">
-        <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
+      <section id="asistente" data-world-section="chat" className="section g-slate arch-grid">
+        <div className="wrap grid h-full grid-cols-1 gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
           <div className="flex flex-col lg:col-span-5">
             <h2 className="t-h2">{dict.chat.title}</h2>
             <p className="t-lead mt-4">{dict.chat.description}</p>

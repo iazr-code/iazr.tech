@@ -22,7 +22,7 @@ export function ContactDirect({ locale, dict }: { locale: Locale; dict: Dictiona
     <section id="contacto-directo" className="py-24 sm:py-32">
       <SectionHeading eyebrow={dict.contactEyebrow} title={dict.contactTitle} description={dict.contactDescription} />
 
-      <div className="wrap grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+      <div className="wrap grid grid-cols-1 gap-8 lg:grid-cols-[1.2fr_1fr]">
         <div className="flex flex-col gap-3">
           {channels.map(({ label, value, href, icon: Icon }) => (
             <a

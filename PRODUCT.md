@@ -59,7 +59,7 @@ Tagline: "Transformamos ideas y operaciones manuales en sistemas inteligentes qu
 - **Languages**: Spanish and English. English is the fallback; Spanish is chosen from Accept-Language.
 - **Team**: the founder plus occasional collaborators. "We" means the IA-ZR brand, and direct contact with the founder is a selling point. Never present a large permanent team.
 - **Open decisions**:
-  - Whether the domain iazr.tech is the canonical URL (today the site is at portafolio-iazr.vercel.app).
+  - The canonical domain is **iazr.tech** (decided 2026-11-14); `NEXT_PUBLIC_SITE_URL` overrides it while the domain is not yet pointed to Vercel.
   - Track 01 prices are not published.
 
 ## Brand Commitments

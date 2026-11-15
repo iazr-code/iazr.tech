@@ -92,37 +92,16 @@ export const metadata: Metadata = {
      * og:locale:alternate: señala a los scrapers que el sitio existe también
      * en variante de idioma. Mejora la clasificación multi-locale.
      */
-    alternateLocale: ["es"],
+    alternateLocale: ["en_US"],
     url: siteConfig.url,
     siteName: siteConfig.name,
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [
-      {
-        /**
-         * URL ABSOLUTA garantizada: `${siteConfig.url}${siteConfig.ogImage}`.
-         * Aunque metadataBase resuelve las relativas, especificarla absoluta
-         * es la práctica más robusta — Facebook, WhatsApp y LinkedIn
-         * verifican ambas formas y prefieren la absoluta.
-         */
-        url: `${siteConfig.url}/og.png`,
-        secureUrl: `${siteConfig.url}/og.png`,
-        width: 1200,
-        height: 630,
-        type: "image/png",
-        alt: `${siteConfig.name} — IA y automatización para empresas`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    /**
-     * URL absoluta también en Twitter Card — el validator de Twitter
-     * no siempre resuelve rutas relativas correctamente.
-     */
-    images: [`${siteConfig.url}/og.png`],
   },
   robots: {
     index: true,

@@ -7,6 +7,8 @@ import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import { localize } from "@/lib/i18n/localized";
 
 export const CV_URL = "https://drive.google.com/file/d/1uXSsTCNRBIJW5D3zHWLMhyqlnwWQ69sp/view?usp=sharing";
+/** The founder portrait (from imgact.jpeg, cropped to its circle by hand-off script; original kept in public/images). */
+export const PORTRAIT_SRC = "/images/ivan-zuniga.webp";
 
 /** The founder: portrait, credentials in sentences, three recent roles, the CV. */
 export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) {
@@ -14,12 +16,12 @@ export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) 
   const roles = experience.slice(0, 3);
 
   return (
-    <section id="fundador" data-world-section="founder" className="section g-cobalt">
-      <div className="wrap grid h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
+    <section id="fundador" data-world-section="founder" className="section g-warm">
+      <div className="wrap grid grid-cols-1 h-full gap-x-6 gap-y-12 max-lg:gap-y-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <div className="w-full max-w-[302px] rounded-[var(--r-lg)] bg-surface p-3">
-          <div className="relative aspect-square overflow-hidden rounded-[var(--r-md)]">
-            <Image src="/perfil.png" alt={t.portraitAlt} fill sizes="278px" className="object-cover" />
+          <div className="portrait-card">
+            <div className="relative aspect-square overflow-hidden rounded-full">
+              <Image src={PORTRAIT_SRC} alt={t.portraitAlt} fill sizes="(max-width: 640px) 70vw, 300px" quality={90} className="object-cover" />
             </div>
           </div>
         </div>
@@ -28,7 +30,7 @@ export function Founder({ dict, locale }: { dict: Dictionary; locale: Locale }) 
           <p className="t-lead mt-4 measure">{t.lead}</p>
           <p className="mt-4 measure">{t.record.replace("{certs}", String(certificationCount))}</p>
 
-          <h3 className="t-label mt-10 text-muted-foreground">{t.rolesTitle}</h3>
+          <h3 className="t-label mt-10 text-[var(--c-cobalt)]">{t.rolesTitle}</h3>
           <ul className="mt-3">
             {roles.map((r) => (
               <li key={r.id} className="grid gap-x-6 border-t border-border py-3 sm:grid-cols-[1fr_auto]">

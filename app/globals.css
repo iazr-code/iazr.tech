@@ -18,6 +18,10 @@
   --c-signal: #8fb0ff;
   --c-signal-dot: #5b8cff;
   --c-live: #3d6bff;
+  --c-slate: #071330;
+  --c-deep: #040d24;
+  --c-charcoal: #111318;
+  --c-soft-sand: #f4efe6;
 
   /* Default ground: ivory. A .g-* class swaps these five per section. */
   --p-bg: var(--c-ivory);
@@ -38,7 +42,7 @@
 }
 
 /* Semantic tokens resolve on every ground, so a section's --p-* values flow into its components. */
-:root, .g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .ground-surface, .ground-inverse {
+:root, .g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-warm, .g-deep, .ground-surface, .ground-inverse {
   --background: var(--p-bg);
   --foreground: var(--p-ink);
   --card: var(--p-surface);
@@ -211,14 +215,23 @@
  * shared semantic rule above turns them into --background, --foreground, etc.
  * Every text pair below is AAA (7:1 or more) on its own ground.
  */
-.g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt { background: var(--p-bg); color: var(--p-ink); }
+.g-ivory, .g-white, .g-sand, .g-night, .g-engine, .g-cobalt, .g-slate, .g-warm, .g-deep { background: var(--p-bg); color: var(--p-ink); }
 .g-ivory { --p-bg: var(--c-ivory); --p-surface: #efe9dc; --p-paper: #fcfaf6; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
 .g-white { --p-bg: var(--c-white); --p-surface: #f1ece3; --p-paper: #ffffff; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
 .g-sand { --p-bg: var(--c-sand); --p-surface: #f3eee4; --p-paper: #faf7f1; --p-ink: var(--c-cobalt); --p-muted: #263f8e; --p-accent: var(--c-cobalt); }
-.g-night, .g-engine, .g-cobalt, .ground-inverse { color-scheme: dark; --p-ink: var(--c-ivory); --p-accent: var(--c-signal); --grid-line: rgba(247, 244, 237, 0.06); --destructive: #ffb4a6; --success: #8fd3a8; }
+.g-night, .g-engine, .g-cobalt, .g-slate, .g-deep, .ground-inverse { color-scheme: dark; --p-ink: var(--c-ivory); --p-accent: var(--c-signal); --grid-line: rgba(247, 244, 237, 0.06); --destructive: #ffb4a6; --success: #8fd3a8; }
 .g-night { --p-bg: var(--c-night); --p-surface: #0b2159; --p-paper: #0e2763; --p-muted: #b8c2dc; }
 .g-engine { --p-bg: var(--c-engine); --p-surface: #0d2558; --p-paper: #102b63; --p-muted: #b8c2dc; }
 .g-cobalt { --p-bg: var(--c-cobalt); --p-surface: #0f3596; --p-paper: #153a90; --p-muted: #c9d3ec; }
+/* Section 7, the assistant: night slate with the technical grid. */
+.g-slate { --p-bg: var(--c-slate); --p-surface: #0c1d47; --p-paper: #0f2352; --p-muted: #b8c2dc; }
+/* Section 8, the founder: warm sand, ivory cards, charcoal headings, cobalt labels and links. */
+.g-warm { --p-bg: var(--c-sand); --p-surface: var(--c-white); --p-paper: var(--c-white); --p-ink: var(--c-charcoal); --p-muted: #3a3d46; --p-accent: var(--c-cobalt); }
+.g-warm :is(.t-label, .link) { color: var(--c-cobalt); }
+.g-warm .btn--primary { background: var(--c-cobalt); color: var(--c-ivory); }
+/* Section 10, the close: deepest night, the wordmark in sand. */
+.g-deep { --p-bg: var(--c-deep); --p-surface: #0a1838; --p-paper: #0d1d44; --p-muted: #b8c2dc; }
+.g-deep .t-wordmark { color: var(--c-sand); }
 /* Legacy names kept for /about and the footer. */
 .ground-surface { --p-bg: #efe9dc; --p-surface: var(--c-ivory); background: var(--p-bg); }
 .ground-inverse {
@@ -234,8 +247,14 @@
   background-position: center top;
 }
 /* Logo tiles stay on paper on dark grounds: the real logos are drawn for light. */
-:is(.g-night, .g-engine, .g-cobalt, .ground-inverse) .ic-tile { background: var(--c-ivory); border-color: transparent; }
-:is(.g-night, .g-engine, .g-cobalt, .ground-inverse) .ic-tile > svg { color: var(--c-cobalt); }
+:is(.g-night, .g-engine, .g-cobalt, .g-slate, .g-deep, .ground-inverse) .ic-tile { background: var(--c-ivory); border-color: transparent; }
+:is(.g-night, .g-engine, .g-cobalt, .g-slate, .g-deep, .ground-inverse) .ic-tile > svg { color: var(--c-cobalt); }
+/* The founder portrait sits on an ivory card. */
+.portrait-card { width: 100%; max-width: 320px; border-radius: var(--r-lg); background: var(--c-white); padding: 12px; border: 1px solid color-mix(in oklab, var(--c-cobalt) 12%, transparent); }
+/* Section 9: the form shell in soft sand with a defined border. */
+.form-shell { background: var(--c-soft-sand); border: 1px solid color-mix(in oklab, var(--c-cobalt) 22%, transparent); border-radius: var(--r-lg); }
+/* The assistant console: a subtle luminous edge, no bloom. */
+.console-glow { border: 1px solid color-mix(in oklab, var(--c-signal) 36%, transparent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--c-signal) 6%, transparent), 0 32px 64px -32px color-mix(in oklab, var(--c-live) 45%, transparent); }
 /* A glass card on the dark grounds. */
 .card-dark { background: color-mix(in oklab, var(--p-surface) 78%, transparent); border: 1px solid var(--line); border-radius: var(--r-lg); backdrop-filter: blur(6px); }
 .signal { color: var(--c-signal); }
@@ -435,6 +454,37 @@ dialog.app-dialog[open], dialog.scanner-dialog[open] { animation: dialog-in 260m
 @keyframes mic-ring { to { box-shadow: 0 0 0 10px transparent; } }
 @media (prefers-reduced-motion: reduce) { .mic-live { animation: none; } }
 
+/* ── Architecture sandbox ───────────────────────────────────────────────── */
+.sandbox { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
+@media (min-width: 1024px) { .sandbox { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; } }
+.sandbox__stage { position: relative; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--p-bg); transition: border-color 300ms var(--ease-out), box-shadow 300ms var(--ease-out); }
+.sandbox__stage[data-on] { border-color: var(--c-cobalt); box-shadow: 0 0 0 3px color-mix(in oklab, var(--c-live) 16%, transparent); }
+.sandbox__label { font-size: var(--t-label); font-weight: 500; color: var(--muted-foreground); }
+.sandbox__nodes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sandbox__node { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-height: 36px; padding: 3px 12px 3px 3px; border: 1px solid var(--line); border-radius: 9999px; background: var(--p-paper); font-size: var(--t-small); }
+.sandbox__wire { position: absolute; left: 27px; top: 100%; width: 2px; height: 28px; overflow: hidden; background: var(--line-strong); }
+.sandbox__wire::after { content: ""; position: absolute; left: 0; top: 0; width: 2px; height: 12px; border-radius: var(--r-data); background: var(--c-live); opacity: 0; }
+.sandbox__wire[data-pulse]::after { opacity: 1; animation: wire-y 420ms linear infinite; }
+@keyframes wire-y { from { transform: translateY(-12px); } to { transform: translateY(28px); } }
+@media (min-width: 1024px) {
+  .sandbox__wire { left: 100%; top: 50%; width: 40px; height: 2px; }
+  .sandbox__wire::after { width: 14px; height: 2px; }
+  .sandbox__wire[data-pulse]::after { animation-name: wire-x; }
+  @keyframes wire-x { from { transform: translateX(-14px); } to { transform: translateX(40px); } }
+}
+@media (prefers-reduced-motion: reduce) { .sandbox__wire[data-pulse]::after { animation: none; transform: none; width: 100%; height: 100%; } }
+.sandbox__timings { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; gap: 6px 16px; font-size: var(--t-small); }
+.sandbox__badge { display: inline-flex; margin-left: 8px; padding: 1px 8px; border-radius: 9999px; background: var(--c-cobalt); color: var(--c-ivory); font-size: var(--t-label); }
+.sandbox__json { max-height: 340px; margin: 0; padding: 14px 16px; overflow: auto; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--p-bg); font: 400 13px/1.55 var(--font-mono); white-space: pre; }
+
+/* ── Command palette ────────────────────────────────────────────────────── */
+.kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--r-data); border: 1px solid var(--line-strong); font: 500 13px/1 var(--font-mono); color: var(--muted-foreground); background: var(--p-paper); }
+.palette__item { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: var(--r-md); color: var(--foreground); cursor: pointer; transition: background-color 120ms var(--ease-out); }
+.palette__item--on { background: color-mix(in oklab, var(--p-ink) 8%, transparent); }
+dialog.palette[open] { animation: palette-in 200ms var(--ease-out); transform-origin: 50% 0; }
+@keyframes palette-in { from { opacity: 0; transform: scale(0.98) translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { dialog.palette[open] { animation: none; } }
+
 /* ── Nav ────────────────────────────────────────────────────────────────── */
 .site-nav {
   position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--nav);
@@ -443,13 +493,7 @@ dialog.app-dialog[open], dialog.scanner-dialog[open] { animation: dialog-in 260m
 }
 
 /* ── Skip link ──────────────────────────────────────────────────────────── */
-.skip-link {
-  position: absolute; left: 0; top: 50%; translate: 0 -50%; z-index: 2;
-  padding: 10px 14px; border-radius: var(--r-sm); background: var(--p-ink); color: var(--p-bg);
-  font-size: var(--t-small); font-weight: 500; text-decoration: none;
-  clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; white-space: nowrap;
-}
-.skip-link:focus-visible { clip-path: none; width: auto; height: auto; overflow: visible; }
+/* .skip-link carries sr-only + focus-visible:not-sr-only; its visible look is the unlayered rule at the end. */
 
 /* ── Hero entrance: once on load, from an already-visible default ───────── */
 .enter { animation: enter 700ms var(--ease-out) both; animation-delay: var(--d, 0ms); }
@@ -488,7 +532,12 @@ dialog.booking-drawer[open] { animation: drawer-in 380ms var(--ease-out); }
 /* ── Cases: the fallback screenshot hides when the WebGL frame is live ──── */
 html[data-world="3d"] [data-world-frame="cases"][data-gl-ready] .case-shot { opacity: 0 !important; }
 
-/* ── Sound toggle equaliser ─────────────────────────────────────────────── */
-.sound-bar { animation: sound-bar 900ms ease-in-out infinite alternate; transform-origin: bottom; }
-@keyframes sound-bar { from { transform: scaleY(0.4); } to { transform: scaleY(1.8); } }
-@media (prefers-reduced-motion: reduce) { .sound-bar { animation: none; } }
+
+
+/* Skip link, visible state only. Unlayered on purpose: it must win over the layered not-sr-only (position: static). */
+.skip-link:focus-visible {
+  position: fixed; left: 16px; top: 12px; z-index: 60;
+  padding: 10px 14px; border-radius: var(--r-sm); background: var(--c-cobalt); color: var(--c-ivory);
+  font-size: var(--t-small); font-weight: 500; text-decoration: none; white-space: nowrap;
+  outline: 2px solid var(--c-cobalt); outline-offset: 3px;
+}
